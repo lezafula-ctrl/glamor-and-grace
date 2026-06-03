@@ -447,27 +447,34 @@ choice=lashChoice;
 choice=(braidChoice==='other') ? other : braidChoice;
 }
 
-let msg='Hello Glamor & Grace!%0A%0A'+
-'BOOKING REQUEST%0A'+
-'Name: '+document.getElementById('name').value+'%0A'+
-'Phone: '+document.getElementById('phone').value+'%0A'+
-'Service: '+service+'%0A'+
-'Choice: '+choice+'%0A'+
-'Date: '+document.getElementById('date').value+'%0A'+
-'Time: '+document.getElementById('time').value+'%0A'+
-'Location: '+document.getElementById('location').value;
-
+let msg = encodeURIComponent(
+  'Hello Glamor & Grace!\n\nBOOKING REQUEST\n' +
+  'Name: ' + document.getElementById('name').value + '\n' +
+  'Phone: ' + document.getElementById('phone').value + '\n' +
+  'Service: ' + service + '\n' +
+  'Choice: ' + choice + '\n' +
+  'Date: ' + document.getElementById('date').value + '\n' +
+  'Time: ' + document.getElementById('time').value + '\n' +
+  'Location: ' + document.getElementById('location').value
+);
 window.open('https://wa.me/27730592497?text='+msg,'_blank');
 }
 
 function sendOrder(){
-let msg='Hello Glamor & Grace!%0A%0A'+
-'ORDER REQUEST%0A'+
-'Product: '+document.getElementById('product').value+'%0A'+
-'Name: '+document.getElementById('oname').value+'%0A'+
-'Phone: '+document.getElementById('ophone').value+'%0A'+
-'PEP Address & Code: '+document.getElementById('address').value+'%0A%0A'+
-'I will wait for your response before sending screenshots from the catalog.';
+
+let msg = encodeURIComponent(
+'Hello Glamor & Grace!\n\n' +
+'ORDER REQUEST\n' +
+'Product: ' + document.getElementById('product').value + '\n' +
+'Name: ' + document.getElementById('oname').value + '\n' +
+'Phone: ' + document.getElementById('ophone').value + '\n' +
+'PEP Address & Code: ' + document.getElementById('address').value + '\n\n' +
+'I will wait for your response before sending screenshots from the catalog.'
+);
+
+window.open('https://wa.me/27730592497?text=' + msg, '_blank');
+
+}
 
 window.open('https://wa.me/27730592497?text='+msg,'_blank');
 }
