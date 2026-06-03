@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Glamor & Grace</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+}
+
+body{
+font-family:'Poppins',sans-serif;
+background:#f5f5f5;
+color:#111;
+line-height:1.6;
+}
+
+header{
+background:#e8e8e8;
+padding:15px 20px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+position:sticky;
+top:0;
+z-index:1000;
+}
+
+header img{
+height:60px;
+border-radius:50%;
+}
+
+nav a{
+text-decoration:none;
+color:#111;
+margin-left:15px;
+font-size:14px;
+font-weight:500;
+}
+
+.hero{
+min-height:90vh;
+background:linear-gradient(rgba(0,0,0,0.35),rgba(0,0,0,0.35)), url('hero.jpg');
+background-size:cover;
+background-position:center;
+display:flex;
+justify-content:center;
+align-items:center;
+text-align:center;
+padding:20px;
+color:white;
+}
+
+.hero-content{
+max-width:700px;
+}
+
+.hero h1{
+font-family:'Playfair Display',serif;
+font-size:55px;
+margin-bottom:15px;
+}
+
+.hero p{
+font-size:18px;
+margin-bottom:15px;
+}
+
+.hero-buttons{
+margin-top:25px;
+}
+
+.btn{
+background:#ffcad4;
+color:#111;
+padding:12px 25px;
+border:none;
+border-radius:30px;
+text-decoration:none;
+margin:10px;
+display:inline-block;
+font-weight:600;
+transition:0.3s;
+}
+
+.btn:hover{
+background:#111;
+color:white;
+}
+
+.section{
+padding:70px 20px;
+}
+
+.section-title{
+text-align:center;
+margin-bottom:40px;
+}
+
+.section-title h2{
+font-family:'Playfair Display',serif;
+font-size:40px;
+margin-bottom:10px;
+}
+
+.services{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+gap:25px;
+}
+
+.card{
+background:white;
+padding:25px;
+border-radius:25px;
+box-shadow:0 5px 15px rgba(0,0,0,0.08);
+text-align:center;
+}
+
+.card img{
+width:100%;
+height:250px;
+object-fit:cover;
+border-radius:20px;
+margin-bottom:15px;
+}
+
+.gallery{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+gap:15px;
+}
+
+.gallery img{
+width:100%;
+height:300px;
+object-fit:cover;
+border-radius:20px;
+}
+
+form{
+background:white;
+padding:25px;
+border-radius:25px;
+max-width:700px;
+margin:auto;
+box-shadow:0 5px 15px rgba(0,0,0,0.08);
+}
+
+input, select, textarea{
+width:100%;
+padding:14px;
+margin:10px 0;
+border-radius:12px;
+border:1px solid #ddd;
+font-family:'Poppins',sans-serif;
+}
+
+.notice{
+background:#ffe4ec;
+padding:15px;
+border-radius:15px;
+margin:15px 0;
+font-size:14px;
+}
+
+.socials{
+text-align:center;
+margin-top:20px;
+}
+
+.socials a{
+text-decoration:none;
+color:#111;
+margin:10px;
+font-weight:600;
+}
+
+footer{
+background:#111;
+color:white;
+text-align:center;
+padding:25px;
+margin-top:50px;
+}
+
+@media(max-width:768px){
+.hero h1{
+font-size:38px;
+}
+
+nav{
+display:none;
+}
+}
+</style>
+</head>
+<body>
+
+<header>
+<img src="logo.png" alt="Glamor & Grace Logo">
+<nav>
+<a href="#home">Home</a>
+<a href="#services">Services</a>
+<a href="#gallery">Gallery</a>
+<a href="#booking">Booking</a>
+<a href="#order">Order</a>
+<a href="#contact">Contact</a>
+</nav>
+</header>
+
+<section class="hero" id="home">
+<div>
+<h1>Glamor & Grace</h1>
+<p><strong>Glamor for every occasion, Grace for everyday.</strong></p>
+<p>Braids • Lashes • Sneakers • Wigs</p>
+<div class="hero-buttons">
+<a href="#booking" class="btn">Book Appointment</a>
+<a href="#order" class="btn">Order Now</a>
+</div>
+</div>
+</section>
+
+<section class="section" id="services">
+<div class="section-title">
+<h2>Our Services</h2>
+<p>Luxury beauty and lifestyle services tailored for you.</p>
+</div>
+
+<div class="services">
+<div class="card">
+<img src="braids6.jpg" alt="Braids">
+<h3>Braids</h3>
+<p>Protective styles, knotless braids, goddess braids and more.</p>
+</div>
+
+<div class="card">
+<img src="lashes2.jpg" alt="Lashes">
+<h3>Lashes</h3>
+<p>Classic, cluster and cat eye lash installations.</p>
+</div>
+
+<div class="card">
+<img src="sneaker1.jpg" alt="Sneakers and Wigs">
+<h3>Sneakers & Wigs</h3>
+<p>Order stylish sneakers and wigs directly through Glamor & Grace.</p>
+</div>
+</div>
+</section>
+
+<section class="section" id="gallery">
+<div class="section-title">
+<h2>Our Work</h2>
+<p>Real clients. Real beauty. Real Glamor & Grace.</p>
+</div>
+
+<div class="gallery">
+<a href="braidsposter.jpg" ,target="_blank"><img src="braidsposter.jpg"></a>
+<a href="braid1.jpg" target="_blank"><img src="braids1.jpg"></a>
+<a href="braid2.jpg" target="_blank"><img src="braids2.jpg"></a>
+<a href="braid5.jpg" target="_blank"><img src="braids5.jpg"></a>
+<a href="braid6.jpg" target="_blank"><img src="braids6.jpg"></a>
+<a href="braid7.jpg" target="_blank"><img src="braids7.jpg"></a>
+<a href="braid9.jpg" target="_blank"><img src="braids9.jpg"></a>
+<video width="250" controls><source src="braids1.mp4" type="video/mp4"></video>
+<video width="250" controls><source src="braids2.mp4" type="video/mp4"></video>
+<a href="lashposter.png" target="_blank"><img src="lashesposter.png">
+<a href="lashes1.jpg" target="_blank"><img src="lashes1.jpg"></a>
+<a href="lashes2.jpg" target="_blank"><img src="lashes2.jpg"></a>
+<a href="lashes3.jpg" target="_blank"><img src="lashes3.jpg"></a>
+<a href="lashes4.jpg" target="_blank"><img src="lashes4.jpg"></a>
+<a href="lashes5.jpg" target="_blank"><img src="lashes5.jpg"></a>
+<a href="lashes6.jpg" target="_blank"><img src="lashes6.jpg"></a>
+<a href="lashes7.jpg" target="_blank"><img src="lashes7.jpg"></a>
+<a href="lashes8.jpg" target="_blank"><img src="lashes8.jpg"></a>
+<video width="200" controls><source src="lashes1.mp4" type="video/mp4"></video>
+<a href="sneakerposter.png" target="_blank"><img src="sneakerposter.png"></a>
+<a href="sneaker1.jpg" target="_blank"><img src="sneaker1.jpg"></a>
+<a href="sneaker2.jpg" target="_blank"><img src="sneaker2.jpg"></a>
+<a href="sneaker3.jpg" target="_blank"><img src="sneaker3.jpg"></a>
+<a href="sneaker4.jpg" target="_blank"><img src="sneaker4.jpg"></a>
+<a href="sneaker5.jpg" target="_blank"><img src="sneaker5.jpg"></a>
+<a href="sneaker7.jpg" target="_blank"><img src="sneaker7.jpg"></a>
+<a href="sneaker8.jpg" target="_blank"><img src="sneaker8.jpg"></a>
+<a href="sneaker9.jpg" target="_blank"><img src="sneaker9.jpg"></a>
+<a href="sneaker12.jpg" target="_blank"><img src="sneaker12.jpg"></a>
+<a href="sneaker13.jpg" target="_blank"><img src="sneaker13.jpg"></a>
+<a href="sneaker14.jpg" target="_blank"><img src="sneaker14.jpg"></a>
+<a href="sneaker15.jpg" target="_blank"><img src="sneaker15.jpg"></a>
+<a href="sneaker16.jpg" target="_blank"><img src="sneaker16.jpg"></a>
+<a href="sneaker18.jpg" target="_blank"><img src="sneaker18.jpg"></a>
+<a href="wigposter1.png" target="_blank"><img src="wigposter1.png"></a>
+<a href="wigposter2.png" target="_blank"><img src="wigposter2.png"></a>
+<a href="wig1.jpg" target="_blank"><img src="wig1.jpg"></a>
+<a href="wig2.jpg.jpeg" target="_blank"><img src="wig2.jpg.jpeg"></a>
+<a href="wig3.jpeg" target="_blank"><img src="wig3.jpeg"></a>
+<a href="wig4.jpeg" target="_blank"><img src="wig4.jpeg"></a>
+<a href="wig5.jpeg" target="_blank"><img src="wig5.jpeg"></a>
+<a href="wig6.jpeg" target="_blank"><img src="wig6.jpeg"></a>
+<a href="wig7.jpeg" target="_blank"><img src="wig7.jpeg"></a>
+<a href="wig8.jpeg" target="_blank"><img src="wig8.jpeg"></a>
+<video width="200" controls><source src="wig1.mp4" type="video/mp4"></video>
+<video width="200" controls><source src="wig3.mp4" type="video/mp4"></video>
+</div>
+</section>
+
+<section class="section" id="booking">
+<div class="section-title">
+<h2>Book Appointment</h2>
+<p>Please book 3 or more days before your appointment date.</p>
+</div>
+
+<form onsubmit="sendBooking(); return false;">
+<select id="service" onchange="showOptions()" required>
+<option value="">Select Service</option>
+<option value="lashes">Lashes</option>
+<option value="braids">Braids</option>
+</select>
+
+<select id="lashes" style="display:none;">
+<option>Classic - R40</option>
+<option>Cluster - R50</option>
+<option>Cat Eye - R60</option>
+</select>
+
+<select id="braids" style="display:none;" onchange="checkOther()">
+<option>Long Knotless - R180</option>
+<option>Short Knotless - R150</option>
+<option>Long Goddess - R200</option>
+<option>Short Goddess - R170</option>
+<option value="other">Other</option>
+</select>
+
+<input type="text" id="other" placeholder="Specify braid style" style="display:none;">
+
+<input type="text" id="name" placeholder="Name & Surname" required>
+<input type="tel" id="phone" placeholder="WhatsApp Number" required>
+<input type="date" id="date" required>
+<input type="time" id="time" required>
+
+<select id="location" required>
+<option>Motherwell</option>
+<option>Khayelitsha</option>
+</select>
+
+<div class="notice">
+<p><strong>Booking Rules:</strong></p>
+<p>• Book 3 or more days before your appointment.</p>
+<p>• Late bookings require an additional R30 emergency fee.</p>
+<p>• Appointments are only confirmed after deposit payment.</p>
+<p>• Live location will be sent before 6AM on appointment day.</p>
+</div>
+
+<button type="submit" class="btn">Submit Booking</button>
+</form>
+</section>
+
+<section class="section" id="order">
+<div class="section-title">
+<h2>Order Sneakers & Wigs</h2>
+<p>Submit your order request and wait for Glamor & Grace to respond.</p>
+</div>
+
+<form onsubmit="sendOrder(); return false;">
+<select id="product" required>
+<option>Sneakers</option>
+<option>Wigs</option>
+</select>
+
+<input type="text" id="oname" placeholder="Name & Surname" required>
+<input type="tel" id="ophone" placeholder="WhatsApp Number" required>
+<input type="text" id="address" placeholder="PEP Address & Code" required>
+
+<div class="notice">
+<p><strong>Instructions:</strong></p>
+<p>• Wait for Glamor & Grace to text you back.</p>
+<p>• You will then send screenshots from the catalog.</p>
+<p>• Include your sneaker size or wig details.</p>
+<p>• If your item is unavailable, our team will contact the supplier for you.</p>
+</div>
+
+<a href="https://wa.me/c/27730592497" class="btn">Open Catalog</a>
+<br><br>
+<button type="submit" class="btn">Submit Order</button>
+</form>
+</section>
+
+<section class="section" id="contact">
+<div class="section-title">
+<h2>Connect With Us</h2>
+<p>Stay connected with Glamor & Grace.</p>
+</div>
+
+<div class="socials">
+<a href="https://instagram.com/lelethu_fula" target="_blank">Instagram</a>
+<a href="https://facebook.com" target="_blank">Facebook</a>
+<a href="https://tiktok.com" target="_blank">TikTok</a>
+<a href="https://wa.me/27730592497" target="_blank">WhatsApp</a>
+</div>
+</section>
+
+<footer>
+<p>© 2026 Glamor & Grace. All rights reserved.</p>
+<p>Managed by the Glamor & Grace Team.</p>
+</footer>
+
+<script>
+function showOptions(){
+let service=document.getElementById('service').value;
+document.getElementById('lashes').style.display='none';
+document.getElementById('braids').style.display='none';
+
+if(service==='lashes'){
+document.getElementById('lashes').style.display='block';
+}
+
+if(service==='braids'){
+document.getElementById('braids').style.display='block';
+}
+}
+
+function checkOther(){
+let braids=document.getElementById('braids').value;
+if(braids==='other'){
+document.getElementById('other').style.display='block';
+}else{
+document.getElementById('other').style.display='none';
+}
+}
+
+function sendBooking(){
+let service=document.getElementById('service').value;
+let braidChoice=document.getElementById('braids').value;
+let lashChoice=document.getElementById('lashes').value;
+let other=document.getElementById('other').value;
+
+let choice='';
+
+if(service==='lashes'){
+choice=lashChoice;
+}else if(service==='braids'){
+choice=(braidChoice==='other') ? other : braidChoice;
+}
+
+let msg='Hello Glamor & Grace!%0A%0A'+
+'BOOKING REQUEST%0A'+
+'Name: '+document.getElementById('name').value+'%0A'+
+'Phone: '+document.getElementById('phone').value+'%0A'+
+'Service: '+service+'%0A'+
+'Choice: '+choice+'%0A'+
+'Date: '+document.getElementById('date').value+'%0A'+
+'Time: '+document.getElementById('time').value+'%0A'+
+'Location: '+document.getElementById('location').value;
+
+window.open('https://wa.me/27730592497?text='+msg,'_blank');
+}
+
+function sendOrder(){
+let msg='Hello Glamor & Grace!%0A%0A'+
+'ORDER REQUEST%0A'+
+'Product: '+document.getElementById('product').value+'%0A'+
+'Name: '+document.getElementById('oname').value+'%0A'+
+'Phone: '+document.getElementById('ophone').value+'%0A'+
+'PEP Address & Code: '+document.getElementById('address').value+'%0A%0A'+
+'I will wait for your response before sending screenshots from the catalog.';
+
+window.open('https://wa.me/27730592497?text='+msg,'_blank');
+}
+</script>
+
+</body>
+</html>
