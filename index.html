@@ -437,6 +437,7 @@ document.getElementById('other').style.display='none';
 }
 
 function sendBooking(){
+alert("sendBooking is running!");
 let service=document.getElementById('service').value;
 let braidChoice=document.getElementById('braids').value;
 let lashChoice=document.getElementById('lashes').value;
@@ -464,6 +465,7 @@ window.open('https://wa.me/27730592497?text='+msg,'_blank');
 }
 
 function sendOrder(){
+alert("sendOrder is running!");
 
 let msg = encodeURIComponent(
 'Hello Glamor and Grace!\n\n' +
