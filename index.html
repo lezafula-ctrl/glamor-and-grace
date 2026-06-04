@@ -390,6 +390,7 @@ Submit Booking
 <br><br>
 <button type="button" class="btn" onclick="sendOrder()">
   Submit Order
+</button>
 </form>
 </section>
 
@@ -437,7 +438,6 @@ document.getElementById('other').style.display='none';
 }
 
 function sendBooking(){
-alert("sendBooking is running!");
 let service=document.getElementById('service').value;
 let braidChoice=document.getElementById('braids').value;
 let lashChoice=document.getElementById('lashes').value;
@@ -457,7 +457,7 @@ let msg='Hello Glamor & Grace!%0A%0A'+
 'Phone: '+document.getElementById('phone').value+'%0A'+
 'Service: '+service+'%0A'+
 'Choice: '+choice+'%0A'+
-'Date: '+document.getElementById('date').value+'%0A'+                                                                                                     what is the mistake here?
+'Date: '+document.getElementById('date').value+'%0A'+
 'Time: '+document.getElementById('time').value+'%0A'+
 'Location: '+document.getElementById('location').value;
 
