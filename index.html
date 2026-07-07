@@ -309,17 +309,17 @@ display:none;
 </div>
 </section>
 
+    <select id="location" onchange="loadBraids()" required>
+<option value="">Select Location</option>
+<option value="motherwell">Motherwell</option>
+<option value="khayelitsha">Khayelitsha</option>
+     </select>                                                                
+
 <section class="section" id="booking">
 <div class="section-title">
 <h2>Book Appointment</h2>
 <p>Please book 3 or more days before your appointment date.</p>
 </div>
-
-  <select id="location" onchange="loadBraids()" required>
-<option value="">Select Location</option>
-<option value="motherwell">Motherwell</option>
-<option value="khayelitsha">Khayelitsha</option>
-  </select>
 
 <form onsubmit="sendBooking(); return false;">
 <select id="service" onchange="showOptions()" required>
