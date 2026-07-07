@@ -328,12 +328,8 @@ display:none;
 <option>Cat Eye - R60</option>
 </select>
 
-<select id="braids" style="display:none;" onchange="checkOther()">
-<option>Long Knotless - R180</option>
-<option>Short Knotless - R150</option>
-<option>Long Goddess - R200</option>
-<option>Short Goddess - R170</option>
-<option value="other">Other</option>
+<select id="braids" style="display:none;">
+<option value="">Select Hairstyle</option>
 </select>
 
 <input type="text" id="other" placeholder="Specify braid style" style="display:none;">
@@ -343,9 +339,10 @@ display:none;
 <input type="date" id="date" required>
 <input type="time" id="time" required>
 
-<select id="location" required>
-<option>Motherwell</option>
-<option>Khayelitsha</option>
+<select id="location" onchange="loadBraids()" required>
+<option value="">Select Location</option>
+<option value="motherwell">Motherwell</option>
+<option value="khayelitsha">Khayelitsha</option>
 </select>
 
 <div class="notice">
@@ -427,15 +424,40 @@ if(service==='braids'){
 document.getElementById('braids').style.display='block';
 }
 }
+function loadBraids(){
 
-function checkOther(){
-let braids=document.getElementById('braids').value;
-if(braids==='other'){
-document.getElementById('other').style.display='block';
-}else{
-document.getElementById('other').style.display='none';
+let location=document.getElementById("location").value;
+let braids=document.getElementById("braids");
+
+braids.innerHTML="";
+
+if(location==="motherwell"){
+
+braids.innerHTML=`
+<option>Short Braids/Twist - R180</option>
+<option>Long Braids/Twist - R230</option>
+<option>Short Island Twist/Boho Braids - R230</option>
+<option>Long Island Twist/Boho Braids - R250</option>
+<option>Mermaid Braids - R200</option>
+<option>Miracle Knots/Jayda Wayda - R200</option>
+`;
+
 }
+
+if(location==="khayelitsha"){
+
+braids.innerHTML=`
+<option>Freehand Cornrows - R80</option>
+<option>Short Braids/Twist - R180</option>
+<option>Long Braids/Twist - R230</option>
+<option>Short Island Twist/Boho Braids - R230</option>
+<option>Long Island Twist/Boho Braids - R250</option>
+`;
+
 }
+
+  }
+
 
 function sendBooking(){
 let service=document.getElementById('service').value;
