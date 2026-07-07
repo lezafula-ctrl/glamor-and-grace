@@ -260,7 +260,7 @@ display:none;
 </div>
 
 <div class="gallery">
-<a href="braidsposter.jpg" ,target="_blank"><img src="braidsposter.jpg"></a>
+<a href="braidsposter.jpg" target="_blank"><img src="braidsposter.jpg"></a>
 <a href="braid1.jpg" target="_blank"><img src="braids1.jpg"></a>
 <a href="braid2.jpg" target="_blank"><img src="braids2.jpg"></a>
 <a href="braid5.jpg" target="_blank"><img src="braids5.jpg"></a>
@@ -269,7 +269,7 @@ display:none;
 <a href="braid9.jpg" target="_blank"><img src="braids9.jpg"></a>
 <video width="250" controls><source src="braids1.mp4" type="video/mp4"></video>
 <video width="250" controls><source src="braids2.mp4" type="video/mp4"></video>
-<a href="lashposter.png" target="_blank"><img src="lashesposter.png">
+<a href="lashposter.png" target="_blank"><img src="lashesposter.png"></a>
 <a href="lashes1.jpg" target="_blank"><img src="lashes1.jpg"></a>
 <a href="lashes2.jpg" target="_blank"><img src="lashes2.jpg"></a>
 <a href="lashes3.jpg" target="_blank"><img src="lashes3.jpg"></a>
@@ -332,7 +332,6 @@ display:none;
 <option value="">Select Hairstyle</option>
 </select>
 
-<input type="text" id="other" placeholder="Specify braid style" style="display:none;">
 
 <input type="text" id="name" placeholder="Name & Surname" required>
 <input type="tel" id="phone" placeholder="WhatsApp Number" required>
@@ -412,18 +411,22 @@ Submit Booking
 
 <script>
 function showOptions(){
+
 let service=document.getElementById('service').value;
+
 document.getElementById('lashes').style.display='none';
 document.getElementById('braids').style.display='none';
 
-if(service==='lashes'){
+if(service==="lashes"){
 document.getElementById('lashes').style.display='block';
 }
 
-if(service==='braids'){
+if(service==="braids"){
 document.getElementById('braids').style.display='block';
+loadBraids();
 }
-}
+
+  }
 function loadBraids(){
 
 let location=document.getElementById("location").value;
@@ -465,13 +468,15 @@ let braidChoice=document.getElementById('braids').value;
 let lashChoice=document.getElementById('lashes').value;
 let other=document.getElementById('other').value;
 
-let choice='';
+let choice="";
 
-if(service==='lashes'){
+if(service==="lashes"){
 choice=lashChoice;
-}else if(service==='braids'){
-choice=(braidChoice==='other') ? other : braidChoice;
 }
+
+if(service==="braids"){
+choice=braidChoice;
+  }
 
 let msg =
 'Hello Glamor and Grace!\n\n'+
