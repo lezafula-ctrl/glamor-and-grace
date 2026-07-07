@@ -316,13 +316,13 @@ display:none;
 <p>Please book 3 or more days before your appointment date.</p>
 </div>
 
+
+<form onsubmit="sendBooking(); return false;">
     <select id="location" onchange="loadBraids()" required>
 <option value="">Select Location</option>
 <option value="motherwell">Motherwell</option>
 <option value="khayelitsha">Khayelitsha</option>
     </select>
-
-<form onsubmit="sendBooking(); return false;">
 <select id="service" onchange="showOptions()" required>
 <option value="">Select Service</option>
 <option value="lashes">Lashes</option>
