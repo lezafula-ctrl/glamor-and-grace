@@ -1,1 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+    <title>Products | Glamor & Grace</title>
+
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+
+<body>
+
+    <header class="admin-header">
+
+        <img
+            src="../logo.png"
+            alt="Glamor & Grace"
+            class="admin-logo-small"
+        >
+
+        <div>
+            <span>Product Management</span>
+
+            <a href="dashboard.html">
+                Dashboard
+            </a>
+
+            <button id="admin-logout">
+                Log Out
+            </button>
+        </div>
+
+    </header>
+
+
+    <main class="admin-dashboard">
+
+        <div class="admin-heading">
+
+            <h1>Products</h1>
+
+            <p>
+                Manage your Glamor & Grace products and inventory.
+            </p>
+
+        </div>
+
+
+        <section class="admin-section">
+
+            <div class="admin-section-heading">
+
+                <h2>All Products</h2>
+
+                <span>
+                    Products currently listed on the website
+                </span>
+
+            </div>
+
+
+            <div id="admin-products">
+
+                <!-- Products will appear here -->
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <script src="../js/products.js"></script>
+
+    <script>
+
+        const productContainer =
+            document.getElementById("admin-products");
+
+        productContainer.innerHTML =
+            products.map(product => `
+
+                <article class="admin-product-card">
+
+                    <div>
+
+                        <h3>
+                            ${product.name}
+                        </h3>
+
+                        <p>
+                            Category: ${product.category}
+                        </p>
+
+                        <p>
+                            Price: R${product.price.toFixed(2)}
+                        </p>
+
+                        <p>
+                            Stock: ${product.stock}
+                        </p>
+
+                    </div>
+
+                    <strong>
+                        ${
+                            product.stock > 0
+                            ? "In Stock"
+                            : "Sold Out"
+                        }
+                    </strong>
+
+                </article>
+
+            `).join("");
+
+    </script>
+
+</body>
+</html>
