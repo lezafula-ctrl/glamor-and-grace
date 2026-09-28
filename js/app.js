@@ -247,3 +247,121 @@ function setupSearch() {
         );
     }
 }
+// ========================================
+// PRODUCT PAGE
+// ========================================
+
+function displayProductPage() {
+
+    const container =
+        document.getElementById("product-details");
+
+    if (!container) {
+        return;
+    }
+
+    const params =
+        new URLSearchParams(window.location.search);
+
+    const productId =
+        params.get("id");
+
+    const product =
+        products.find(item => item.id === productId);
+
+    if (!product) {
+
+        container.innerHTML = `
+            <div class="product-not-found">
+                <h2>Product not found</h2>
+                <p>Sorry, we couldn't find this product.</p>
+                <a href="shop.html" class="primary-button">
+                    Back to Shop
+                </a>
+            </div>
+        `;
+
+        return;
+    }
+
+    const available =
+        product.stock > 0;
+
+    container.innerHTML = `
+
+        <div class="product-detail-image">
+
+            <img
+                src="${product.image}"
+                alt="${product.name}"
+                onerror="this.style.display='none'; this.parentElement.classList.add('image-placeholder');"
+            >
+
+        </div>
+
+
+        <div class="product-detail-info">
+
+            <p class="product-category">
+                ${product.category}
+            </p>
+
+            <h1>
+                ${product.name}
+            </h1>
+
+            <p class="product-detail-price">
+                R${product.price.toFixed(2)}
+            </p>
+
+            <p class="product-description">
+                ${product.description}
+            </p>
+
+            <div class="product-availability">
+
+                ${
+                    available
+                    ? "✓ In Stock"
+                    : "Coming Soon"
+                }
+
+            </div>
+
+            <p class="delivery-note">
+                📦 Estimated delivery: 7–14 business days
+            </p>
+
+            ${
+                available
+                ?
+                `<button
+                    class="primary-button"
+                    onclick="addToCart('${product.id}')">
+                    Add to Cart
+                </button>`
+                :
+                `<button
+                    class="primary-button"
+                    disabled>
+                    Coming Soon
+                </button>`
+            }
+
+            <br><br>
+
+            <a href="shop.html" class="back-to-shop">
+                ← Continue Shopping
+            </a>
+
+        </div>
+
+    `;
+}
+
+
+// Automatically load product page when needed
+
+document.addEventListener("DOMContentLoaded", () => {
+    displayProductPage();
+});
