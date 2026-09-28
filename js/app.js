@@ -365,3 +365,147 @@ function displayProductPage() {
 document.addEventListener("DOMContentLoaded", () => {
     displayProductPage();
 });
+// ========================================
+// ORDER STATUS
+// ========================================
+
+function setupOrderTracking() {
+
+    const form =
+        document.getElementById("order-search-form");
+
+    const result =
+        document.getElementById("order-result");
+
+    if (!form || !result) {
+        return;
+    }
+
+
+    form.addEventListener("submit", event => {
+
+        event.preventDefault();
+
+
+        const orderNumber =
+            document.getElementById("order-number")
+                .value
+                .trim();
+
+
+        if (!orderNumber) {
+            return;
+        }
+
+
+        result.innerHTML = `
+
+            <div class="order-status-card">
+
+                <p class="section-label">
+                    ORDER ${orderNumber}
+                </p>
+
+                <h2>
+                    Order Status
+                </h2>
+
+
+                <div class="order-timeline">
+
+                    <div class="status-step active">
+                        <span>✓</span>
+                        <div>
+                            <strong>Payment Pending</strong>
+                            <small>
+                                Waiting for payment confirmation
+                            </small>
+                        </div>
+                    </div>
+
+
+                    <div class="status-step">
+                        <span>2</span>
+                        <div>
+                            <strong>Paid / Confirmed</strong>
+                            <small>
+                                Payment confirmed
+                            </small>
+                        </div>
+                    </div>
+
+
+                    <div class="status-step">
+                        <span>3</span>
+                        <div>
+                            <strong>Processing</strong>
+                            <small>
+                                Your order is being prepared
+                            </small>
+                        </div>
+                    </div>
+
+
+                    <div class="status-step">
+                        <span>4</span>
+                        <div>
+                            <strong>Packed</strong>
+                            <small>
+                                Your order has been packed
+                            </small>
+                        </div>
+                    </div>
+
+
+                    <div class="status-step">
+                        <span>5</span>
+                        <div>
+                            <strong>Shipped</strong>
+                            <small>
+                                Your order is on its way
+                            </small>
+                        </div>
+                    </div>
+
+
+                    <div class="status-step">
+                        <span>6</span>
+                        <div>
+                            <strong>Tracking Added</strong>
+                            <small>
+                                Tracking information available
+                            </small>
+                        </div>
+                    </div>
+
+
+                    <div class="status-step">
+                        <span>7</span>
+                        <div>
+                            <strong>Delivered</strong>
+                            <small>
+                                Order delivered
+                            </small>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+        `;
+
+    });
+}
+
+
+// ========================================
+// LOAD ORDER TRACKING
+// ========================================
+
+document.addEventListener(
+    "DOMContentLoaded",
+    () => {
+        setupOrderTracking();
+    }
+);
