@@ -5,12 +5,13 @@
 document.addEventListener("DOMContentLoaded", () => {
     displayProducts();
     setupSearch();
+    setupShopFilters();
     updateCartCount();
 });
 
 
 // ========================================
-// PRODUCT DISPLAY
+// PRODUCT CARD
 // ========================================
 
 function createProductCard(product) {
@@ -71,6 +72,10 @@ function createProductCard(product) {
 }
 
 
+// ========================================
+// HOMEPAGE PRODUCTS
+// ========================================
+
 function displayProducts() {
 
     const specialContainer =
@@ -79,39 +84,121 @@ function displayProducts() {
     const featuredContainer =
         document.getElementById("featured-products");
 
-
-    if (!specialContainer || !featuredContainer) {
+    if (!specialContainer && !featuredContainer) {
+        displayShopProducts();
         return;
     }
-
-
-    const specials = products.filter(
-        product => product.category === "G&G Specials"
-    );
 
     const essentials = products.filter(
         product => product.category === "Essentials"
     );
 
+    if (specialContainer) {
+        specialContainer.innerHTML =
+            essentials.length
+            ? essentials.map(createProductCard).join("")
+            : "<p>No specials available yet.</p>";
+    }
 
-    /*
-        Our current G&G bags are part of
-        the Essentials collection.
-
-        We will later add more products and
-        G&G Specials to products.js.
-    */
-
-    specialContainer.innerHTML =
-        essentials.length
-        ? essentials.map(createProductCard).join("")
-        : "<p>No specials available yet.</p>";
+    if (featuredContainer) {
+        featuredContainer.innerHTML =
+            products.length
+            ? products.map(createProductCard).join("")
+            : "<p>Products coming soon.</p>";
+    }
+}
 
 
-    featuredContainer.innerHTML =
-        products.length
-        ? products.map(createProductCard).join("")
-        : "<p>Products coming soon.</p>";
+// ========================================
+// SHOP PAGE
+// ========================================
+
+function displayShopProducts() {
+
+    const shopContainer =
+        document.getElementById("shop-products");
+
+    const noProducts =
+        document.getElementById("no-products");
+
+    if (!shopContainer) {
+        return;
+    }
+
+    const params = new URLSearchParams(window.location.search);
+
+    const category =
+        params.get("category");
+
+    const search =
+        params.get("search");
+
+    let filteredProducts = [...products];
+
+    if (category) {
+        filteredProducts =
+            filteredProducts.filter(
+                product =>
+                    product.category.toLowerCase() ===
+                    category.toLowerCase()
+            );
+    }
+
+    if (search) {
+
+        const searchTerm =
+            search.toLowerCase();
+
+        filteredProducts =
+            filteredProducts.filter(product =>
+                product.name.toLowerCase().includes(searchTerm) ||
+                product.category.toLowerCase().includes(searchTerm) ||
+                product.description.toLowerCase().includes(searchTerm)
+            );
+    }
+
+    shopContainer.innerHTML =
+        filteredProducts.length
+        ? filteredProducts.map(createProductCard).join("")
+        : "";
+
+    if (noProducts) {
+        noProducts.style.display =
+            filteredProducts.length ? "none" : "block";
+    }
+}
+
+
+// ========================================
+// SHOP FILTER BUTTONS
+// ========================================
+
+function setupShopFilters() {
+
+    const filterButtons =
+        document.querySelectorAll(".filter-button");
+
+    if (!filterButtons.length) {
+        return;
+    }
+
+    filterButtons.forEach(button => {
+
+        button.addEventListener("click", () => {
+
+            const category =
+                button.dataset.category;
+
+            if (category === "All") {
+                window.location.href = "shop.html";
+            } else {
+                window.location.href =
+                    `shop.html?category=${encodeURIComponent(category)}`;
+            }
+
+        });
+
+    });
 }
 
 
@@ -127,28 +214,23 @@ function setupSearch() {
     const searchButton =
         document.getElementById("search-button");
 
-
     if (!searchInput) {
         return;
     }
-
 
     function performSearch() {
 
         const searchTerm =
             searchInput.value.trim();
 
-
         if (!searchTerm) {
             window.location.href = "shop.html";
             return;
         }
 
-
         window.location.href =
             `shop.html?search=${encodeURIComponent(searchTerm)}`;
     }
-
 
     searchInput.addEventListener("keydown", event => {
 
@@ -158,13 +240,10 @@ function setupSearch() {
 
     });
 
-
     if (searchButton) {
-
         searchButton.addEventListener(
             "click",
             performSearch
         );
-
     }
 }
