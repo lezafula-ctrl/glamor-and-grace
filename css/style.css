@@ -184,19 +184,19 @@ input {
 ======================================== */
 
 .hero {
-    min-height: 520px;
-    background:
-        linear-gradient(
-            rgba(0, 0, 0, 0.25),
-            rgba(0, 0, 0, 0.25)
-        ),
-        url("../hero.jpg") center/cover no-repeat;
+    min-height: 430px;
+    background: linear-gradient(
+        135deg,
+        #f9edf1,
+        #e8dce1,
+        #f5f5f5
+    );
 
     display: flex;
     align-items: center;
     justify-content: center;
     text-align: center;
-    color: white;
+    color: #111111;
 }
 
 .hero-content {
@@ -210,7 +210,7 @@ input {
 }
 
 .hero h1 {
-    font-size: clamp(40px, 7vw, 75px);
+    font-size: clamp(32px, 7vw, 65px);
     font-weight: 500;
     font-family: Georgia, serif;
 }
@@ -222,15 +222,15 @@ input {
 
 .primary-button {
     display: inline-block;
-    background: white;
-    color: black;
+    background: #111111;
+    color: #ffffff;
     padding: 13px 35px;
     font-size: 13px;
     transition: 0.2s;
 }
 
 .primary-button:hover {
-    background: var(--pink);
+    background: #555555;
 }
 
 
