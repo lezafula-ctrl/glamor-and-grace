@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Admin Dashboard | Glamor & Grace</title>
+
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+
+<body>
+
+    <header class="admin-header">
+
+        <a href="../index.html">
+            <img
+                src="../logo.png"
+                alt="Glamor & Grace Logo"
+                class="admin-logo-small"
+            >
+        </a>
+
+        <div>
+
+            <span>
+                Admin Dashboard
+            </span>
+
+            <button id="admin-logout">
+                Log Out
+            </button>
+
+        </div>
+
+    </header>
+
+
+    <main class="admin-dashboard">
+
+        <div class="admin-heading">
+
+            <div>
+
+                <p class="section-label">
+                    GLAMOR & GRACE
+                </p>
+
+                <h1>
+                    Dashboard
+                </h1>
+
+            </div>
+
+        </div>
+
+
+        <!-- OVERVIEW -->
+
+        <section class="admin-section">
+
+            <h2>Overview</h2>
+
+            <div class="admin-stats">
+
+                <div class="admin-stat-card">
+                    <span>Orders</span>
+                    <strong>0</strong>
+                </div>
+
+                <div class="admin-stat-card">
+                    <span>Revenue</span>
+                    <strong>R0.00</strong>
+                </div>
+
+                <div class="admin-stat-card">
+                    <span>Products</span>
+                    <strong>2</strong>
+                </div>
+
+                <div class="admin-stat-card">
+                    <span>Low Stock</span>
+                    <strong>0</strong>
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ADMIN MENU -->
+
+        <section class="admin-section">
+
+            <h2>Manage Store</h2>
+
+            <div class="admin-menu-grid">
+
+                <a href="#" class="admin-menu-card">
+                    📦
+                    <strong>Orders</strong>
+                    <span>View and manage orders</span>
+                </a>
+
+
+                <a href="#" class="admin-menu-card">
+                    🛍️
+                    <strong>Products</strong>
+                    <span>Add and edit products</span>
+                </a>
+
+
+                <a href="#" class="admin-menu-card">
+                    📊
+                    <strong>Inventory</strong>
+                    <span>Manage stock levels</span>
+                </a>
+
+
+                <a href="#" class="admin-menu-card">
+                    👥
+                    <strong>Customers</strong>
+                    <span>View customer information</span>
+                </a>
+
+
+                <a href="#" class="admin-menu-card">
+                    📈
+                    <strong>Analytics</strong>
+                    <span>Sales and store performance</span>
+                </a>
+
+
+                <a href="#" class="admin-menu-card">
+                    💳
+                    <strong>Payments</strong>
+                    <span>Payment information</span>
+                </a>
+
+
+                <a href="#" class="admin-menu-card">
+                    ⚙️
+                    <strong>Settings</strong>
+                    <span>Store settings</span>
+                </a>
+
+
+                <a href="#" class="admin-menu-card">
+                    🔐
+                    <strong>Security</strong>
+                    <span>Admin access and security</span>
+                </a>
+
+            </div>
+
+        </section>
+
+
+        <!-- RECENT ORDERS -->
+
+        <section class="admin-section">
+
+            <div class="admin-section-heading">
+
+                <h2>
+                    Recent Orders
+                </h2>
+
+                <span>
+                    Newest first
+                </span>
+
+            </div>
+
+
+            <div id="admin-orders">
+
+                <p>
+                    No orders yet.
+                </p>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <script>
+
+        document
+            .getElementById("admin-logout")
+            .addEventListener("click", () => {
+
+                window.location.href =
+                    "login.html";
+
+            });
+
+    </script>
+
+</body>
+</html>
