@@ -273,11 +273,13 @@ function setupCheckoutForm() {
             getCheckoutTotal(deliveryFee);
 
 
-        alert(
-            `Order total: R${total.toFixed(2)}\n\n` +
-            `Next we will connect this to online payment.`
-        );
+        console.log("Order prepared:", order);
 
+alert(
+    `Order prepared.\n\n` +
+    `Total: R${total.toFixed(2)}\n\n` +
+    `Online payment will be connected next.`
+);
     });
 }
 
