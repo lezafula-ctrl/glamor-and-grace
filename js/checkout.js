@@ -217,7 +217,77 @@ status: "Payment Pending",
 
     });
 }
+function setupPaymentPlanOptions() {
 
+    const paymentOptions =
+        document.querySelectorAll(
+            'input[name="payment-plan"]'
+        );
+
+    const laybySummary =
+        document.getElementById("layby-summary");
+
+    const laybyDeposit =
+        document.getElementById("layby-deposit");
+
+    const laybyBalance =
+        document.getElementById("layby-balance");
+
+    if (!paymentOptions.length) {
+        return;
+    }
+
+    paymentOptions.forEach(option => {
+
+        option.addEventListener("change", () => {
+
+            const selectedDelivery =
+                document.querySelector(
+                    'input[name="delivery"]:checked'
+                );
+
+            const deliveryFee =
+                selectedDelivery
+                ? Number(selectedDelivery.dataset.fee)
+                : 0;
+
+            const total =
+                getCheckoutTotal(deliveryFee);
+
+            if (option.value === "layby") {
+
+                const deposit =
+                    total * 0.30;
+
+                const balance =
+                    total * 0.70;
+
+                if (laybySummary) {
+                    laybySummary.style.display = "block";
+                }
+
+                if (laybyDeposit) {
+                    laybyDeposit.textContent =
+                        `R${deposit.toFixed(2)}`;
+                }
+
+                if (laybyBalance) {
+                    laybyBalance.textContent =
+                        `R${balance.toFixed(2)}`;
+                }
+
+            } else {
+
+                if (laybySummary) {
+                    laybySummary.style.display = "none";
+                }
+
+            }
+
+        });
+
+    });
+}
 
 // ========================================
 // CHECKOUT FORM
@@ -321,12 +391,9 @@ alert(
 document.addEventListener(
     "DOMContentLoaded",
     () => {
-
         displayCheckout();
-
         setupDeliveryOptions();
-
+        setupPaymentPlanOptions();
         setupCheckoutForm();
-
     }
 );
