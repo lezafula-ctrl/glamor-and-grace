@@ -89,16 +89,17 @@ function displayProducts() {
         return;
     }
 
-    const essentials = products.filter(
-        product => product.category === "Essentials"
+    if (specialContainer) {
+    const specials = products.filter(
+        product => product.category === "Specials"
     );
 
-    if (specialContainer) {
-        specialContainer.innerHTML =
-            essentials.length
-            ? essentials.map(createProductCard).join("")
-            : "<p>No specials available yet.</p>";
-    }
+    specialContainer.innerHTML =
+        specials.length
+        ? specials.map(createProductCard).join("")
+        : "<p>No specials available yet.</p>";
+}
+
 
     if (featuredContainer) {
         featuredContainer.innerHTML =
