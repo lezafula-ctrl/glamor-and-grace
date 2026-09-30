@@ -148,6 +148,29 @@ function setupDeliveryOptions() {
 
             const total =
                 getCheckoutTotal(deliveryFee);
+            const order = {
+    customer: customerDetails,
+
+    items: cart.map(item => ({
+        id: item.id,
+        name: item.name,
+        price: item.price,
+        quantity: item.quantity
+    })),
+
+    subtotal: subtotal,
+
+    delivery: {
+        method: selectedDelivery.value,
+        fee: deliveryFee
+    },
+
+    total: total,
+
+    status: "Payment Pending",
+
+    createdAt: new Date().toISOString()
+};
 
 
             const deliveryElement =
