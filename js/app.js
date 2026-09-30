@@ -514,3 +514,26 @@ document.addEventListener(
         setupOrderTracking();
     }
 );
+// ========================================
+// MOBILE MENU
+// ========================================
+
+document.addEventListener("DOMContentLoaded", () => {
+
+    const menuButton =
+        document.querySelector(".menu-button");
+
+    const mobileMenu =
+        document.querySelector(".mobile-menu");
+
+    if (!menuButton || !mobileMenu) {
+        return;
+    }
+
+    menuButton.addEventListener("click", () => {
+
+        mobileMenu.classList.toggle("open");
+
+    });
+
+});
