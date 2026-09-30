@@ -374,11 +374,14 @@ function setupCheckoutForm() {
     document.querySelector(
         'input[name="payment-plan"]:checked'
     );
-
+        
+if (!selectedPaymentPlan) {
+    alert("Please choose a payment plan.");
+    return;
+}
+        
 const paymentPlan =
-    selectedPaymentPlan
-    ? selectedPaymentPlan.value
-    : "full-payment";
+    selectedPaymentPlan.value;
         let depositAmount = 0;
 let remainingBalance = 0;
 
