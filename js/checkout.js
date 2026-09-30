@@ -283,13 +283,18 @@ function setupPaymentPlanOptions() {
 if (laybyMonthly) {
     laybyMonthly.textContent =
         `R${monthlyPayment.toFixed(2)} per month`;
-}  
+
+    laybyMonthly.style.display = "block";
+}
 
             } else {
 
                 if (laybySummary) {
                     laybySummary.style.display = "none";
                 }
+               if (laybyMonthly) {
+    laybyMonthly.style.display = "none";
+} 
 
             }
 
