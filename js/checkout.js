@@ -261,6 +261,8 @@ function setupPaymentPlanOptions() {
 
                 const balance =
                     total * 0.70;
+                const monthlyPayment =
+    balance / 3;
 
                 if (laybySummary) {
                     laybySummary.style.display = "block";
@@ -275,6 +277,13 @@ function setupPaymentPlanOptions() {
                     laybyBalance.textContent =
                         `R${balance.toFixed(2)}`;
                 }
+              const laybyMonthly =
+    document.getElementById("layby-monthly");
+
+if (laybyMonthly) {
+    laybyMonthly.textContent =
+        `R${monthlyPayment.toFixed(2)} per month`;
+}  
 
             } else {
 
