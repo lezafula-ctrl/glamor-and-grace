@@ -50,7 +50,25 @@ function displayCheckout() {
         return;
     }
 
+const customerDetails = {
+    firstName:
+        document.getElementById("first-name").value.trim(),
 
+    surname:
+        document.getElementById("surname").value.trim(),
+
+    phone:
+        document.getElementById("phone").value.trim(),
+
+    whatsapp:
+        document.getElementById("whatsapp").value.trim(),
+
+    email:
+        document.getElementById("email").value.trim(),
+
+    deliveryDetails:
+        document.getElementById("delivery-details").value.trim()
+};
     const subtotal =
         getCartSubtotal();
 
