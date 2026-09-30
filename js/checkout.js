@@ -178,10 +178,13 @@ function setupDeliveryOptions() {
 
     total: total,
 
-    status: "Payment Pending",
+paymentPlan: paymentPlan,
 
-    createdAt: new Date().toISOString()
-};
+laybyDeposit: laybyDeposit,
+
+laybyBalance: laybyBalance,
+
+status: "Payment Pending",
 
 
             const deliveryElement =
@@ -283,6 +286,22 @@ function setupCheckoutForm() {
         const total =
             getCheckoutTotal(deliveryFee);
 
+        const selectedPaymentPlan =
+    document.querySelector(
+        'input[name="payment-plan"]:checked'
+    );
+
+const paymentPlan =
+    selectedPaymentPlan
+    ? selectedPaymentPlan.value
+    : "full-payment";
+        let depositAmount = 0;
+let remainingBalance = 0;
+
+if (paymentPlan === "layby") {
+    depositAmount = total * 0.30;
+    remainingBalance = total * 0.70;
+}
 
         console.log("Order prepared:", order);
 
