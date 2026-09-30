@@ -102,11 +102,15 @@ function displayProducts() {
 
 
     if (featuredContainer) {
-        featuredContainer.innerHTML =
-            products.length
-            ? products.map(createProductCard).join("")
-            : "<p>Products coming soon.</p>";
-    }
+
+    const featuredProducts =
+        products.filter(product => product.stock > 0);
+
+    featuredContainer.innerHTML =
+        featuredProducts.length
+        ? featuredProducts.map(createProductCard).join("")
+        : "<p>Featured products coming soon.</p>";
+}
 }
 
 
