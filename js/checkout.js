@@ -69,6 +69,16 @@ const customerDetails = {
     deliveryDetails:
         document.getElementById("delivery-details").value.trim()
 };
+    if (
+    !customerDetails.firstName ||
+    !customerDetails.surname ||
+    !customerDetails.phone ||
+    !customerDetails.email ||
+    !customerDetails.deliveryDetails
+) {
+    alert("Please complete all required checkout details.");
+    return;
+}
     const subtotal =
         getCartSubtotal();
 
@@ -161,9 +171,10 @@ function setupDeliveryOptions() {
     subtotal: subtotal,
 
     delivery: {
-        method: selectedDelivery.value,
-        fee: deliveryFee
-    },
+    method: selectedDelivery.value,
+    fee: deliveryFee,
+    details: customerDetails.deliveryDetails
+},
 
     total: total,
 
