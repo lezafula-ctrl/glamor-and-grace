@@ -547,11 +547,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
     });
 
-});
-mobileMenu.querySelectorAll("a").forEach(link => {
+    mobileMenu.querySelectorAll("a").forEach(link => {
 
-    link.addEventListener("click", () => {
-        mobileMenu.classList.remove("open");
+        link.addEventListener("click", () => {
+
+            mobileMenu.classList.remove("open");
+
+        });
+
     });
 
 });
