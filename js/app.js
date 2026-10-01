@@ -21,8 +21,23 @@ document.addEventListener(
 
 function createProductCard(product) {
 
-    const available = product.stock > 0;
-    const price = Number(product.price || 0);
+    const available =
+        Number(product.stock || 0) > 0;
+
+    const price =
+        Number(product.price || 0);
+
+    const name =
+        product.name || "Unnamed Product";
+
+    const category =
+        product.category || "Uncategorized";
+
+    const description =
+        product.description || "";
+
+    const image =
+        product.image || "";
 
     return `
         <article class="product-card">
@@ -31,8 +46,8 @@ function createProductCard(product) {
                 <div class="product-image-container">
 
                     <img
-                        src="${product.image}"
-                        alt="${product.name}"
+                        src="${image}"
+                        alt="${name}"
                         onerror="this.style.display='none'; this.parentElement.classList.add('image-placeholder');"
                     >
 
@@ -42,12 +57,12 @@ function createProductCard(product) {
             <div class="product-info">
 
                 <div class="product-category">
-                    ${product.category}
+                    ${category}
                 </div>
 
                 <a href="product.html?id=${product.id}">
                     <div class="product-name">
-                        ${product.name}
+                        ${name}
                     </div>
                 </a>
 
