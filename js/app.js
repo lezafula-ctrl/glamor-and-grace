@@ -156,16 +156,29 @@ if (category) {
 
     if (search) {
 
-        const searchTerm =
-            search.toLowerCase();
+    const searchTerm =
+        search.toLowerCase();
 
-        filteredProducts =
-            filteredProducts.filter(product =>
-                product.name.toLowerCase().includes(searchTerm) ||
-                product.category.toLowerCase().includes(searchTerm) ||
-                product.description.toLowerCase().includes(searchTerm)
+    filteredProducts =
+        filteredProducts.filter(product => {
+
+            const name =
+                (product.name || "").toLowerCase();
+
+            const category =
+                (product.category || "").toLowerCase();
+
+            const description =
+                (product.description || "").toLowerCase();
+
+            return (
+                name.includes(searchTerm) ||
+                category.includes(searchTerm) ||
+                description.includes(searchTerm)
             );
-    }
+
+        });
+}
 
     shopContainer.innerHTML =
         filteredProducts.length
