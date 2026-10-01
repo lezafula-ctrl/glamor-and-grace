@@ -5,18 +5,12 @@
 const MINIMUM_CART_TOTAL = 150;
 
 
-// ========================================
-// CHECKOUT TOTAL
-// ========================================
-
 function getCheckoutTotal(deliveryFee = 0) {
+
     return getCartSubtotal() + deliveryFee;
+
 }
 
-
-// ========================================
-// DISPLAY CHECKOUT
-// ========================================
 
 function displayCheckout() {
 
@@ -50,35 +44,7 @@ function displayCheckout() {
         return;
     }
 
-const customerDetails = {
-    firstName:
-        document.getElementById("first-name").value.trim(),
 
-    surname:
-        document.getElementById("surname").value.trim(),
-
-    phone:
-        document.getElementById("phone").value.trim(),
-
-    whatsapp:
-        document.getElementById("whatsapp").value.trim(),
-
-    email:
-        document.getElementById("email").value.trim(),
-
-    deliveryDetails:
-        document.getElementById("delivery-details").value.trim()
-};
-    if (
-    !customerDetails.firstName ||
-    !customerDetails.surname ||
-    !customerDetails.phone ||
-    !customerDetails.email ||
-    !customerDetails.deliveryDetails
-) {
-    alert("Please complete all required checkout details.");
-    return;
-}
     const subtotal =
         getCartSubtotal();
 
@@ -94,7 +60,8 @@ const customerDetails = {
 
                 <strong>
                     R${(
-                        item.price * item.quantity
+                        item.price *
+                        item.quantity
                     ).toFixed(2)}
                 </strong>
 
@@ -125,12 +92,9 @@ const customerDetails = {
             `R${subtotal.toFixed(2)}`;
 
     }
+
 }
 
-
-// ========================================
-// DELIVERY FEE
-// ========================================
 
 function setupDeliveryOptions() {
 
@@ -138,6 +102,7 @@ function setupDeliveryOptions() {
         document.querySelectorAll(
             'input[name="delivery"]'
         );
+
 
     if (!deliveryOptions.length) {
         return;
@@ -151,40 +116,11 @@ function setupDeliveryOptions() {
             const deliveryFee =
                 Number(option.dataset.fee);
 
-
             const subtotal =
                 getCartSubtotal();
 
-
             const total =
                 getCheckoutTotal(deliveryFee);
-            const order = {
-    customer: customerDetails,
-
-    items: cart.map(item => ({
-        id: item.id,
-        name: item.name,
-        price: item.price,
-        quantity: item.quantity
-    })),
-
-    subtotal: subtotal,
-
-    delivery: {
-    method: selectedDelivery.value,
-    fee: deliveryFee,
-    details: customerDetails.deliveryDetails
-},
-
-    total: total,
-
-paymentPlan: paymentPlan,
-
-laybyDeposit: laybyDeposit,
-
-laybyBalance: laybyBalance,
-
-status: "Payment Pending",
 
 
             const deliveryElement =
@@ -216,101 +152,15 @@ status: "Payment Pending",
         });
 
     });
-}
-function setupPaymentPlanOptions() {
 
-    const paymentOptions =
-        document.querySelectorAll(
-            'input[name="payment-plan"]'
-        );
-
-    const laybySummary =
-        document.getElementById("layby-summary");
-
-    const laybyDeposit =
-        document.getElementById("layby-deposit");
-
-    const laybyBalance =
-        document.getElementById("layby-balance");
-
-    if (!paymentOptions.length) {
-        return;
-    }
-
-    paymentOptions.forEach(option => {
-
-        option.addEventListener("change", () => {
-
-            const selectedDelivery =
-                document.querySelector(
-                    'input[name="delivery"]:checked'
-                );
-
-            const deliveryFee =
-                selectedDelivery
-                ? Number(selectedDelivery.dataset.fee)
-                : 0;
-
-            const total =
-                getCheckoutTotal(deliveryFee);
-
-            if (option.value === "layby") {
-
-                const deposit =
-                    total * 0.30;
-
-                const balance =
-                    total * 0.70;
-                const monthlyPayment =
-    balance / 3;
-
-                if (laybySummary) {
-                    laybySummary.style.display = "block";
-                }
-
-                if (laybyDeposit) {
-                    laybyDeposit.textContent =
-                        `R${deposit.toFixed(2)}`;
-                }
-
-                if (laybyBalance) {
-                    laybyBalance.textContent =
-                        `R${balance.toFixed(2)}`;
-                }
-              const laybyMonthly =
-    document.getElementById("layby-monthly");
-
-if (laybyMonthly) {
-    laybyMonthly.textContent =
-        `R${monthlyPayment.toFixed(2)} per month`;
-
-    laybyMonthly.style.display = "block";
 }
 
-            } else {
-
-                if (laybySummary) {
-                    laybySummary.style.display = "none";
-                }
-               if (laybyMonthly) {
-    laybyMonthly.style.display = "none";
-} 
-
-            }
-
-        });
-
-    });
-}
-
-// ========================================
-// CHECKOUT FORM
-// ========================================
 
 function setupCheckoutForm() {
 
     const form =
         document.getElementById("checkout-form");
+
 
     if (!form) {
         return;
@@ -363,6 +213,58 @@ function setupCheckoutForm() {
         }
 
 
+        const customerDetails = {
+
+            firstName:
+                document.getElementById("first-name")
+                    .value
+                    .trim(),
+
+            surname:
+                document.getElementById("surname")
+                    .value
+                    .trim(),
+
+            phone:
+                document.getElementById("phone")
+                    .value
+                    .trim(),
+
+            whatsapp:
+                document.getElementById("whatsapp")
+                    .value
+                    .trim(),
+
+            email:
+                document.getElementById("email")
+                    .value
+                    .trim(),
+
+            deliveryDetails:
+                document.getElementById("delivery-details")
+                    .value
+                    .trim()
+
+        };
+
+
+        if (
+            !customerDetails.firstName ||
+            !customerDetails.surname ||
+            !customerDetails.phone ||
+            !customerDetails.email ||
+            !customerDetails.deliveryDetails
+        ) {
+
+            alert(
+                "Please complete all required checkout details."
+            );
+
+            return;
+
+        }
+
+
         const deliveryFee =
             Number(selectedDelivery.dataset.fee);
 
@@ -370,47 +272,24 @@ function setupCheckoutForm() {
         const total =
             getCheckoutTotal(deliveryFee);
 
-        const selectedPaymentPlan =
-    document.querySelector(
-        'input[name="payment-plan"]:checked'
-    );
-        
-if (!selectedPaymentPlan) {
-    alert("Please choose a payment plan.");
-    return;
-}
-        
-const paymentPlan =
-    selectedPaymentPlan.value;
-        let depositAmount = 0;
-let remainingBalance = 0;
 
-if (paymentPlan === "layby") {
-    depositAmount = total * 0.30;
-    remainingBalance = total * 0.70;
-}
+        alert(
+            `Order total: R${total.toFixed(2)}\n\n` +
+            `Next we will connect this to online payment.`
+        );
 
-        console.log("Order prepared:", order);
-
-alert(
-    `Order prepared.\n\n` +
-    `Total: R${total.toFixed(2)}\n\n` +
-    `Online payment will be connected next.`
-);
     });
+
 }
 
-
-// ========================================
-// LOAD CHECKOUT
-// ========================================
 
 document.addEventListener(
     "DOMContentLoaded",
     () => {
+
         displayCheckout();
         setupDeliveryOptions();
-        setupPaymentPlanOptions();
         setupCheckoutForm();
+
     }
 );
