@@ -2,13 +2,18 @@
 // GLAMOR & GRACE - MAIN WEBSITE FUNCTIONS
 // ========================================
 
-document.addEventListener("DOMContentLoaded", () => {
-    displayProducts();
-    setupSearch();
-    setupShopFilters();
-    updateCartCount();
-});
+document.addEventListener(
+    "DOMContentLoaded",
+    async () => {
 
+        await productsReady;
+
+        displayProducts();
+        setupSearch();
+        setupShopFilters();
+        updateCartCount();
+    }
+);
 
 // ========================================
 // PRODUCT CARD
@@ -367,9 +372,15 @@ function displayProductPage() {
 
 // Automatically load product page when needed
 
-document.addEventListener("DOMContentLoaded", () => {
-    displayProductPage();
-});
+document.addEventListener(
+    "DOMContentLoaded",
+    async () => {
+
+        await productsReady;
+
+        displayProductPage();
+    }
+);
 // ========================================
 // ORDER STATUS
 // ========================================
