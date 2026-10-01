@@ -142,17 +142,17 @@ function displayShopProducts() {
 
     const search =
         params.get("search");
+    
+let filteredProducts = [...products];
 
-    let filteredProducts = [...products];
-
-    if (category) {
-        filteredProducts =
-            filteredProducts.filter(
-                product =>
-                    product.category.toLowerCase() ===
-                    category.toLowerCase()
-            );
-    }
+if (category) {
+    filteredProducts =
+        filteredProducts.filter(
+            product =>
+                (product.category || "").toLowerCase() ===
+                category.toLowerCase()
+        );
+}
 
     if (search) {
 
