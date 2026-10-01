@@ -22,6 +22,7 @@ document.addEventListener(
 function createProductCard(product) {
 
     const available = product.stock > 0;
+    const price = Number(product.price || 0);
 
     return `
         <article class="product-card">
@@ -51,7 +52,7 @@ function createProductCard(product) {
                 </a>
 
                 <div class="product-price">
-                    R${product.price.toFixed(2)}
+                    R${price.toFixed(2)}
                 </div>
 
                 ${
