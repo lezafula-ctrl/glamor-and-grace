@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Staff Sign Up | Glamor & Grace</title>
+
+    <link rel="stylesheet" href="../css/style.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../js/supabase-config.js"></script>
+</head>
+
+<body>
+
+    <main class="admin-login-page">
+
+        <div class="admin-login-card">
+
+            <p class="section-label">
+                GLAMOR & GRACE
+            </p>
+
+            <h1>Staff Sign Up</h1>
+
+            <p>
+                Create your account to request staff access.
+            </p>
+
+            <form id="staff-signup-form">
+
+                <div class="form-group">
+                    <label for="staff-email">Email</label>
+                    <input type="email" id="staff-email" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="staff-password">Password</label>
+                    <input type="password" id="staff-password" required>
+                </div>
+
+                <button type="submit" class="primary-button">
+                    Create Account
+                </button>
+
+                <p id="signup-message"></p>
+
+            </form>
+
+        </div>
+
+    </main>
+
+    <script>
+    document
+        .getElementById("staff-signup-form")
+        .addEventListener("submit", async (event) => {
+
+            event.preventDefault();
+
+            const email =
+                document.getElementById("staff-email").value.trim();
+
+            const password =
+                document.getElementById("staff-password").value;
+
+            const message =
+                document.getElementById("signup-message");
+
+            message.textContent = "Creating account...";
+
+            const { data, error } =
+                await ggSupabase.auth.signUp({
+                    email: email,
+                    password: password
+                });
+
+            if (error) {
+                console.error(error);
+                message.textContent = error.message;
+                return;
+            }
+
+            if (data.user) {
+
+                const { error: profileError } =
+                    await ggSupabase
+                        .from("admin_users")
+                        .insert({
+                            id: data.user.id,
+                            email: email,
+                            role: "pending"
+                        });
+
+                if (profileError) {
+                    console.error(profileError);
+                    message.textContent =
+                        "Account created, but staff access is still pending.";
+                    return;
+                }
+            }
+
+            message.textContent =
+                "Account created! Your staff access is waiting for Owner approval.";
+        });
+    </script>
+
+</body>
+</html>
