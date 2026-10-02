@@ -302,6 +302,33 @@
             });
 
     </script>
+<script>
+(async function () {
 
+    const {
+        data: { user }
+    } = await ggSupabase.auth.getUser();
+
+    if (!user) {
+        window.location.href = "login.html";
+        return;
+    }
+
+    const { data: adminUser, error } =
+        await ggSupabase
+            .from("admin_users")
+            .select("role")
+            .eq("id", user.id)
+            .single();
+
+    if (error || !adminUser || adminUser.role === "pending") {
+        await ggSupabase.auth.signOut();
+        alert("Your account is waiting for Owner approval.");
+        window.location.href = "login.html";
+        return;
+    }
+
+})();
+</script>
 </body>
 </html>
