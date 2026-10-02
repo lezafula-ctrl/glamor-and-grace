@@ -154,6 +154,110 @@
             </div>
 
         </section>
+                <!-- PRODUCT MANAGEMENT -->
+
+        <section class="admin-section" id="product-management">
+
+            <div class="admin-section-heading">
+
+                <h2>
+                    Add Product
+                </h2>
+
+                <span>
+                    Add a new item to your store
+                </span>
+
+            </div>
+
+            <form id="add-product-form">
+
+                <label>
+                    Product Name
+                    <input
+                        type="text"
+                        id="product-name"
+                        required
+                    >
+                </label>
+
+                <label>
+                    Category
+                    <select id="product-category" required>
+
+                        <option value="">
+                            Select category
+                        </option>
+
+                        <option value="Sneakers">Sneakers</option>
+                        <option value="Human Hair Wigs">Human Hair Wigs</option>
+                        <option value="Blended Wigs">Blended Wigs</option>
+                        <option value="Bags">Bags</option>
+                        <option value="Dresses">Dresses</option>
+                        <option value="Shoes">Shoes</option>
+                        <option value="Accessories">Accessories</option>
+                        <option value="Swim / Beachwear">Swim / Beachwear</option>
+                        <option value="Gifts">Gifts</option>
+                        <option value="Home Appliances">Home Appliances</option>
+                        <option value="Stationery">Stationery</option>
+                        <option value="Sportswear">Sportswear</option>
+                        <option value="Specials">Specials</option>
+                        <option value="Sleepwear">Sleepwear</option>
+                        <option value="Women Comfies">Women Comfies</option>
+                        <option value="Elegancies">Elegancies</option>
+
+                    </select>
+                </label>
+
+                <label>
+                    Price
+                    <input
+                        type="number"
+                        id="product-price"
+                        min="0"
+                        step="0.01"
+                        required
+                    >
+                </label>
+
+                <label>
+                    Stock
+                    <input
+                        type="number"
+                        id="product-stock"
+                        min="0"
+                        required
+                    >
+                </label>
+
+                <label>
+                    Product Image
+                    <input
+                        type="file"
+                        id="product-image"
+                        accept="image/*"
+                        required
+                    >
+                </label>
+
+                <label>
+                    Description
+                    <textarea
+                        id="product-description"
+                        rows="4"
+                    ></textarea>
+                </label>
+
+                <button
+                    type="submit"
+                    class="add-to-cart"
+                >
+                    Add Product
+                </button>
+
+            </form>
+
+        </section>
 
 
         <!-- RECENT ORDERS -->
