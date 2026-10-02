@@ -12,6 +12,9 @@ async function loadProducts() {
             .select("*")
             .order("created_at", { ascending: false });
 
+    console.log("SUPABASE PRODUCTS:", data);
+    console.log("SUPABASE ERROR:", error);
+
     if (error) {
         console.error("Could not load products:", error);
         return;
