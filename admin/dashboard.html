@@ -154,6 +154,20 @@
             </div>
 
         </section>
+
+        <section class="admin-section" id="staff-management">
+
+    <div class="admin-section-heading">
+        <h2>Staff Accounts</h2>
+        <span>Manage staff access</span>
+    </div>
+
+    <div id="staff-list">
+        <p>Loading staff accounts...</p>
+    </div>
+
+</section>
+        
                 <!-- PRODUCT MANAGEMENT -->
 
         <section class="admin-section" id="product-management">
@@ -330,5 +344,73 @@
 
 })();
 </script>
+ <script>
+
+async function loadStaffAccounts() {
+
+    const { data: staff, error } =
+        await ggSupabase
+            .from("admin_users")
+            .select("id, email, role")
+            .order("created_at", { ascending: false });
+
+    const staffList =
+        document.getElementById("staff-list");
+
+    if (error) {
+        console.error(error);
+        staffList.innerHTML =
+            "<p>Could not load staff accounts.</p>";
+        return;
+    }
+
+    if (!staff || staff.length === 0) {
+        staffList.innerHTML =
+            "<p>No staff accounts yet.</p>";
+        return;
+    }
+
+    staffList.innerHTML = staff.map(account => `
+        <div class="admin-card">
+            <strong>${account.email}</strong>
+            <p>Role: ${account.role}</p>
+
+            ${
+                account.role === "pending"
+                ? `
+                    <button
+                        class="primary-button"
+                        onclick="approveStaff('${account.id}')">
+                        Approve Staff
+                    </button>
+                `
+                : ""
+            }
+        </div>
+    `).join("");
+}
+
+async function approveStaff(userId) {
+
+    const { error } =
+        await ggSupabase
+            .from("admin_users")
+            .update({ role: "staff" })
+            .eq("id", userId);
+
+    if (error) {
+        console.error(error);
+        alert("Could not approve this staff account.");
+        return;
+    }
+
+    alert("Staff account approved!");
+
+    loadStaffAccounts();
+}
+
+loadStaffAccounts();
+
+</script>   
 </body>
 </html>
