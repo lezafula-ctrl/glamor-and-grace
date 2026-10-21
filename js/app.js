@@ -306,7 +306,7 @@ function displayProductPage() {
         params.get("id");
 
     const product =
-        products.find(item => item.id === productId);
+    products.find(item => String(item.id) === String(productId));
 
     if (!product) {
 
