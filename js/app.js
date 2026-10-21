@@ -368,7 +368,7 @@ function displayProductPage() {
             </div>
 
             <p class="delivery-note">
-                📦 Estimated delivery: 7–14 business days
+                📦 Estimated delivery: 14-21 business days
             </p>
 
             ${
