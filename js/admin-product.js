@@ -135,7 +135,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         price: price,
                         stock: stock,
                         description: description,
-                        image_url: imageUrl
+                        image: imageUrl
                     })
                     .select()
                     .single();
