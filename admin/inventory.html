@@ -147,7 +147,21 @@
                     <td>${escapeHTML(product.name)}</td>
                     <td>${escapeHTML(product.category)}</td>
                     <td>${money(product.price)}</td>
-                    <td>${product.stock}</td>
+                    <td>
+    <input
+        type="number"
+        min="0"
+        step="1"
+        value="${product.stock}"
+        id="stock-${escapeHTML(product.id)}"
+    >
+    <button
+        type="button"
+        onclick="saveStock('${escapeHTML(product.id)}')"
+    >
+        Save
+    </button>
+</td>
                     <td>${product.sold}</td>
                     <td>${product.pending}</td>
                     <td>${statusFor(product.stock)}</td>
