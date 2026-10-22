@@ -473,5 +473,98 @@
 <script src="js/checkout.js"></script>
 <script src="js/app.js"></script>
 
+    
+
+<script>
+(function () {
+  const messages = [
+    {
+      verse: "Be still, and know that I am God.",
+      reference: "PSALM 46:10 · HOLY BIBLE · KJV",
+      inspiration: "When life feels overwhelming, take a moment to be still. You can turn to God in prayer and remember that He is with you.",
+      reminder: "You do not have to figure everything out today.",
+      reminderBody: "Take life one step at a time. Give yourself grace and trust that you can keep growing.",
+      prayer: "Heavenly Father, quiet my worries and help me find peace in Thee. Remind me that I do not have to carry everything alone. In Jesus' name, Amen."
+    },
+    {
+      verse: "Wherefore, ye must press forward with a steadfastness in Christ, having a perfect brightness of hope, and a love of God and of all men.",
+      reference: "2 NEPHI 31:20 · BOOK OF MORMON",
+      inspiration: "Faith is not about having every answer. It is about continuing to follow Jesus Christ with hope, even when the road feels difficult.",
+      reminder: "Small steps forward are still progress.",
+      reminderBody: "You do not need to change everything overnight. Keep trying, keep learning, and keep Christ at the centre.",
+      prayer: "Heavenly Father, help me press forward with faith in Jesus Christ. Fill my heart with hope and teach me to show love to those around me. In Jesus' name, Amen."
+    },
+    {
+      verse: "Look unto me in every thought; doubt not, fear not.",
+      reference: "DOCTRINE AND COVENANTS 6:36",
+      inspiration: "When your thoughts feel heavy, turn your heart towards Jesus Christ. You can seek His guidance in the middle of ordinary, everyday moments.",
+      reminder: "You do not have to let fear make every decision.",
+      reminderBody: "Pause, pray, and take the next right step. You can move forward even when you feel uncertain.",
+      prayer: "Heavenly Father, help me remember Jesus Christ throughout my day. Replace my fear with faith and guide my thoughts and decisions. In Jesus' name, Amen."
+    },
+    {
+      verse: "Trust in the LORD with all thine heart; and lean not unto thine own understanding.",
+      reference: "PROVERBS 3:5 · HOLY BIBLE · KJV",
+      inspiration: "You may not understand everything happening in your life right now. Keep seeking God and trust Him as you take each step.",
+      reminder: "It is okay not to have the whole plan yet.",
+      reminderBody: "You can make wise choices with what you know today and keep learning along the way.",
+      prayer: "Heavenly Father, help me trust Thee when I cannot see the full picture. Give me wisdom, patience, and a willing heart. In Jesus' name, Amen."
+    },
+    {
+      verse: "And if men come unto me I will show unto them their weakness. I give unto men weakness that they may be humble; and my grace is sufficient for all men that humble themselves before me.",
+      reference: "ETHER 12:27 · BOOK OF MORMON · EXCERPT",
+      inspiration: "Your weaknesses do not have to be the end of your story. Through Jesus Christ, you can learn, grow, and become stronger.",
+      reminder: "You can be a work in progress and still be worthy of grace.",
+      reminderBody: "Be honest about what you need to improve, but do not forget to recognise the good that is growing in you.",
+      prayer: "Heavenly Father, help me be humble enough to learn and courageous enough to change. Help me rely on the grace of Jesus Christ as I grow. In Jesus' name, Amen."
+    },
+    {
+      verse: "My son, peace be unto thy soul; thine adversity and thy afflictions shall be but a small moment.",
+      reference: "DOCTRINE AND COVENANTS 121:7",
+      inspiration: "Difficult seasons can feel long while you are living through them. You can seek comfort in Christ and take each day as it comes.",
+      reminder: "A difficult season does not define your whole life.",
+      reminderBody: "Give yourself permission to heal, learn, and hope for better days. You do not have to rush your growth.",
+      prayer: "Heavenly Father, comfort me when I feel tired or discouraged. Help me hold on to hope, trust Thy timing, and feel Thy love through Jesus Christ. Amen."
+    },
+    {
+      verse: "Fear thou not; for I am with thee: be not dismayed; for I am thy God.",
+      reference: "ISAIAH 41:10 · HOLY BIBLE · KJV",
+      inspiration: "You can face tomorrow without knowing exactly what it will bring. Remember that you can pray for strength and seek God's guidance along the way.",
+      reminder: "You can begin again, even after a hard week.",
+      reminderBody: "Celebrate what you learned, release what you cannot change, and take a little hope with you into the new week.",
+      prayer: "Heavenly Father, strengthen me when I feel afraid. Help me trust Thee, recognise Thy hand in my life, and move forward with faith in Jesus Christ. Amen."
+    }
+  ];
+
+  // The weekly message changes every Monday.
+  // The seven messages repeat after seven weeks.
+  const startDate = new Date(2026, 9, 19); // Monday, 19 October 2026
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const daysSinceStart = Math.floor(
+    (today - startDate) / (24 * 60 * 60 * 1000)
+  );
+  const weekNumber = Math.floor(daysSinceStart / 7);
+  const index = ((weekNumber % messages.length) + messages.length)
+    % messages.length;
+
+  const current = messages[index];
+
+  function updateText(selector, value) {
+    const element = document.querySelector(selector);
+    if (element) element.textContent = value;
+  }
+
+  updateText(".faith-scripture blockquote", "“" + current.verse + "”");
+  updateText(".faith-reference", current.reference);
+  updateText(".faith-scripture .faith-body", current.inspiration);
+  updateText(".faith-reminder .faith-featured", current.reminder);
+  updateText(".faith-reminder .faith-body", current.reminderBody);
+  updateText(".faith-prayer-text", current.prayer);
+})();
+</script>
+
+
 </body>
 </html>
