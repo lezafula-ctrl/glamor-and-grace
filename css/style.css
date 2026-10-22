@@ -1110,130 +1110,249 @@ input {
     background: #f9edf1;
 }
 
-/* =================================
-   FAITH & INSPIRATION SECTION
-================================= */
+
+/* ==========================================
+   GLAMOR & GRACE — A MOMENT OF PEACE
+========================================== */
 
 .faith-section {
-  padding: 55px 20px;
-  background: #f8f5f6;
+  padding: 64px 22px;
+  background: linear-gradient(145deg, #fbf0f4, #f8f2ed, #f4edf6);
+  overflow: hidden;
 }
 
-.faith-card {
-  max-width: 760px;
+.faith-container {
+  max-width: 1120px;
   margin: 0 auto;
-  padding: 42px 35px;
-  text-align: center;
-  background: #ffffff;
-  border: 1px solid #ead7df;
-  border-radius: 18px;
-  box-shadow: 0 8px 25px rgba(80, 50, 65, 0.06);
 }
 
-.faith-eyebrow {
-  margin: 0 0 12px;
-  color: #a66f88;
-  font-size: 12px;
+.faith-heading {
+  text-align: center;
+  margin-bottom: 36px;
+}
+
+.faith-kicker {
+  display: inline-block;
+  margin-bottom: 14px;
+  color: #ad718c;
+  font-size: 11px;
   font-weight: 700;
   letter-spacing: 3px;
 }
 
-.faith-card h2 {
-  margin: 0 0 14px;
-  color: #493640;
-  font-size: clamp(27px, 4vw, 36px);
-}
-
-.faith-intro {
-  max-width: 540px;
-  margin: 0 auto;
-  color: #70636a;
-  line-height: 1.8;
-}
-
-.faith-divider {
-  width: 65px;
-  height: 2px;
-  margin: 28px auto;
-  background: #d9afc1;
-}
-
-.faith-label {
-  margin-bottom: 16px;
-  color: #a66f88;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 2px;
-}
-
-.faith-verse {
-  max-width: 570px;
-  margin: 0 auto;
-  color: #493640;
-  font-family: Georgia, "Times New Roman", serif;
-  font-size: clamp(20px, 3vw, 26px);
+.faith-heading h2 {
+  margin: 0;
+  color: #684657;
+  font-family: "Times New Roman", Times, serif;
+  font-size: clamp(34px, 5vw, 52px);
+  font-weight: 400;
   font-style: italic;
-  line-height: 1.7;
+  line-height: 1.2;
+}
+
+.faith-heading > p {
+  margin: 14px 0;
+  color: #826c77;
+  font-family: "Times New Roman", Times, serif;
+  font-size: 17px;
+}
+
+.faith-ornament {
+  margin-top: 20px;
+  color: #c18ca3;
+  font-size: 14px;
+  letter-spacing: 3px;
+}
+
+.faith-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 22px;
+  align-items: stretch;
+}
+
+.faith-card {
+  position: relative;
+  padding: 30px 24px;
+  border: 1px solid rgba(174, 115, 143, 0.25);
+  border-radius: 20px;
+  box-shadow: 0 10px 28px rgba(103, 65, 83, 0.07);
+  text-align: center;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.faith-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 32px rgba(103, 65, 83, 0.12);
+}
+
+.faith-scripture {
+  background: linear-gradient(160deg, #f8e3eb, #f4dce6);
+}
+
+.faith-reminder {
+  background: linear-gradient(160deg, #fff2e9, #f8e7df);
+}
+
+.faith-prayer {
+  background: linear-gradient(160deg, #f0e8f5, #e9def0);
+}
+
+.faith-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  margin: 0 auto 18px;
+  border: 1px solid rgba(139, 83, 111, 0.25);
+  border-radius: 50%;
+  color: #965e79;
+  background: rgba(255, 255, 255, 0.45);
+  font-family: "Times New Roman", Times, serif;
+  font-size: 28px;
+}
+
+.faith-card-label {
+  display: block;
+  margin-bottom: 10px;
+  color: #96677e;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 1.8px;
+}
+
+.faith-card h3 {
+  margin: 0;
+  color: #684657;
+  font-family: "Times New Roman", Times, serif;
+  font-size: 25px;
+  font-weight: 400;
+}
+
+.faith-small-line {
+  width: 42px;
+  height: 2px;
+  margin: 18px auto;
+  background: #c18ca3;
+}
+
+.faith-card blockquote {
+  margin: 0;
+  color: #684657;
+  font-family: "Times New Roman", Times, serif;
+  font-size: 22px;
+  font-style: italic;
+  line-height: 1.55;
 }
 
 .faith-reference {
-  margin-top: 15px;
-  color: #a66f88;
-  font-weight: 600;
+  margin: 16px 0 20px;
+  color: #96677e;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
 }
 
-.faith-reflection,
-.faith-prayer {
-  max-width: 560px;
-  margin: 28px auto 0;
-  padding: 22px;
-  border-radius: 12px;
-  text-align: left;
-}
-
-.faith-reflection {
-  background: #fbf4f7;
-}
-
-.faith-prayer {
-  background: #f7f6f1;
-}
-
-.faith-reflection h3,
-.faith-prayer h3 {
-  margin: 0 0 10px;
-  color: #493640;
-  font-size: 18px;
-}
-
-.faith-reflection p,
-.faith-prayer p {
+.faith-body {
   margin: 0;
-  color: #655961;
-  font-size: 15px;
-  line-height: 1.8;
+  color: #725c68;
+  font-size: 14px;
+  line-height: 1.9;
 }
 
-.faith-signoff {
-  margin: 28px 0 0;
-  color: #a66f88;
-  font-family: Georgia, "Times New Roman", serif;
+.faith-featured {
+  margin: 0 0 18px;
+  color: #684657;
+  font-family: "Times New Roman", Times, serif;
+  font-size: 22px;
+  font-style: italic;
+  line-height: 1.5;
+}
+
+.faith-flower {
+  margin-top: 18px;
+  color: #b17d91;
+  font-size: 30px;
+}
+
+.faith-prayer-text {
+  font-family: "Times New Roman", Times, serif;
   font-size: 17px;
+  line-height: 1.85;
+}
+
+.faith-amen {
+  margin: 20px 0 0;
+  color: #96677e;
+  font-family: "Times New Roman", Times, serif;
+  font-size: 19px;
   font-style: italic;
 }
 
-@media (max-width: 600px) {
+.faith-footer {
+  margin: 32px 0 0;
+  color: #96677e;
+  font-family: "Times New Roman", Times, serif;
+  font-size: 17px;
+  font-style: italic;
+  text-align: center;
+}
+
+.faith-footer span {
+  display: inline-block;
+  margin-left: 4px;
+  font-size: 20px;
+}
+
+/* TABLETS */
+@media (max-width: 850px) {
+  .faith-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .faith-prayer {
+    grid-column: 1 / -1;
+  }
+}
+
+/* MOBILE PHONES */
+@media (max-width: 560px) {
   .faith-section {
-    padding: 35px 15px;
+    padding: 42px 16px;
+  }
+
+  .faith-heading {
+    margin-bottom: 26px;
+  }
+
+  .faith-grid {
+    grid-template-columns: 1fr;
+    gap: 17px;
   }
 
   .faith-card {
-    padding: 30px 20px;
+    padding: 29px 23px;
   }
 
-  .faith-reflection,
   .faith-prayer {
-    padding: 18px;
+    grid-column: auto;
+  }
+
+  .faith-heading > p {
+    font-size: 16px;
+    line-height: 1.7;
   }
 }
+
+@media (prefers-reduced-motion: reduce) {
+  .faith-card {
+    transition: none;
+  }
+
+  .faith-card:hover {
+    transform: none;
+  }
+}
+
 
