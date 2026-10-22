@@ -228,6 +228,10 @@
                 sold: soldByProduct.get(String(product.id)) || 0,
                 pending: pendingByProduct.get(String(product.id)) || 0
             }));
+            console.log("Inventory stock check:", inventory.map(product => ({
+    name: product.name,
+    stock: product.stock
+})));
 
             document.getElementById("total-products").textContent =
                 inventory.length;
