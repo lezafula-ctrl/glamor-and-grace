@@ -4,6 +4,31 @@
 ======================================== */
 
 document.addEventListener("DOMContentLoaded", () => {
+   
+function parseOptionFields(text) {
+    return text.split("\n")
+        .map(line => line.trim())
+        .filter(Boolean)
+        .map(line => {
+            const separator = line.indexOf(":");
+
+            if (separator === -1) {
+                return {
+                    name: line,
+                    options: []
+                };
+            }
+
+            return {
+                name: line.slice(0, separator).trim(),
+                options: line.slice(separator + 1)
+                    .split(",")
+                    .map(value => value.trim())
+                    .filter(Boolean)
+            };
+        });
+}
+
     const form = document.getElementById("add-product-form");
 
     if (!form) {
@@ -49,6 +74,13 @@ document.addEventListener("DOMContentLoaded", () => {
             const price = Number(document.getElementById("product-price").value);
             const stock = Number(document.getElementById("product-stock").value);
             const description = document.getElementById("product-description").value.trim();
+            const variants = parseOptionFields(
+    document.getElementById("product-options").value
+);
+
+            const customizationFields = parseOptionFields(
+    document.getElementById("product-personalisation").value
+);
             const imageFile = document.getElementById("product-image").files[0];
 
             if (!name || !category || !imageFile) {
@@ -105,19 +137,20 @@ document.addEventListener("DOMContentLoaded", () => {
                 .from("product-images")
                 .getPublicUrl(imagePath);
 
-            const { data: savedProduct, error: saveError } =
-                await ggSupabase
-                    .from("products")
-                    .insert({
-                        name,
-                        category,
-                        price,
-                        stock,
-                        description,
-                        image: imageData.publicUrl
-                    })
-                    .select()
-                    .single();
+            const { data: savedProduct, error: saveError } = await ggSupabase
+    .from("products")
+    .insert({
+        name,
+        category,
+        price,
+        stock,
+        description,
+        image: imageData.publicUrl,
+        variants,
+        customization_fields: customizationFields
+    })
+    .select()
+    .single();
 
             if (saveError) {
                 throw new Error(
