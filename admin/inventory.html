@@ -1,0 +1,268 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventory | Glamor & Grace</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <style>
+        .inventory-wrap { max-width: 1200px; margin: 30px auto; padding: 20px; }
+        .inventory-stats { display: grid; grid-template-columns: repeat(auto-fit,minmax(160px,1fr)); gap: 15px; margin: 24px 0; }
+        .inventory-stat { padding: 20px; border: 1px solid #eadde4; border-radius: 12px; background: #fff8fb; }
+        .inventory-stat p { margin: 0 0 8px; color: #665760; }
+        .inventory-stat strong { font-size: 25px; }
+        .inventory-table-wrap { overflow-x: auto; }
+        .inventory-table { width: 100%; border-collapse: collapse; min-width: 720px; }
+        .inventory-table th, .inventory-table td { padding: 12px; text-align: left; border-bottom: 1px solid #eee; }
+        .inventory-table th { background: #fff4f8; }
+        .inventory-table img { width: 60px; height: 60px; object-fit: contain; }
+        .inventory-table input { width: 75px; padding: 7px; }
+        .inventory-message { margin: 15px 0; }
+        .inventory-tools { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 15px; }
+        .inventory-tools input { flex: 1; min-width: 200px; padding: 10px; }
+        .inventory-status { font-weight: 600; }
+        .inventory-low { color: #a65d00; }
+        .inventory-out { color: #b42318; }
+        .inventory-ok { color: #247345; }
+    </style>
+</head>
+<body>
+
+<header class="admin-header">
+    <img src="../logo.png" alt="Glamor & Grace" class="admin-logo-small">
+    <div>
+        <span>Inventory Management</span>
+        <a href="dashboard.html">Dashboard</a>
+        <button id="inventory-logout" type="button">Log Out</button>
+    </div>
+</header>
+
+<main class="inventory-wrap">
+    <div class="admin-heading">
+        <h1>Stock & Inventory</h1>
+        <p>Monitor your products, stock quantities and sales.</p>
+    </div>
+
+    <p id="inventory-message" class="inventory-message" role="status">
+        Loading your inventory...
+    </p>
+
+    <section class="inventory-stats">
+        <div class="inventory-stat">
+            <p>Products listed</p>
+            <strong id="total-products">—</strong>
+        </div>
+        <div class="inventory-stat">
+            <p>Units in stock</p>
+            <strong id="total-stock">—</strong>
+        </div>
+        <div class="inventory-stat">
+            <p>Units sold (paid orders)</p>
+            <strong id="total-sold">—</strong>
+        </div>
+        <div class="inventory-stat">
+            <p>Units in pending orders</p>
+            <strong id="total-pending">—</strong>
+        </div>
+        <div class="inventory-stat">
+            <p>Low-stock products</p>
+            <strong id="total-low-stock">—</strong>
+        </div>
+    </section>
+
+    <section class="admin-section">
+        <h2>All Products</h2>
+        <div class="inventory-tools">
+            <input id="inventory-search" type="search"
+                placeholder="Search by product name or category">
+        </div>
+
+        <div class="inventory-table-wrap">
+            <table class="inventory-table">
+                <thead>
+                    <tr>
+                        <th>Image</th>
+                        <th>Product</th>
+                        <th>Category</th>
+                        <th>Price</th>
+                        <th>Available stock*</th>
+                        <th>Units sold</th>
+                        <th>Pending units</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody id="inventory-rows">
+                    <tr><td colspan="8">Loading products...</td></tr>
+                </tbody>
+            </table>
+        </div>
+        <p><small>*Available stock reflects the quantity currently saved on the product record. It is not automatically reduced by orders yet.</small></p>
+    </section>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../js/supabase-config.js"></script>
+<script>
+(() => {
+    const message = document.getElementById("inventory-message");
+    const rows = document.getElementById("inventory-rows");
+    let inventory = [];
+
+    const escapeHTML = value => String(value ?? "").replace(/[&<>"']/g, char => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;"
+    })[char]);
+
+    const money = value => "R" + Number(value || 0).toFixed(2);
+
+    function statusFor(stock) {
+        if (stock <= 0) {
+            return '<span class="inventory-status inventory-out">Out of stock</span>';
+        }
+        if (stock <= 3) {
+            return '<span class="inventory-status inventory-low">Low stock</span>';
+        }
+        return '<span class="inventory-status inventory-ok">In stock</span>';
+    }
+
+    function render() {
+        const search = document.getElementById("inventory-search")
+            .value.trim().toLowerCase();
+
+        const filtered = inventory.filter(product =>
+            product.name.toLowerCase().includes(search) ||
+            product.category.toLowerCase().includes(search)
+        );
+
+        rows.innerHTML = filtered.length
+            ? filtered.map(product => `
+                <tr>
+                    <td>${product.image
+                        ? `<img src="${escapeHTML(product.image)}" alt="${escapeHTML(product.name)}">`
+                        : "No image"}</td>
+                    <td>${escapeHTML(product.name)}</td>
+                    <td>${escapeHTML(product.category)}</td>
+                    <td>${money(product.price)}</td>
+                    <td>${product.stock}</td>
+                    <td>${product.sold}</td>
+                    <td>${product.pending}</td>
+                    <td>${statusFor(product.stock)}</td>
+                </tr>
+            `).join("")
+            : '<tr><td colspan="8">No matching products found.</td></tr>';
+    }
+
+    async function loadInventory() {
+        try {
+            const { data: authData, error: authError } =
+                await ggSupabase.auth.getUser();
+
+            if (authError || !authData.user) {
+                throw new Error("Please sign in to access inventory.");
+            }
+
+            const { data: admin, error: adminError } = await ggSupabase
+                .from("admin_users")
+                .select("role")
+                .eq("id", authData.user.id)
+                .maybeSingle();
+
+            if (adminError || !admin || !["owner", "staff"].includes(admin.role)) {
+                throw new Error("You do not have permission to view inventory.");
+            }
+
+            const [
+                { data: products, error: productsError },
+                { data: orders, error: ordersError },
+                { data: items, error: itemsError }
+            ] = await Promise.all([
+                ggSupabase.from("products").select("*")
+                    .order("created_at", { ascending: false }),
+                ggSupabase.from("orders")
+                    .select("id, order_status, payment_status"),
+                ggSupabase.from("order_items")
+                    .select("order_id, product_id, quantity")
+            ]);
+
+            if (productsError) throw productsError;
+            if (ordersError) throw ordersError;
+            if (itemsError) throw itemsError;
+
+            const orderById = new Map((orders || []).map(order => [
+                String(order.id), order
+            ]));
+
+            const soldByProduct = new Map();
+            const pendingByProduct = new Map();
+
+            for (const item of items || []) {
+                const order = orderById.get(String(item.order_id));
+                if (!order || order.order_status === "cancelled") continue;
+
+                const id = String(item.product_id);
+                const quantity = Number(item.quantity) || 0;
+
+                if (order.payment_status === "paid") {
+                    soldByProduct.set(id,
+                        (soldByProduct.get(id) || 0) + quantity);
+                } else if (
+                    order.order_status === "pending" &&
+                    order.payment_status === "pending"
+                ) {
+                    pendingByProduct.set(id,
+                        (pendingByProduct.get(id) || 0) + quantity);
+                }
+            }
+
+            inventory = (products || []).map(product => ({
+                id: String(product.id),
+                name: String(product.name ?? product.Name ?? ""),
+                category: String(product.category ?? product.Category ?? ""),
+                price: Number(product.price ?? product.Price ?? 0),
+                stock: Number(product.stock ?? product.Stock ?? 0),
+                image: product.image_url ?? product.image ?? "",
+                sold: soldByProduct.get(String(product.id)) || 0,
+                pending: pendingByProduct.get(String(product.id)) || 0
+            }));
+
+            document.getElementById("total-products").textContent =
+                inventory.length;
+            document.getElementById("total-stock").textContent =
+                inventory.reduce((sum, product) => sum + product.stock, 0);
+            document.getElementById("total-sold").textContent =
+                inventory.reduce((sum, product) => sum + product.sold, 0);
+            document.getElementById("total-pending").textContent =
+                inventory.reduce((sum, product) => sum + product.pending, 0);
+            document.getElementById("total-low-stock").textContent =
+                inventory.filter(product => product.stock <= 3).length;
+
+            render();
+            message.textContent = "Inventory loaded.";
+
+        } catch (error) {
+            console.error("Inventory error:", error);
+            message.textContent =
+                "Could not load inventory: " + (error.message || "Unknown error");
+            rows.innerHTML =
+                '<tr><td colspan="8">Please check your admin access and database permissions.</td></tr>';
+        }
+    }
+
+    document.getElementById("inventory-search")
+        .addEventListener("input", render);
+
+    document.getElementById("inventory-logout")
+        .addEventListener("click", async () => {
+            await ggSupabase.auth.signOut();
+            window.location.href = "login.html";
+        });
+
+    loadInventory();
+})();
+</script>
+</body>
+</html>
