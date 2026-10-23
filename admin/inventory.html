@@ -94,7 +94,7 @@
                     </tr>
                 </thead>
                 <tbody id="inventory-rows">
-                    <tr><td colspan="8">Loading products...</td></tr>
+                    <tr><td colspan="9">Loading products...</td></tr>
                 </tbody>
             </table>
         </div>
@@ -550,6 +550,7 @@ async function saveVariantStock(productId, button) {
         }
     }
 }
+    window.saveVariantStock = saveVariantStock;
 
 
     async function loadInventory() {
