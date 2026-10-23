@@ -4,6 +4,12 @@
 
 const MINIMUM_CART_TOTAL = 150;
 
+function escapeCheckoutText(value) {
+    return String(value ?? "").replace(/[&<>"']/g, char => ({
+        "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+    })[char]);
+}
+
 
 function getCheckoutTotal(deliveryFee = 0) {
 
@@ -55,7 +61,7 @@ function displayCheckout() {
             <div class="checkout-item">
 
                 <span>
-                    ${item.name}${Object.entries(item.selectedOptions || {}).map(([key, value]) => " · " + key + ": " + value).join("")}${Object.entries(item.customisation || {}).map(([key, value]) => " · " + key + ": " + value).join("")} × ${item.quantity}
+                    ${escapeCheckoutText(item.name)}${Object.entries(item.selectedOptions || {}).map(([key, value]) => " · " + escapeCheckoutText(key) + ": " + escapeCheckoutText(value)).join("")}${Object.entries(item.customisation || {}).map(([key, value]) => " · " + escapeCheckoutText(key) + ": " + escapeCheckoutText(value)).join("")} × ${item.quantity}
                 </span>
 
                 <strong>
