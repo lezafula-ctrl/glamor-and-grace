@@ -272,7 +272,8 @@ function parseVariantStock(text) {
                     <td>${statusFor(product.stock)}</td>
                 </tr>
             `).join("")
-            : '<tr><td colspan="8">No matching products found.</td></tr>';
+            : '<tr><td colspan="9">No matching products found.</td></tr>';
+                renderVariantStockEditors(filtered);
     }
 
 function variantArray(value) {
@@ -550,42 +551,6 @@ async function saveVariantStock(productId, button) {
     }
 }
 
-window.saveVariantStock = saveVariantStock;
-
-
-        product.stock = Number(data.stock);
-        product.variant_stock = data.variant_stock || variantStock;
-
-        document.getElementById("total-stock").textContent =
-            inventory.reduce(
-                (sum, item) => sum + item.stock,
-                0
-            );
-
-        document.getElementById("total-low-stock").textContent =
-            inventory.filter(item => item.stock <= 3).length;
-
-        render();
-
-        message.textContent =
-            `Size/colour quantities saved for ${product.name}.`;
-
-    } catch (error) {
-        console.error("Variant stock save error:", error);
-
-        message.textContent =
-            "Could not save quantities: " +
-            (error.message || "Unknown error");
-
-    } finally {
-        if (button) {
-            button.disabled = false;
-            button.textContent = "Save quantities";
-        }
-    }
-}
-
-window.saveVariantStock = saveVariantStock;
 
     async function loadInventory() {
         try {
@@ -685,8 +650,7 @@ window.saveVariantStock = saveVariantStock;
             message.textContent =
                 "Could not load inventory: " + (error.message || "Unknown error");
             rows.innerHTML =
-                '<tr><td colspan="8">Please check your admin access and database permissions.</td></tr>';
-            renderVariantStockEditors(filtered);
+                '<tr><td colspan="9">Please check your admin access and database permissions.</td></tr>';
         }
     }
 
