@@ -200,6 +200,10 @@ document.addEventListener("DOMContentLoaded", () => {
         field("edit-product-image-note").textContent = product.image
             ? "A current image is saved. Choose a new file only if you want to replace it."
             : "This product has no saved image. Choose a file to add one.";
+        window.GGAdminProductImages?.showSavedPreview("edit-product-colour-image-preview", product.product_images || []);
+        window.GGOptionBuilder?.load("edit-product-options");
+        window.GGOptionBuilder?.load("edit-product-personalisation");
+        window.GGAdminProductImages?.renderFields("edit-product-options", "edit-product-colour-image-fields");
 
         field("edit-form-title").textContent =
             `Edit: ${product.name || "Unnamed product"}`;
@@ -324,6 +328,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const customizationFields =
                 parseOptionFields(field("edit-product-personalisation").value);
 
+            window.GGOptionBuilder?.syncAll();
             const imageFile = field("edit-product-image").files[0];
 
             if (!name || !category) {
@@ -345,15 +350,10 @@ document.addEventListener("DOMContentLoaded", () => {
                 throw new Error("Please choose an image smaller than 5 MB.");
             }
 
-            const payload = {
-                name,
-                category,
-                price,
-                stock,
-                description,
-                variants,
-                customization_fields: customizationFields
-            };
+            const payload = { name, category, price, stock, description, variants, customization_fields: customizationFields };
+            const newColourImages = await window.GGAdminProductImages.uploadSelected("edit-product-colour-image-fields", name);
+            const existingProduct = products.find(item => String(item.id) === String(editingProductId));
+            payload.product_images = window.GGAdminProductImages.mergeByColour(existingProduct?.product_images || [], newColourImages);
 
             if (imageFile) {
                 const extension = imageFile.name.split(".").pop()

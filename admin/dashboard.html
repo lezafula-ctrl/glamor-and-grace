@@ -10,7 +10,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="../js/supabase-config.js"></script>
-</head>
+<style>.gg-option-section{margin:16px 0;padding:14px;border:1px solid #eadde4;border-radius:12px;background:#fffafd}.gg-option-builder{margin-top:10px}.gg-option-builder select,.gg-option-builder input{box-sizing:border-box;width:100%;max-width:100%;border:1px solid #d9cbd2;border-radius:8px;background:#fff}.gg-option-section>button{margin:8px 0}.gg-option-section [hidden]{display:none!important}@media(max-width:600px){.gg-option-builder .gg-option-row{grid-template-columns:1fr!important}.gg-option-builder .gg-option-row>button{justify-self:start}}</style></head>
 
 <body>
 
@@ -233,18 +233,9 @@
             <textarea id="edit-product-description" rows="4"></textarea>
         </label>
 
-        <label>
-            Product Options
-            <textarea id="edit-product-options" rows="4"
-                placeholder="Size: 4, 5, 6
-Colour: Pink, Black, White"></textarea>
-        </label>
+        <div class="gg-option-section"><strong>Product Options</strong><div class="gg-option-builder" data-option-output="edit-product-options" data-kind="product"></div><button type="button" data-add-option-for="edit-product-options" class="secondary-button">+ Add option</button><textarea id="edit-product-options" rows="4" hidden aria-hidden="true"></textarea><div id="edit-product-colour-image-preview"></div><div id="edit-product-colour-image-fields"></div></div>
 
-        <label>
-            Personalisation Options
-            <textarea id="edit-product-personalisation" rows="3"
-                placeholder="Name: Customer enters their name"></textarea>
-        </label>
+        <div class="gg-option-section"><strong>Personalisation Options</strong><div class="gg-option-builder" data-option-output="edit-product-personalisation" data-kind="personalisation"></div><button type="button" data-add-option-for="edit-product-personalisation" class="secondary-button">+ Add personalisation option</button><textarea id="edit-product-personalisation" rows="4" hidden aria-hidden="true"></textarea><div id="edit-product-personalisation-fields"></div></div>
 
         <button type="submit" class="primary-button">
             Save Changes
@@ -353,29 +344,9 @@ Colour: Pink, Black, White"></textarea>
                     ></textarea>
                 </label>
                 
-<label>
-    Product Options
-    <textarea
-        id="product-options"
-        rows="4"
-        placeholder="Example:
-Size: 5, 6, 7, 8
-Colour: Pink, Black, White
-Length: 12, 14, 16 inches"
-    ></textarea>
-</label>
+<div class="gg-option-section"><strong>Product Options</strong><div class="gg-option-builder" data-option-output="product-options" data-kind="product"></div><button type="button" data-add-option-for="product-options" class="secondary-button">+ Add option</button><textarea id="product-options" rows="4" hidden aria-hidden="true"></textarea><div id="product-colour-image-fields"></div></div>
 
-<label>
-    Personalisation Options
-    <textarea
-        id="product-personalisation"
-        rows="3"
-        placeholder="Example:
-Letter: A, B, C
-Number: 0, 1, 2
-Name: Customer enters their name"
-    ></textarea>
-</label>
+<div class="gg-option-section"><strong>Personalisation Options</strong><div class="gg-option-builder" data-option-output="product-personalisation" data-kind="personalisation"></div><button type="button" data-add-option-for="product-personalisation" class="secondary-button">+ Add personalisation option</button><textarea id="product-personalisation" rows="4" hidden aria-hidden="true"></textarea><div id="product-personalisation-fields"></div></div>
 
 
                 <button
@@ -528,7 +499,7 @@ async function approveStaff(userId) {
 loadStaffAccounts();
 
 </script>
- <script src="../js/admin-product.js"></script>
+ <script src="../js/admin-option-builder.js"></script><script src="../js/admin-product-images.js"></script><script src="../js/admin-product.js"></script>
 <script src="../js/admin-product-management.js"></script>
 </body>
 </html>

@@ -16,84 +16,55 @@ document.addEventListener(
 );
 
 // ========================================
+
+function ggAsArray(value) {
+    if (Array.isArray(value)) return value;
+    if (typeof value === "string") { try { const parsed = JSON.parse(value); return Array.isArray(parsed) ? parsed : []; } catch { return []; } }
+    return [];
+}
+function ggHtmlSafe(value) {
+    return String(value ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+}
+function ggProductOptions(product) {
+    return ggAsArray(product.variants).map(v => ({
+        name: String(v?.name || "").trim(),
+        options: Array.isArray(v?.options) ? v.options.map(x => String(x)) : []
+    })).filter(v => v.name && v.options.length);
+}
+function ggProductImages(product) {
+    return ggAsArray(product.product_images).filter(item => item && item.url);
+}
+function ggStockForOptions(product, selected) {
+    const entries = ggAsArray(product.variant_stock);
+    if (!entries.length) return Number(product.stock || 0);
+    const match = entries.find(entry => {
+        const opts = entry.options || {};
+        return Object.entries(opts).every(([key, value]) => String(value).toLowerCase() === String((selected || {})[key] || "").toLowerCase()) &&
+            Object.keys(opts).length === Object.keys(selected || {}).length;
+    });
+    return match ? Number(match.quantity || 0) : 0;
+}
+
+// ========================================
 // PRODUCT CARD
 // ========================================
 
 function createProductCard(product) {
-
-    const available =
-        Number(product.stock || 0) > 0;
-
-    const price =
-        Number(product.price || 0);
-
-    const name =
-        product.name || "Unnamed Product";
-
-    const category =
-        product.category || "Uncategorized";
-
-    const description =
-        product.description || "";
-
-    const image =
-        product.image || "";
-
-    return `
-        <article class="product-card">
-
-            <a href="product.html?id=${product.id}">
-                <div class="product-image-container">
-
-                    <img
-                        src="${image}"
-                        alt="${name}"
-                        onerror="this.style.display='none'; this.parentElement.classList.add('image-placeholder');"
-                    >
-
-                </div>
-            </a>
-
-            <div class="product-info">
-
-                <div class="product-category">
-                    ${category}
-                </div>
-
-                <a href="product.html?id=${product.id}">
-                    <div class="product-name">
-                        ${name}
-                    </div>
-                </a>
-
-                <div class="product-price">
-                    R${price.toFixed(2)}
-                </div>
-
-                ${
-                    available
-                    ?
-                    `<button
-                        class="add-to-cart"
-                        onclick="addToCart('${product.id}')">
-                        Add to Cart
-                    </button>`
-                    :
-                    `<button
-                        class="add-to-cart"
-                        disabled>
-                        Coming Soon
-                    </button>`
-                }
-
-            </div>
-
-        </article>
-    `;
+    const available = Number(product.stock || 0) > 0;
+    const price = Number(product.price || 0);
+    const name = ggHtmlSafe(product.name || "Unnamed Product");
+    const category = ggHtmlSafe(product.category || "Uncategorized");
+    const image = ggHtmlSafe(product.image || "");
+    const hasChoices = ggProductOptions(product).length > 0 || ggAsArray(product.customization_fields).length > 0;
+    const button = !available
+        ? '<button class="add-to-cart" disabled>Coming Soon</button>'
+        : hasChoices
+            ? '<a class="add-to-cart" href="product.html?id=' + encodeURIComponent(product.id) + '">View Options</a>'
+            : '<button class="add-to-cart" onclick="addToCart(\'' + String(product.id).replace(/'/g, "\'") + '\')">Add to Cart</button>';
+    return '<article class="product-card"><a href="product.html?id=' + encodeURIComponent(product.id) + '"><div class="product-image-container"><img src="' + image + '" alt="' + name + '" onerror="this.style.display=\'none\';this.parentElement.classList.add(\'image-placeholder\')"></div></a><div class="product-info"><div class="product-category">' + category + '</div><a href="product.html?id=' + encodeURIComponent(product.id) + '"><div class="product-name">' + name + '</div></a><div class="product-price">R' + price.toFixed(2) + '</div>' + button + '</div></article>';
 }
 
 
-// ========================================
 // HOMEPAGE PRODUCTS
 // ========================================
 
@@ -291,113 +262,109 @@ function setupSearch() {
 // ========================================
 
 function displayProductPage() {
-
-    const container =
-        document.getElementById("product-details");
-
-    if (!container) {
-        return;
-    }
-
-    const params =
-        new URLSearchParams(window.location.search);
-
-    const productId =
-        params.get("id");
-
-    const product =
-    products.find(item => String(item.id) === String(productId));
-
+    const container = document.getElementById("product-details");
+    if (!container) return;
+    const productId = new URLSearchParams(window.location.search).get("id");
+    const product = products.find(item => String(item.id) === String(productId));
     if (!product) {
-
-        container.innerHTML = `
-            <div class="product-not-found">
-                <h2>Product not found</h2>
-                <p>Sorry, we couldn't find this product.</p>
-                <a href="shop.html" class="primary-button">
-                    Back to Shop
-                </a>
-            </div>
-        `;
-
+        container.innerHTML = '<div class="product-not-found"><h2>Product not found</h2><p>Sorry, we couldn\'t find this product.</p><a href="shop.html" class="primary-button">Back to Shop</a></div>';
         return;
     }
+    const variants = ggProductOptions(product);
+    const customFields = ggAsArray(product.customization_fields);
+    const images = ggProductImages(product);
+    const allImages = images.length ? images : [{url: product.image || "", color: "", alt: product.name}];
+    const colorDefinition = variants.find(v => /^(colour|color)$/i.test(v.name));
+    const available = Number(product.stock || 0) > 0;
+    const selected = {};
+    if (colorDefinition && colorDefinition.options.length) selected[colorDefinition.name] = colorDefinition.options[0];
 
-    const available =
-        product.stock > 0;
+    const optionControls = variants.map((variant, index) => {
+        const isColor = /^(colour|color)$/i.test(variant.name);
+        const controls = isColor
+            ? '<div class="gg-colour-swatches" role="group" aria-label="Choose ' + ggHtmlSafe(variant.name) + '">' + variant.options.map((value, i) =>
+                '<button type="button" class="gg-choice-button gg-colour-choice" data-option-index="' + index + '" data-option-value="' + ggHtmlSafe(value) + '" aria-pressed="' + (i === 0) + '">' + ggHtmlSafe(value) + '</button>'
+              ).join("") + '</div>'
+            : '<select class="gg-product-option" data-option-index="' + index + '" required><option value="">Choose ' + ggHtmlSafe(variant.name) + '</option>' + variant.options.map(value => '<option value="' + ggHtmlSafe(value) + '">' + ggHtmlSafe(value) + '</option>').join("") + '</select>';
+        return '<div class="gg-product-field"><label>' + ggHtmlSafe(variant.name) + '</label>' + controls + '</div>';
+    }).join("");
 
-    container.innerHTML = `
+    const personalisation = customFields.map((field, index) => {
+        const values = Array.isArray(field.options) ? field.options : [];
+        const name = String(field.name || "").trim();
+        if (!name) return "";
+        const freeText = !values.length || /^(name|message|custom message)$/i.test(name) && values.length === 0;
+        return '<div class="gg-product-field gg-personalisation-field"><label for="gg-personal-' + index + '">' + ggHtmlSafe(name) + (freeText ? ' (optional)' : '') + '</label>' +
+            (freeText
+                ? '<input id="gg-personal-' + index + '" class="gg-personalisation" data-field-name="' + ggHtmlSafe(name) + '" type="text" maxlength="100" placeholder="Enter ' + ggHtmlSafe(name.toLowerCase()) + '">'
+                : '<select id="gg-personal-' + index + '" class="gg-personalisation" data-field-name="' + ggHtmlSafe(name) + '"><option value="">Choose ' + ggHtmlSafe(name) + '</option>' + values.map(v => '<option value="' + ggHtmlSafe(v) + '">' + ggHtmlSafe(v) + '</option>').join("") + '</select>') +
+            '</div>';
+    }).join("");
 
-        <div class="product-detail-image">
+    container.innerHTML =
+        '<div class="product-detail-image"><img id="gg-main-product-image" src="' + ggHtmlSafe(allImages[0].url) + '" alt="' + ggHtmlSafe(product.name) + '" onerror="this.style.display=\'none\';this.parentElement.classList.add(\'image-placeholder\')"><div id="gg-product-thumbnails" class="gg-product-thumbnails"></div></div>' +
+        '<div class="product-detail-info"><p class="product-category">' + ggHtmlSafe(product.category) + '</p><h1>' + ggHtmlSafe(product.name) + '</h1><p class="product-detail-price">R' + Number(product.price || 0).toFixed(2) + '</p><p class="product-description">' + ggHtmlSafe(product.description || "") + '</p><p class="product-availability">' + (available ? "✓ In Stock" : "Coming Soon") + '</p><p class="delivery-note">📦 Estimated delivery: 14-21 business days</p>' +
+        optionControls + personalisation + '<p id="gg-selected-stock" class="product-availability"></p>' +
+        (available ? '<button id="gg-add-product-to-cart" type="button" class="primary-button">Add to Cart</button>' : '<button class="primary-button" disabled>Coming Soon</button>') +
+        '<p id="gg-product-status" role="status" aria-live="polite"></p><br><a href="shop.html" class="back-to-shop">← Continue Shopping</a></div>';
 
-            <img
-                src="${product.image}"
-                alt="${product.name}"
-                onerror="this.style.display='none'; this.parentElement.classList.add('image-placeholder');"
-            >
+    function setGalleryForColour(colour) {
+        const matching = images.filter(img => String(img.color || img.colour || "").toLowerCase() === String(colour || "").toLowerCase());
+        const fallback = images.filter(img => !img.color && !img.colour);
+        const display = matching.length ? matching : fallback.length ? fallback : allImages;
+        const main = document.getElementById("gg-main-product-image");
+        main.src = display[0].url;
+        main.alt = display[0].alt || product.name;
+        document.getElementById("gg-product-thumbnails").innerHTML = display.map((img, i) =>
+            '<button type="button" class="gg-thumb" data-image-url="' + ggHtmlSafe(img.url) + '" aria-label="View photo ' + (i + 1) + '"><img src="' + ggHtmlSafe(img.url) + '" alt="' + ggHtmlSafe(img.alt || product.name) + '"></button>'
+        ).join("");
+    }
+    function updateAvailableStock() {
+        const stockEl = document.getElementById("gg-selected-stock");
+        if (ggAsArray(product.variant_stock).length && Object.keys(selected).length === variants.length) {
+            const qty = ggStockForOptions(product, selected);
+            stockEl.textContent = qty > 0 ? qty + " available for this combination" : "This size/colour combination is currently unavailable.";
+        } else {
+            stockEl.textContent = Number(product.stock) > 0 ? "Available stock: " + product.stock : "Currently unavailable";
+        }
+    }
+    container.querySelectorAll(".gg-colour-choice").forEach(button => button.addEventListener("click", () => {
+        const variant = variants[Number(button.dataset.optionIndex)];
+        selected[variant.name] = button.dataset.optionValue;
+        container.querySelectorAll('.gg-colour-choice[data-option-index="' + button.dataset.optionIndex + '"]').forEach(b => b.setAttribute("aria-pressed", String(b === button)));
+        setGalleryForColour(selected[variant.name]);
+        updateAvailableStock();
+    }));
+    container.querySelectorAll(".gg-product-option").forEach(select => select.addEventListener("change", () => {
+        const variant = variants[Number(select.dataset.optionIndex)];
+        if (select.value) selected[variant.name] = select.value; else delete selected[variant.name];
+        updateAvailableStock();
+    }));
+    container.querySelector("#gg-product-thumbnails").addEventListener("click", event => {
+        const button = event.target.closest("[data-image-url]");
+        if (button) document.getElementById("gg-main-product-image").src = button.dataset.imageUrl;
+    });
+    if (colorDefinition && selected[colorDefinition.name]) setGalleryForColour(selected[colorDefinition.name]);
+    else setGalleryForColour("");
+    updateAvailableStock();
 
-        </div>
-
-
-        <div class="product-detail-info">
-
-            <p class="product-category">
-                ${product.category}
-            </p>
-
-            <h1>
-                ${product.name}
-            </h1>
-
-            <p class="product-detail-price">
-                R${product.price.toFixed(2)}
-            </p>
-
-            <p class="product-description">
-                ${product.description}
-            </p>
-
-            <div class="product-availability">
-
-                ${
-                    available
-                    ? "✓ In Stock"
-                    : "Coming Soon"
-                }
-
-            </div>
-
-            <p class="delivery-note">
-                📦 Estimated delivery: 14-21 business days
-            </p>
-
-            ${
-                available
-                ?
-                `<button
-                    class="primary-button"
-                    onclick="addToCart('${product.id}')">
-                    Add to Cart
-                </button>`
-                :
-                `<button
-                    class="primary-button"
-                    disabled>
-                    Coming Soon
-                </button>`
-            }
-
-            <br><br>
-
-            <a href="shop.html" class="back-to-shop">
-                ← Continue Shopping
-            </a>
-
-        </div>
-
-    `;
+    const addButton = document.getElementById("gg-add-product-to-cart");
+    if (addButton) addButton.addEventListener("click", () => {
+        const status = document.getElementById("gg-product-status");
+        const missing = variants.filter(v => !selected[v.name]);
+        if (missing.length) { status.textContent = "Please choose: " + missing.map(v => v.name).join(", ") + "."; return; }
+        const custom = {};
+        container.querySelectorAll(".gg-personalisation").forEach(input => {
+            const value = input.value.trim();
+            if (value) custom[input.dataset.fieldName] = value;
+        });
+        if (ggAsArray(product.variant_stock).length && ggStockForOptions(product, selected) <= 0) {
+            status.textContent = "Sorry, that size/colour combination is out of stock."; return;
+        }
+        addToCart(String(product.id), {...selected}, custom);
+        status.textContent = "Added to cart. Choose another colour or size to add another item.";
+    });
 }
-
 
 // Automatically load product page when needed
 
