@@ -177,9 +177,8 @@
         const output = document.getElementById(textareaId);
         const root = document.querySelector('[data-option-output="' + textareaId + '"]');
         if (!output || !root) return;
-        root.innerHTML = "";
+        root.replaceChildren();
         output.value = "";
-        const kind = root.dataset.kind;
         output.dispatchEvent(new Event("input", { bubbles: true }));
         output.dispatchEvent(new Event("change", { bubbles: true }));
     }
