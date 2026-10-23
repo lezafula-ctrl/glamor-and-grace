@@ -60,7 +60,7 @@ function createProductCard(product) {
         ? '<button class="add-to-cart" disabled>Coming Soon</button>'
         : hasChoices
             ? '<a class="add-to-cart" href="product.html?id=' + encodeURIComponent(product.id) + '">View Options</a>'
-            : '<button class="add-to-cart" onclick="addToCart(\'' + String(product.id).replace(/'/g, "\\'") + '\')">Add to Cart</button>';
+            : '<button class="add-to-cart" onclick="addToCart(\'' + String(product.id).replace(/'/g, "\'") + '\')">Add to Cart</button>';
     return '<article class="product-card"><a href="product.html?id=' + encodeURIComponent(product.id) + '"><div class="product-image-container"><img src="' + image + '" alt="' + name + '" onerror="this.style.display=\'none\';this.parentElement.classList.add(\'image-placeholder\')"></div></a><div class="product-info"><div class="product-category">' + category + '</div><a href="product.html?id=' + encodeURIComponent(product.id) + '"><div class="product-name">' + name + '</div></a><div class="product-price">R' + price.toFixed(2) + '</div>' + button + '</div></article>';
 }
 
@@ -267,7 +267,7 @@ function displayProductPage() {
     const productId = new URLSearchParams(window.location.search).get("id");
     const product = products.find(item => String(item.id) === String(productId));
     if (!product) {
-        container.innerHTML = '<div class="product-not-found"><h2>Product not found</h2><p>Sorry, we couldn\\'t find this product.</p><a href="shop.html" class="primary-button">Back to Shop</a></div>';
+        container.innerHTML = '<div class="product-not-found"><h2>Product not found</h2><p>Sorry, we couldn\'t find this product.</p><a href="shop.html" class="primary-button">Back to Shop</a></div>';
         return;
     }
     const variants = ggProductOptions(product);
@@ -302,7 +302,7 @@ function displayProductPage() {
     }).join("");
 
     container.innerHTML =
-        '<div class="product-detail-image"><img id="gg-main-product-image" src="' + ggHtmlSafe(allImages[0].url) + '" alt="' + ggHtmlSafe(product.name) + '" onerror="this.style.display=\\'none\\';this.parentElement.classList.add(\\'image-placeholder\\')"><div id="gg-product-thumbnails" class="gg-product-thumbnails"></div></div>' +
+        '<div class="product-detail-image"><img id="gg-main-product-image" src="' + ggHtmlSafe(allImages[0].url) + '" alt="' + ggHtmlSafe(product.name) + '" onerror="this.style.display=\'none\';this.parentElement.classList.add(\'image-placeholder\')"><div id="gg-product-thumbnails" class="gg-product-thumbnails"></div></div>' +
         '<div class="product-detail-info"><p class="product-category">' + ggHtmlSafe(product.category) + '</p><h1>' + ggHtmlSafe(product.name) + '</h1><p class="product-detail-price">R' + Number(product.price || 0).toFixed(2) + '</p><p class="product-description">' + ggHtmlSafe(product.description || "") + '</p><p class="product-availability">' + (available ? "✓ In Stock" : "Coming Soon") + '</p><p class="delivery-note">📦 Estimated delivery: 14-21 business days</p>' +
         optionControls + personalisation + '<p id="gg-selected-stock" class="product-availability"></p>' +
         (available ? '<button id="gg-add-product-to-cart" type="button" class="primary-button">Add to Cart</button>' : '<button class="primary-button" disabled>Coming Soon</button>') +
