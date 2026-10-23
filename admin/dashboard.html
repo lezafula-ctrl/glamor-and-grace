@@ -176,6 +176,88 @@
     </div>
 
 </section>
+
+    
+<!-- MANAGE EXISTING PRODUCTS -->
+
+<section class="admin-section" id="existing-products-management">
+
+    <div class="admin-section-heading">
+        <h2>Manage Existing Products</h2>
+        <span>Edit or remove products</span>
+    </div>
+
+    <p id="manage-products-status" role="status">
+        Loading products...
+    </p>
+
+    <div id="manage-products-list">
+        <p>Loading products...</p>
+    </div>
+
+    <form id="edit-product-form" hidden>
+
+        <h3 id="edit-form-title">Edit Product</h3>
+
+        <label>
+            Product Name
+            <input type="text" id="edit-product-name" required>
+        </label>
+
+        <label>
+            Category
+            <input type="text" id="edit-product-category" required>
+        </label>
+
+        <label>
+            Price
+            <input type="number" id="edit-product-price"
+                   min="0" step="0.01" required>
+        </label>
+
+        <label>
+            Total Stock
+            <input type="number" id="edit-product-stock"
+                   min="0" step="1" required>
+        </label>
+
+        <label>
+            Replace Product Image (optional)
+            <input type="file" id="edit-product-image" accept="image/*">
+        </label>
+
+        <p id="edit-product-image-note" role="status"></p>
+
+        <label>
+            Description
+            <textarea id="edit-product-description" rows="4"></textarea>
+        </label>
+
+        <label>
+            Product Options
+            <textarea id="edit-product-options" rows="4"
+                placeholder="Size: 4, 5, 6
+Colour: Pink, Black, White"></textarea>
+        </label>
+
+        <label>
+            Personalisation Options
+            <textarea id="edit-product-personalisation" rows="3"
+                placeholder="Name: Customer enters their name"></textarea>
+        </label>
+
+        <button type="submit" class="primary-button">
+            Save Changes
+        </button>
+
+        <button type="button" id="cancel-product-edit">
+            Cancel
+        </button>
+
+    </form>
+
+</section>
+
         
                 <!-- PRODUCT MANAGEMENT -->
 
@@ -447,5 +529,6 @@ loadStaffAccounts();
 
 </script>
  <script src="../js/admin-product.js"></script>
+<script src="../js/admin-product-management.js"></script>
 </body>
 </html>
