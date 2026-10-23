@@ -200,7 +200,7 @@ document.addEventListener("DOMContentLoaded", () => {
         field("edit-product-image-note").textContent = product.image
             ? "A current image is saved. Choose a new file only if you want to replace it."
             : "This product has no saved image. Choose a file to add one.";
-        window.GGAdminProductImages?.showSavedPreview("edit-product-colour-image-fields", product.product_images || []);
+        window.GGAdminProductImages?.showSavedPreview("edit-product-colour-image-preview", product.product_images || []);
         window.GGOptionBuilder?.load("edit-product-options");
         window.GGOptionBuilder?.load("edit-product-personalisation");
         window.GGAdminProductImages?.renderFields("edit-product-options", "edit-product-colour-image-fields");
