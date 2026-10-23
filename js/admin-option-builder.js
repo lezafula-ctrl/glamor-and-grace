@@ -106,7 +106,7 @@
     }
 
     function sync(root, kind, emitChange) {
-        const output = document.getElementById(root.dataset.output);
+        const output = document.getElementById(root.dataset.optionOutput);
         if (!output) return;
         const lines = [];
         root.querySelectorAll(".gg-option-row").forEach(row => {
