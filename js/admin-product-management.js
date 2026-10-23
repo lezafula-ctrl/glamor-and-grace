@@ -322,13 +322,16 @@ document.addEventListener("DOMContentLoaded", () => {
             const description =
                 field("edit-product-description").value.trim();
 
+            // Sync the visible option dropdowns into their hidden textareas
+            // before parsing them, so edited options are included in the save.
+            window.GGOptionBuilder?.syncAll();
+
             const variants =
                 parseOptionFields(field("edit-product-options").value);
 
             const customizationFields =
                 parseOptionFields(field("edit-product-personalisation").value);
 
-            window.GGOptionBuilder?.syncAll();
             const imageFile = field("edit-product-image").files[0];
 
             if (!name || !category) {
