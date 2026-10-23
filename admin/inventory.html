@@ -87,6 +87,7 @@
                         <th>Category</th>
                         <th>Price</th>
                         <th>Available stock*</th>
+                        <th>Stock by size / colour</th>
                         <th>Units sold</th>
                         <th>Pending units</th>
                         <th>Status</th>
@@ -129,6 +130,86 @@
         return '<span class="inventory-status inventory-ok">In stock</span>';
     }
 
+function formatVariantStock(value) {
+    let entries = value;
+
+    if (typeof entries === "string") {
+        try {
+            entries = JSON.parse(entries);
+        } catch {
+            entries = [];
+        }
+    }
+
+    if (!Array.isArray(entries)) return "";
+
+    return entries.map(entry => {
+        const options = entry.options || {};
+
+        const parts = Object.entries(options).map(
+            ([name, value]) => `${name}=${value}`
+        );
+
+        parts.push(`Qty=${entry.quantity}`);
+
+        return parts.join(" | ");
+    }).join("\n");
+}
+
+function parseVariantStock(text) {
+    const lines = text.split(/\r?\n/)
+        .map(line => line.trim())
+        .filter(Boolean);
+
+    if (!lines.length) {
+        throw new Error(
+            "Enter at least one size/colour quantity."
+        );
+    }
+
+    return lines.map((line, index) => {
+        const options = {};
+        let quantity = null;
+
+        for (const part of line.split("|")) {
+            const separator = part.indexOf("=");
+
+            if (separator < 1) {
+                throw new Error(
+                    `Check line ${index + 1}. Use Name=Value format.`
+                );
+            }
+
+            const name = part.slice(0, separator).trim();
+            const value = part.slice(separator + 1).trim();
+
+            if (!name || !value) {
+                throw new Error(
+                    `Check line ${index + 1}. A name or value is missing.`
+                );
+            }
+
+            if (["qty", "quantity"].includes(name.toLowerCase())) {
+                quantity = Number(value);
+            } else {
+                options[name] = value;
+            }
+        }
+
+        if (
+            quantity === null ||
+            !Number.isInteger(quantity) ||
+            quantity < 0 ||
+            Object.keys(options).length === 0
+        ) {
+            throw new Error(
+                `Check line ${index + 1}. Include a size or colour and a whole-number Qty.`
+            );
+        }
+
+        return { options, quantity };
+    });
+}
     function render() {
         const search = document.getElementById("inventory-search")
             .value.trim().toLowerCase();
@@ -154,12 +235,32 @@
         step="1"
         value="${product.stock}"
         id="stock-${escapeHTML(product.id)}"
+        ${product.variant_stock?.length ? "disabled" : ""}
     >
+    ${
+        product.variant_stock?.length
+        ? "<small>Calculated from size/colour quantities below.</small>"
+        : `<button
+            type="button"
+            onclick="saveStock('${escapeHTML(product.id)}')">
+            Save
+        </button>`
+    }
+</td>
+
+<td>
+    <textarea
+        id="variant-stock-${escapeHTML(product.id)}"
+        rows="4"
+        style="width:280px;min-height:90px;"
+        placeholder="Size=4 | Colour=Pink | Qty=3
+Size=5 | Colour=Pink | Qty=2"
+    >${escapeHTML(formatVariantStock(product.variant_stock))}</textarea>
+
     <button
         type="button"
-        onclick="saveStock('${escapeHTML(product.id)}')"
-    >
-        Save
+        onclick="saveVariantStock('${escapeHTML(product.id)}')">
+        Save quantities
     </button>
 </td>
                     <td>${product.sold}</td>
@@ -169,6 +270,90 @@
             `).join("")
             : '<tr><td colspan="8">No matching products found.</td></tr>';
     }
+
+async function saveVariantStock(productId) {
+    const input = document.getElementById(
+        `variant-stock-${productId}`
+    );
+
+    const button = input?.parentElement.querySelector("button");
+
+    const product = inventory.find(
+        item => String(item.id) === String(productId)
+    );
+
+    if (!input || !product) {
+        message.textContent = "Could not find this product.";
+        return;
+    }
+
+    try {
+        const variantStock = parseVariantStock(input.value);
+
+        const totalStock = variantStock.reduce(
+            (sum, entry) => sum + entry.quantity,
+            0
+        );
+
+        if (button) {
+            button.disabled = true;
+            button.textContent = "Saving...";
+        }
+
+        message.textContent =
+            `Saving size/colour stock for ${product.name}...`;
+
+        const { data, error } = await ggSupabase
+            .from("products")
+            .update({
+                variant_stock: variantStock,
+                stock: totalStock
+            })
+            .eq("id", productId)
+            .select("id, stock, variant_stock")
+            .maybeSingle();
+
+        if (error) throw error;
+
+        if (!data) {
+            throw new Error(
+                "No update was saved. Check your database permissions."
+            );
+        }
+
+        product.stock = Number(data.stock);
+        product.variant_stock = data.variant_stock || variantStock;
+
+        document.getElementById("total-stock").textContent =
+            inventory.reduce(
+                (sum, item) => sum + item.stock,
+                0
+            );
+
+        document.getElementById("total-low-stock").textContent =
+            inventory.filter(item => item.stock <= 3).length;
+
+        render();
+
+        message.textContent =
+            `Size/colour quantities saved for ${product.name}.`;
+
+    } catch (error) {
+        console.error("Variant stock save error:", error);
+
+        message.textContent =
+            "Could not save quantities: " +
+            (error.message || "Unknown error");
+
+    } finally {
+        if (button) {
+            button.disabled = false;
+            button.textContent = "Save quantities";
+        }
+    }
+}
+
+window.saveVariantStock = saveVariantStock;
 
     async function loadInventory() {
         try {
@@ -238,6 +423,7 @@
                 category: String(product.category ?? product.Category ?? ""),
                 price: Number(product.price ?? product.Price ?? 0),
                 stock: Number(product.stock ?? product.Stock ?? 0),
+                variant_stock: product.variant_stock || [], 
                 image: product.image_url ?? product.image ?? "",
                 sold: soldByProduct.get(String(product.id)) || 0,
                 pending: pendingByProduct.get(String(product.id)) || 0
