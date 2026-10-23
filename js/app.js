@@ -183,6 +183,7 @@ function displayProductPage() {
             stockEl.textContent = "Available stock: " + product.stock;
         } else stockEl.textContent = "Currently unavailable";
     }
+    if (colorDefinition && selected[colorName]) setGalleryForColour(selected[colorName]);
     updateAvailableStock();
     const addButton = document.getElementById("gg-add-product-to-cart");
     if (addButton) addButton.addEventListener("click", () => {
