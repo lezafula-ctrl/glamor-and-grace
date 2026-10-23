@@ -270,6 +270,79 @@
         }
     }
 
+window.saveStock = async function(productId) {
+    const input = document.getElementById(`stock-${productId}`);
+    const button = input?.parentElement.querySelector("button");
+
+    if (!input) {
+        message.textContent = "Could not find the stock field.";
+        return;
+    }
+
+    const newStock = Number(input.value);
+
+    if (!Number.isInteger(newStock) || newStock < 0) {
+        message.textContent = "Enter a whole number of zero or more.";
+        return;
+    }
+
+    const product = inventory.find(
+        item => String(item.id) === String(productId)
+    );
+
+    if (!product) {
+        message.textContent = "Product not found.";
+        return;
+    }
+
+    if (button) {
+        button.disabled = true;
+        button.textContent = "Saving...";
+    }
+
+    message.textContent = `Saving stock for ${product.name}...`;
+
+    try {
+        const { data, error } = await ggSupabase
+            .from("products")
+            .update({ stock: newStock })
+            .eq("id", productId)
+            .select("id, stock")
+            .maybeSingle();
+
+        if (error) throw error;
+
+        if (!data) {
+            throw new Error(
+                "No product was updated. Check your database permissions."
+            );
+        }
+
+        product.stock = Number(data.stock);
+
+        document.getElementById("total-stock").textContent =
+            inventory.reduce((sum, item) => sum + item.stock, 0);
+
+        document.getElementById("total-low-stock").textContent =
+            inventory.filter(item => item.stock <= 3).length;
+
+        render();
+
+        message.textContent =
+            `Stock saved successfully for ${product.name}.`;
+
+    } catch (error) {
+        console.error("Stock save error:", error);
+        message.textContent =
+            "Could not save stock: " + (error.message || "Unknown error");
+
+        if (button) {
+            button.disabled = false;
+            button.textContent = "Save";
+        }
+    }
+};
+
     document.getElementById("inventory-search")
         .addEventListener("input", render);
 
