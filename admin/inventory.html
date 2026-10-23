@@ -248,21 +248,25 @@ function parseVariantStock(text) {
     }
 </td>
 
-<td>
-    <textarea
-        id="variant-stock-${escapeHTML(product.id)}"
-        rows="4"
-        style="width:280px;min-height:90px;"
-        placeholder="Size=4 | Colour=Pink | Qty=3
-Size=5 | Colour=Pink | Qty=2"
-    >${escapeHTML(formatVariantStock(product.variant_stock))}</textarea>
 
-    <button
-        type="button"
-        onclick="saveVariantStock('${escapeHTML(product.id)}')">
-        Save quantities
-    </button>
+<td>
+    <div id="variant-editor-${escapeHTML(product.id)}"></div>
+
+    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;">
+        <button
+            type="button"
+            onclick="addVariantStockRow('${escapeHTML(product.id)}')">
+            + Add combination
+        </button>
+
+        <button
+            type="button"
+            onclick="saveVariantStock('${escapeHTML(product.id)}', this)">
+            Save quantities
+        </button>
+    </div>
 </td>
+
                     <td>${product.sold}</td>
                     <td>${product.pending}</td>
                     <td>${statusFor(product.stock)}</td>
@@ -271,24 +275,221 @@ Size=5 | Colour=Pink | Qty=2"
             : '<tr><td colspan="8">No matching products found.</td></tr>';
     }
 
-async function saveVariantStock(productId) {
-    const input = document.getElementById(
-        `variant-stock-${productId}`
+function variantArray(value) {
+    if (typeof value === "string") {
+        try {
+            value = JSON.parse(value);
+        } catch {
+            return [];
+        }
+    }
+
+    return Array.isArray(value) ? value : [];
+}
+
+function getVariantDefinitions(product) {
+    return variantArray(product.variants)
+        .map(item => ({
+            name: String(item?.name ?? "").trim(),
+            options: Array.isArray(item?.options)
+                ? item.options.map(value => String(value).trim()).filter(Boolean)
+                : []
+        }))
+        .filter(item => item.name && item.options.length);
+}
+
+function addVariantStockRow(productId, initialOptions = {}, initialQuantity = "") {
+    const product = inventory.find(
+        item => String(item.id) === String(productId)
     );
 
-    const button = input?.parentElement.querySelector("button");
+    const editor = document.getElementById(`variant-editor-${productId}`);
+
+    if (!product || !editor) return;
+
+    const definitions = getVariantDefinitions(product);
+
+    if (!definitions.length) {
+        message.textContent =
+            "Add Product Options to this product first, such as Size and Colour.";
+        return;
+    }
+
+    const row = document.createElement("div");
+    row.className = "variant-stock-row";
+    row.style.cssText =
+        "display:flex;gap:10px;flex-wrap:wrap;align-items:end;" +
+        "padding:10px 0;border-bottom:1px solid #eee;";
+
+    definitions.forEach(definition => {
+        const label = document.createElement("label");
+        label.textContent = definition.name;
+        label.style.cssText =
+            "display:flex;flex-direction:column;gap:4px;";
+
+        const select = document.createElement("select");
+        select.className = "variant-option";
+        select.dataset.optionName = definition.name;
+        select.required = true;
+
+        const placeholder = document.createElement("option");
+        placeholder.value = "";
+        placeholder.textContent = `Choose ${definition.name}`;
+        select.appendChild(placeholder);
+
+        definition.options.forEach(value => {
+            const option = document.createElement("option");
+            option.value = value;
+            option.textContent = value;
+            select.appendChild(option);
+        });
+
+        const selected = String(initialOptions[definition.name] ?? "");
+
+        if (definition.options.includes(selected)) {
+            select.value = selected;
+        }
+
+        label.appendChild(select);
+        row.appendChild(label);
+    });
+
+    const quantityLabel = document.createElement("label");
+    quantityLabel.textContent = "Quantity";
+    quantityLabel.style.cssText =
+        "display:flex;flex-direction:column;gap:4px;";
+
+    const quantityInput = document.createElement("input");
+    quantityInput.type = "number";
+    quantityInput.min = "0";
+    quantityInput.step = "1";
+    quantityInput.className = "variant-quantity";
+    quantityInput.placeholder = "Qty";
+    quantityInput.style.width = "85px";
+    quantityInput.value =
+        initialQuantity === "" || initialQuantity == null
+            ? ""
+            : String(initialQuantity);
+
+    quantityLabel.appendChild(quantityInput);
+    row.appendChild(quantityLabel);
+
+    const removeButton = document.createElement("button");
+    removeButton.type = "button";
+    removeButton.textContent = "Remove row";
+    removeButton.addEventListener("click", () => row.remove());
+
+    row.appendChild(removeButton);
+    editor.appendChild(row);
+}
+
+function renderVariantStockEditors(filteredProducts) {
+    filteredProducts.forEach(product => {
+        const editor = document.getElementById(
+            `variant-editor-${product.id}`
+        );
+
+        if (!editor) return;
+
+        editor.innerHTML = "";
+
+        if (!getVariantDefinitions(product).length) {
+            editor.innerHTML =
+                "<small>Add Product Options before tracking stock by size or colour.</small>";
+            return;
+        }
+
+        const savedEntries = variantArray(product.variant_stock);
+
+        if (savedEntries.length) {
+            savedEntries.forEach(entry => {
+                addVariantStockRow(
+                    product.id,
+                    entry.options || {},
+                    entry.quantity ?? ""
+                );
+            });
+        } else {
+            addVariantStockRow(product.id);
+        }
+    });
+}
+
+window.addVariantStockRow = addVariantStockRow;
+
+
+async function saveVariantStock(productId, button) {
+    const editor = document.getElementById(`variant-editor-${productId}`);
 
     const product = inventory.find(
         item => String(item.id) === String(productId)
     );
 
-    if (!input || !product) {
+    if (!editor || !product) {
         message.textContent = "Could not find this product.";
         return;
     }
 
+    const originalText = button?.textContent || "Save quantities";
+
     try {
-        const variantStock = parseVariantStock(input.value);
+        const rows = [
+            ...editor.querySelectorAll(".variant-stock-row")
+        ];
+
+        if (!rows.length) {
+            throw new Error("Add at least one size/colour combination.");
+        }
+
+        const seen = new Set();
+
+        const variantStock = rows.map((row, index) => {
+            const options = {};
+            const selects = [
+                ...row.querySelectorAll("select.variant-option")
+            ];
+
+            selects.forEach(select => {
+                if (!select.value) {
+                    throw new Error(
+                        `Please select ${select.dataset.optionName} in row ${index + 1}.`
+                    );
+                }
+
+                options[select.dataset.optionName] = select.value;
+            });
+
+            const quantityInput =
+                row.querySelector(".variant-quantity");
+
+            if (!quantityInput || quantityInput.value.trim() === "") {
+                throw new Error(
+                    `Enter a quantity in row ${index + 1}.`
+                );
+            }
+
+            const quantity = Number(quantityInput.value);
+
+            if (!Number.isInteger(quantity) || quantity < 0) {
+                throw new Error(
+                    `Row ${index + 1} needs a whole number of zero or more.`
+                );
+            }
+
+            const signature = JSON.stringify(
+                Object.keys(options).sort().map(key => [key, options[key]])
+            );
+
+            if (seen.has(signature)) {
+                throw new Error(
+                    `Row ${index + 1} duplicates a size/colour combination.`
+                );
+            }
+
+            seen.add(signature);
+
+            return { options, quantity };
+        });
 
         const totalStock = variantStock.reduce(
             (sum, entry) => sum + entry.quantity,
@@ -300,8 +501,7 @@ async function saveVariantStock(productId) {
             button.textContent = "Saving...";
         }
 
-        message.textContent =
-            `Saving size/colour stock for ${product.name}...`;
+        message.textContent = `Saving stock for ${product.name}...`;
 
         const { data, error } = await ggSupabase
             .from("products")
@@ -317,9 +517,41 @@ async function saveVariantStock(productId) {
 
         if (!data) {
             throw new Error(
-                "No update was saved. Check your database permissions."
+                "No changes were saved. Check database permissions."
             );
         }
+
+        product.stock = Number(data.stock);
+        product.variant_stock = data.variant_stock || variantStock;
+
+        document.getElementById("total-stock").textContent =
+            inventory.reduce((sum, item) => sum + item.stock, 0);
+
+        document.getElementById("total-low-stock").textContent =
+            inventory.filter(item => item.stock <= 3).length;
+
+        render();
+
+        message.textContent =
+            `Stock quantities saved for ${product.name}.`;
+
+    } catch (error) {
+        console.error("Could not save size/colour stock:", error);
+
+        message.textContent =
+            "Could not save quantities: " +
+            (error.message || "Unknown error");
+
+    } finally {
+        if (button) {
+            button.disabled = false;
+            button.textContent = originalText;
+        }
+    }
+}
+
+window.saveVariantStock = saveVariantStock;
+
 
         product.stock = Number(data.stock);
         product.variant_stock = data.variant_stock || variantStock;
@@ -423,6 +655,7 @@ window.saveVariantStock = saveVariantStock;
                 category: String(product.category ?? product.Category ?? ""),
                 price: Number(product.price ?? product.Price ?? 0),
                 stock: Number(product.stock ?? product.Stock ?? 0),
+                variants: product.variants || [],
                 variant_stock: product.variant_stock || [], 
                 image: product.image_url ?? product.image ?? "",
                 sold: soldByProduct.get(String(product.id)) || 0,
@@ -453,6 +686,7 @@ window.saveVariantStock = saveVariantStock;
                 "Could not load inventory: " + (error.message || "Unknown error");
             rows.innerHTML =
                 '<tr><td colspan="8">Please check your admin access and database permissions.</td></tr>';
+            renderVariantStockEditors(filtered);
         }
     }
 
