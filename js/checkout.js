@@ -55,7 +55,7 @@ function displayCheckout() {
             <div class="checkout-item">
 
                 <span>
-                    ${item.name} × ${item.quantity}
+                    ${item.name}${Object.entries(item.selectedOptions || {}).map(([key, value]) => " · " + key + ": " + value).join("")}${Object.entries(item.customisation || {}).map(([key, value]) => " · " + key + ": " + value).join("")} × ${item.quantity}
                 </span>
 
                 <strong>
