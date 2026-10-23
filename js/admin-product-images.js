@@ -124,10 +124,8 @@
     function mergeByColour(existingValue, uploaded) {
         const existing = arrayValue(existingValue);
         if (!uploaded.length) return existing;
-        const updatedColours = new Set(uploaded.map(item => String(item.color).toLowerCase()));
-        return existing.filter(item =>
-            !updatedColours.has(String(item.color || "").toLowerCase())
-        ).concat(uploaded);
+        // Adding photos to a colour keeps its existing gallery intact.
+        return existing.concat(uploaded);
     }
 
     function showSavedPreview(containerId, imagesValue) {
