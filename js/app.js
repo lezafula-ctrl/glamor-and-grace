@@ -308,6 +308,8 @@ function displayProductPage() {
         (available ? '<button id="gg-add-product-to-cart" type="button" class="primary-button">Add to Cart</button>' : '<button class="primary-button" disabled>Coming Soon</button>') +
         '<p id="gg-product-status" role="status" aria-live="polite"></p><br><a href="shop.html" class="back-to-shop">← Continue Shopping</a></div>';
 
+    container.insertAdjacentHTML("beforeend", "<div id=\"gg-product-reviews\"></div>");
+
     function setGalleryForColour(colour) {
         const matching = images.filter(img => String(img.color || img.colour || "").toLowerCase() === String(colour || "").toLowerCase());
         const fallback = images.filter(img => !img.color && !img.colour);
