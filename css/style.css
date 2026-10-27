@@ -1369,3 +1369,28 @@ input {
 .gg-thumb{border:1px solid #eadde4;border-radius:8px;background:#fff;padding:3px;cursor:pointer}
 .gg-thumb img{width:64px;height:60px;object-fit:contain;display:block}
 .cart-item-options,.cart-item-customisation{font-size:.92rem;color:#665760}
+
+
+/* Customer product reviews */
+#gg-product-reviews { grid-column: 1 / -1; width: 100%; margin-top: 2rem; }
+.gg-reviews { border-top: 1px solid #eadde5; padding-top: 1.5rem; }
+.gg-reviews h2, .gg-review-form-wrap h3 { color: #8f456b; }
+.gg-review-summary { display: flex; align-items: center; gap: .5rem; flex-wrap: wrap; }
+.gg-review-stars { color: #d28a19; letter-spacing: 2px; white-space: nowrap; }
+.gg-review-empty { color: #ded7dc; }
+.gg-review-list { display: grid; gap: 1rem; margin: 1rem 0 2rem; }
+.gg-review-card, .gg-review-form-wrap { border: 1px solid #eadde5; border-radius: 12px; padding: 1rem; background: #fff; }
+.gg-review-heading { display: flex; align-items: center; justify-content: space-between; gap: .75rem; flex-wrap: wrap; }
+.gg-review-card p { white-space: pre-wrap; overflow-wrap: anywhere; }
+.gg-review-card small { color: #777; }
+.gg-review-photos { display: flex; gap: .6rem; flex-wrap: wrap; margin: .75rem 0; }
+.gg-review-photos a { display: block; width: 84px; height: 84px; }
+.gg-review-photos img { width: 100%; height: 100%; object-fit: cover; border-radius: 8px; }
+#gg-review-form { display: grid; gap: .65rem; }
+#gg-review-form label { font-weight: 600; margin-top: .25rem; }
+#gg-review-form input:not([type="checkbox"]):not([type="file"]), #gg-review-form select, #gg-review-form textarea, #gg-review-form input[type="file"] { width: 100%; max-width: 100%; padding: .7rem; border: 1px solid #d9cbd3; border-radius: 8px; box-sizing: border-box; }
+#gg-review-form textarea { resize: vertical; }
+#gg-review-form label:has(input[type="checkbox"]) { display: flex; align-items: center; gap: .5rem; }
+#gg-review-form button:disabled { opacity: .65; cursor: wait; }
+#gg-review-status { overflow-wrap: anywhere; }
+@media (max-width: 640px) { .gg-review-card, .gg-review-form-wrap { padding: .8rem; } .gg-review-heading { align-items: flex-start; } }
