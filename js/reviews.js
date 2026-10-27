@@ -56,31 +56,19 @@
  }
 
  async function initialise() {
-  const container=document.getElementById("product-details");
-  const id=new URLSearchParams(location.search).get("id");
-  if(!container || !id || !window.ggSupabase) return;
+  const host=document.getElementById("gg-product-reviews");
+  const id=new URLSearchParams(window.location.search).get("id");
+  if(!host || !id || !window.ggSupabase) return;
   try {
    await productsReady;
    const product=(window.products || products || []).find(p=>String(p.id)===String(id));
-   if(!product) { console.warn("Review section: product id not found in loaded products:", id); return; }
-   const mount=()=>{
-    if(!container.isConnected) return;
-    if(!container.querySelector(".product-not-found") && !container.querySelector(".product-detail")) {
-      // Product markup varies by product template; only mount after app.js has replaced its loading text.
-      if((container.textContent||"").trim()==="Loading product...") return;
-    }
-    let host=document.getElementById("gg-product-reviews");
-    if(!host){host=document.createElement("div");host.id="gg-product-reviews";container.appendChild(host);}
-    if(host.dataset.productId===String(product.id) && host.dataset.initialised==="true") return;
-    host.dataset.productId=String(product.id);host.dataset.initialised="true";
-    render(product,host);
-   };
-   const observer=new MutationObserver(mount);
-   observer.observe(container,{childList:true,subtree:true});
-   mount();
-   // Stop observing after the review mount exists, avoiding extra renders during form interaction.
-   const stopWhenMounted=new MutationObserver(()=>{const host=document.getElementById("gg-product-reviews");if(host&&host.dataset.initialised==="true"){observer.disconnect();stopWhenMounted.disconnect();}});
-   stopWhenMounted.observe(container,{childList:true,subtree:true});
+   if(!product) {
+    host.innerHTML='<section class="gg-reviews"><h2>Customer reviews</h2><p>Reviews will appear here when the product has loaded.</p></section>';
+    console.warn("Review section: product id not found in loaded products:",id);
+    return;
+   }
+   host.dataset.productId=String(product.id);
+   await render(product,host);
   } catch(e) { console.warn("Reviews could not initialise:",e); }
  }
  if(document.readyState==="loading") document.addEventListener("DOMContentLoaded",initialise,{once:true});
