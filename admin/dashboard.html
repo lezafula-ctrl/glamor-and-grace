@@ -66,7 +66,7 @@
 
         <!-- OVERVIEW -->
 
-        <section class="admin-section">
+        <section class="admin-section" id="overview">
 
             <h2>Overview</h2>
 
@@ -74,22 +74,22 @@
 
                 <div class="admin-stat-card">
                     <span>Orders</span>
-                    <strong>0</strong>
+                    <strong id="stat-orders">—</strong>
                 </div>
 
                 <div class="admin-stat-card">
                     <span>Revenue</span>
-                    <strong>R0.00</strong>
+                    <strong id="stat-revenue">—</strong>
                 </div>
 
                 <div class="admin-stat-card">
                     <span>Products</span>
-                    <strong>2</strong>
+                    <strong id="stat-products">—</strong>
                 </div>
 
                 <div class="admin-stat-card">
                     <span>Low Stock</span>
-                    <strong>0</strong>
+                    <strong id="stat-low-stock">—</strong>
                 </div>
 
             </div>
@@ -105,7 +105,7 @@
 
             <div class="admin-menu-grid">
 
-                <a href="#" class="admin-menu-card">
+                <a href="#recent-orders" class="admin-menu-card">
                     📦
                     <strong>Orders</strong>
                     <span>View and manage orders</span>
@@ -119,45 +119,45 @@
 </a>
 
 
-                <a href="#" class="admin-menu-card">
+                <a href="inventory.html" class="admin-menu-card">
                     📊
                     <strong>Inventory</strong>
                     <span>Manage stock levels</span>
                 </a>
 
 
-                <a href="#" class="admin-menu-card">
+                <div class="admin-menu-card" aria-label="Customers feature not available yet">
                     👥
                     <strong>Customers</strong>
-                    <span>View customer information</span>
-                </a>
+                    <span>Customer view not available yet</span>
+                </div>
 
 
-                <a href="#" class="admin-menu-card">
+                <a href="#overview" class="admin-menu-card">
                     📈
                     <strong>Analytics</strong>
                     <span>Sales and store performance</span>
                 </a>
 
 
-                <a href="products.html" class="admin-menu-card">
+                <a href="#recent-orders" class="admin-menu-card">
                     💳
                     <strong>Payments</strong>
-                    <span>Payment information</span>
+                    <span>Review order payment status</span>
                 </a>
 
 
-                <a href="#" class="admin-menu-card">
+                <div class="admin-menu-card" aria-label="Settings feature not available yet">
                     ⚙️
                     <strong>Settings</strong>
-                    <span>Store settings</span>
-                </a>
+                    <span>Settings page not available yet</span>
+                </div>
 
 
-                <a href="#" class="admin-menu-card">
+                <a href="#staff-management" class="admin-menu-card">
                     🔐
                     <strong>Security</strong>
-                    <span>Admin access and security</span>
+                    <span>Manage staff access</span>
                 </a>
 
             </div>
@@ -363,7 +363,7 @@
 
         <!-- RECENT ORDERS -->
 
-        <section class="admin-section">
+        <section class="admin-section" id="recent-orders">
 
             <div class="admin-section-heading">
 
@@ -392,16 +392,13 @@
 
 
     <script>
-
-        document
-            .getElementById("admin-logout")
-            .addEventListener("click", () => {
-
-                window.location.href =
-                    "login.html";
-
-            });
-
+        document.getElementById("admin-logout").addEventListener("click", async () => {
+            const button = document.getElementById("admin-logout");
+            button.disabled = true;
+            button.textContent = "Logging out...";
+            try { await ggSupabase.auth.signOut(); } catch (error) { console.error("Sign-out error:", error); }
+            window.location.href = "login.html";
+        });
     </script>
 <script>
 (async function () {
@@ -429,6 +426,34 @@
         return;
     }
 
+})();
+</script>
+<script>
+(async function loadDashboardOverview() {
+    const setText = (id, value) => { const element = document.getElementById(id); if (element) element.textContent = value; };
+    try {
+        const results = await Promise.all([
+            ggSupabase.from("products").select("id, stock"),
+            ggSupabase.from("orders").select("*").order("created_at", { ascending: false }).limit(100)
+        ]);
+        const products = results[0].data; const productError = results[0].error;
+        const orders = results[1].data; const orderError = results[1].error;
+        if (productError) throw productError; if (orderError) throw orderError;
+        const productRows = products || []; const orderRows = orders || [];
+        setText("stat-products", productRows.length);
+        setText("stat-low-stock", productRows.filter(product => Number(product.stock || 0) <= 3).length);
+        setText("stat-orders", orderRows.length);
+        const totalFields = ["total_amount", "grand_total", "total_price", "total", "amount"];
+        const sampleOrder = orderRows.find(order => totalFields.some(key => order[key] !== undefined && order[key] !== null));
+        if (sampleOrder) {
+            const totalField = totalFields.find(key => sampleOrder[key] !== undefined && sampleOrder[key] !== null);
+            const revenue = orderRows.filter(order => String(order.payment_status || "").toLowerCase() === "paid").reduce((sum, order) => sum + (Number(order[totalField]) || 0), 0);
+            setText("stat-revenue", "R" + revenue.toFixed(2));
+        } else { setText("stat-revenue", "Not available"); }
+    } catch (error) {
+        console.error("Could not load dashboard overview:", error);
+        setText("stat-products", "—"); setText("stat-low-stock", "—"); setText("stat-orders", "—"); setText("stat-revenue", "Unavailable");
+    }
 })();
 </script>
  <script>
