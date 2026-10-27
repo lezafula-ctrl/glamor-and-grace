@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Customer Reviews | Glamor & Grace Admin</title>
+<link rel="stylesheet" href="../css/style.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../js/supabase-config.js"></script>
+<style>
+body{background:#faf7f8;color:#30262b}.gg-review-admin{max-width:1000px;margin:28px auto;padding:0 16px}.gg-review-admin h1{margin-bottom:8px}.gg-admin-actions{display:flex;gap:10px;flex-wrap:wrap;margin:18px 0}.gg-admin-actions a,.gg-admin-actions button,.gg-review-actions button{border:1px solid #d9c5d0;border-radius:9px;padding:10px 14px;background:#fff;color:#30262b;text-decoration:none;cursor:pointer}.gg-admin-review{background:#fff;border:1px solid #eadde4;border-radius:14px;padding:18px;margin:14px 0}.gg-admin-review h2{font-size:1.15rem;margin:0 0 8px}.gg-admin-review p{white-space:pre-wrap;overflow-wrap:anywhere}.gg-admin-photos{display:flex;flex-wrap:wrap;gap:8px}.gg-admin-photos img{width:90px;height:90px;object-fit:cover;border-radius:8px}.gg-review-actions{display:flex;gap:8px;margin-top:14px}.gg-review-actions button:disabled{opacity:.5}.gg-admin-note{padding:12px;border-radius:8px;background:#fff0f6}
+</style>
+</head>
+<body>
+<main class="gg-review-admin">
+<p class="section-label">GLAMOR &amp; GRACE</p>
+<h1>Customer reviews</h1>
+<p>Review submissions before they appear on the public website.</p>
+<div class="gg-admin-actions">
+<a href="dashboard.html">← Dashboard</a>
+<a href="inventory.html">Stock &amp; Inventory</a>
+<button id="gg-review-logout" type="button">Log out</button>
+</div>
+<div id="gg-review-admin-status" class="gg-admin-note" role="status">Checking admin access…</div>
+<section id="gg-review-pending" aria-live="polite"></section>
+</main>
+<script>
+(function(){
+const status=document.getElementById('gg-review-admin-status');
+const list=document.getElementById('gg-review-pending');
+const el=(tag,cls,text)=>{const n=document.createElement(tag);if(cls)n.className=cls;if(text!==undefined)n.textContent=text;return n;};
+async function init(){
+ try{
+  const {data:{user},error:authError}=await ggSupabase.auth.getUser();
+  if(authError||!user){location.href='login.html';return;}
+  const {data:admin,error:adminError}=await ggSupabase.from('admin_users').select('role').eq('id',user.id).maybeSingle();
+  if(adminError||!admin||!['owner','staff'].includes(admin.role)){status.textContent='You do not have permission to moderate reviews.';return;}
+  await loadReviews();
+ }catch(e){console.error(e);status.textContent='Could not check admin access. Please refresh and try again.';}
+}
+async function loadReviews(){
+ status.textContent='Loading pending reviews…';list.replaceChildren();
+ const {data:reviews,error}=await ggSupabase.from('product_reviews').select('id,product_name,reviewer_name,is_anonymous,rating,comment,photo_urls,created_at').eq('status','pending').order('created_at',{ascending:true});
+ if(error){console.error(error);status.textContent='Could not load reviews. Make sure the review setup and staff moderation SQL have been run in Supabase.';return;}
+ if(!reviews||!reviews.length){status.textContent='No pending reviews right now.';return;}
+ status.textContent=reviews.length+' pending review(s).';
+ reviews.forEach(r=>{
+  const card=el('article','gg-admin-review');
+  card.append(el('h2','',r.product_name||'Product'));
+  card.append(el('p','',((r.is_anonymous?'Anonymous customer':r.reviewer_name||'Customer')+' · '+r.rating+'/5 stars · '+new Date(r.created_at).toLocaleString())));
+  card.append(el('p','',r.comment));
+  if(Array.isArray(r.photo_urls)&&r.photo_urls.length){
+   const photos=el('div','gg-admin-photos');
+   r.photo_urls.forEach((url,i)=>{const a=el('a');a.href=url;a.target='_blank';a.rel='noopener noreferrer';const img=el('img');img.src=url;img.alt='Review photo '+(i+1);img.loading='lazy';a.append(img);photos.append(a);});
+   card.append(photos);
+  }
+  const actions=el('div','gg-review-actions');
+  [['Approve','approved'],['Reject','rejected']].forEach(([label,next])=>{
+   const b=el('button','',label);b.type='button';b.addEventListener('click',async()=>{
+    b.disabled=true;status.textContent=label+'ing review…';
+    const {error:updateError}=await ggSupabase.from('product_reviews').update({status:next}).eq('id',r.id).eq('status','pending');
+    if(updateError){console.error(updateError);status.textContent='Could not update review. Check the moderation SQL and try again.';b.disabled=false;return;}
+    await loadReviews();
+   });actions.append(b);
+  });
+  card.append(actions);list.append(card);
+ });
+}
+document.getElementById('gg-review-logout').addEventListener('click',async()=>{await ggSupabase.auth.signOut();location.href='login.html';});
+document.addEventListener('DOMContentLoaded',init);
+})();
+</script>
+</body>
+</html>
