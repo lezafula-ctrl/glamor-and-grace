@@ -5,7 +5,7 @@
  const stars = n => '<span class="gg-review-stars" aria-label="' + Number(n) + ' out of 5 stars">' + "★".repeat(Number(n)) + '<span class="gg-review-empty">' + "★".repeat(5 - Number(n)) + "</span></span>";
 
  async function render(product, host) {
-  if (!host || !window.ggSupabase) return;
+  if (!host || typeof ggSupabase === "undefined") return;
   host.innerHTML = '<section class="gg-reviews"><h2>Customer reviews</h2><p>Loading reviews…</p></section>';
   const {data, error} = await ggSupabase.from("product_reviews")
    .select("id,reviewer_name,is_anonymous,rating,comment,photo_urls,created_at")
@@ -58,7 +58,7 @@
  async function initialise() {
   const host=document.getElementById("gg-product-reviews");
   const id=new URLSearchParams(window.location.search).get("id");
-  if(!host || !id || !window.ggSupabase) return;
+  if(!host || !id || typeof ggSupabase === "undefined") return;
   try {
    await productsReady;
    const product=(window.products || products || []).find(p=>String(p.id)===String(id));
