@@ -1394,3 +1394,13 @@ input {
 #gg-review-form button:disabled { opacity: .65; cursor: wait; }
 #gg-review-status { overflow-wrap: anywhere; }
 @media (max-width: 640px) { .gg-review-card, .gg-review-form-wrap { padding: .8rem; } .gg-review-heading { align-items: flex-start; } }
+
+
+/* Launch countdown and prominent faith navigation */
+.gg-launch-banner{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:12px 14px;text-align:center;background:#f8e8ef;color:#75485d;font-size:13px;line-height:1.45}
+.gg-launch-banner>span:first-child{font-size:10px;font-weight:700;letter-spacing:2px}
+.gg-launch-banner strong{font-size:clamp(20px,4vw,28px);letter-spacing:1px;color:#8d4567;font-variant-numeric:tabular-nums}
+.gg-launch-banner small{font-size:12px}
+.faith-nav-link{font-weight:700!important;color:#9a5575!important}
+.faith-nav-link:hover{text-decoration:underline}
+.mobile-nav a[href*="faith-inspiration"]{font-weight:700;color:#9a5575;border-top:1px solid #eadde5;margin-top:6px;padding-top:12px}
