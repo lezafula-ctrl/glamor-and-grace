@@ -526,5 +526,78 @@ loadStaffAccounts();
 </script>
  <script src="../js/admin-option-builder.js"></script><script src="../js/admin-product-images.js"></script><script src="../js/admin-product.js"></script>
 <script src="../js/admin-product-management.js"></script>
+
+<script>
+(async function renderRecentOrders() {
+    const container = document.getElementById("admin-orders");
+    if (!container) return;
+    container.textContent = "Loading orders...";
+    try {
+        const { data: orders, error } = await ggSupabase
+            .from("orders").select("*").order("created_at", { ascending: false }).limit(50);
+        if (error) throw error;
+        if (!orders || !orders.length) {
+            container.textContent = "No orders yet.";
+            return;
+        }
+        const ids = orders.map(order => order.id);
+        const { data: items, error: itemError } = await ggSupabase
+            .from("order_items")
+            .select("order_id, product_name, product_id, unit_price, quantity, selected_variants")
+            .in("order_id", ids);
+        if (itemError) throw itemError;
+        const itemsByOrder = {};
+        (items || []).forEach(item => {
+            (itemsByOrder[item.order_id] ||= []).push(item);
+        });
+        container.replaceChildren();
+        orders.forEach(order => {
+            const card = document.createElement("article");
+            card.className = "admin-card";
+            card.style.marginBottom = "16px";
+            const heading = document.createElement("h3");
+            heading.textContent = "Order #" + order.id;
+            card.appendChild(heading);
+            const created = document.createElement("p");
+            created.textContent = order.created_at ? new Date(order.created_at).toLocaleString() : "";
+            card.appendChild(created);
+            const customer = document.createElement("p");
+            customer.textContent = order.first_name + " " + order.surname + " · " + order.phone +
+                (order.whatsapp ? " · WhatsApp: " + order.whatsapp : "") + " · " + order.email;
+            card.appendChild(customer);
+            const delivery = document.createElement("p");
+            delivery.textContent = "Delivery: " + order.delivery_method + " · " + order.delivery_details;
+            card.appendChild(delivery);
+            const list = document.createElement("ul");
+            (itemsByOrder[order.id] || []).forEach(item => {
+                const li = document.createElement("li");
+                const variant = item.selected_variants || {};
+                const optionText = [
+                    ...Object.entries(variant.options || {}).map(([k,v]) => k + ": " + v),
+                    ...Object.entries(variant.customisation || {}).map(([k,v]) => k + ": " + v)
+                ].join(" · ");
+                li.textContent = item.product_name + " × " + item.quantity +
+                    " — R" + Number(item.unit_price).toFixed(2) +
+                    (optionText ? " (" + optionText + ")" : "");
+                list.appendChild(li);
+            });
+            card.appendChild(list);
+            const total = document.createElement("p");
+            total.textContent = "Subtotal: R" + Number(order.subtotal).toFixed(2) +
+                " · Delivery: R" + Number(order.delivery_fee).toFixed(2) +
+                " · Total: R" + Number(order.total).toFixed(2);
+            card.appendChild(total);
+            const status = document.createElement("p");
+            status.textContent = "Order status: " + order.order_status + " · Payment: " + order.payment_status;
+            card.appendChild(status);
+            container.appendChild(card);
+        });
+    } catch (error) {
+        console.error("Could not load recent orders:", error);
+        container.textContent = "Could not load orders. Please refresh the page.";
+    }
+})();
+</script>
+
 </body>
 </html>
