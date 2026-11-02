@@ -1404,3 +1404,22 @@ input {
 .faith-nav-link{font-weight:700!important;color:#9a5575!important}
 .faith-nav-link:hover{text-decoration:underline}
 .mobile-nav a[href*="faith-inspiration"]{font-weight:700;color:#9a5575;border-top:1px solid #eadde5;margin-top:6px;padding-top:12px}
+
+
+/* Homepage hero link to Faith & Inspiration */
+.faith-hero-button{
+    display:inline-block;
+    margin:12px 0 0 10px;
+    padding:13px 25px;
+    border:1px solid #9a5575;
+    color:#75485d;
+    background:#f8e8ef;
+    font-size:13px;
+    text-decoration:none;
+    transition:background .2s ease,color .2s ease;
+}
+.faith-hero-button:hover{
+    background:#9a5575;
+    color:#fff;
+}
+html{scroll-behavior:smooth;}
