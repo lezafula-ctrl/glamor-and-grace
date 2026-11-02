@@ -139,7 +139,7 @@ async function submitCheckoutOrder(form) {
     }
 
     try {
-        if (!window.ggSupabase) throw new Error("Checkout is temporarily unavailable. Please try again shortly.");
+        if (typeof ggSupabase === "undefined") throw new Error("Checkout is temporarily unavailable. Please try again shortly.");
         const { data: orderId, error } = await ggSupabase.rpc("create_store_order", { p_order: payload });
         if (error) throw error;
         if (!orderId) throw new Error("The order could not be confirmed as saved. Please contact us before trying again.");
