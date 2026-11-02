@@ -134,11 +134,15 @@ let filteredProducts = [...products];
 
 if (category) {
     filteredProducts =
-        filteredProducts.filter(
-            product =>
-                (product.category || "").toLowerCase() ===
-                category.toLowerCase()
-        );
+        filteredProducts.filter(product => {
+            const normaliseCategory = value => String(value || "")
+                .toLowerCase()
+                .replace(/&/g, "and")
+                .replace(/[^a-z0-9]+/g, " ")
+                .trim()
+                .replace(/\s+/g, " ");
+            return normaliseCategory(product.category) === normaliseCategory(category);
+        });
 }
 
     if (search) {
