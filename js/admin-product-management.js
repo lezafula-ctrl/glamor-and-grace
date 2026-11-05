@@ -50,6 +50,38 @@ document.addEventListener("DOMContentLoaded", () => {
             });
     }
 
+    function pricesToText(value) {
+        let variants = value;
+        if (typeof variants === "string") { try { variants = JSON.parse(variants); } catch { variants = []; } }
+        if (!Array.isArray(variants)) return "";
+        return variants.filter(v => v && v.name && v.prices && Object.keys(v.prices).length)
+            .map(v => v.name + ": " + Object.entries(v.prices).map(([option, price]) => option + "=" + price).join(", "))
+            .join("\n");
+    }
+
+    function applyVariantPrices(variants, text) {
+        String(text || "").split(/\r?\n/).map(line => line.trim()).filter(Boolean).forEach(line => {
+            const colon = line.indexOf(":");
+            if (colon < 1) throw new Error("Use the format Length: 16 inches=850, 18 inches=950.");
+            const name = line.slice(0, colon).trim();
+            const variant = variants.find(v => v.name.toLowerCase() === name.toLowerCase());
+            if (!variant) throw new Error('Add the "' + name + '" option first, then enter its prices.');
+            const prices = {};
+            line.slice(colon + 1).split(",").map(x => x.trim()).filter(Boolean).forEach(pair => {
+                const equals = pair.lastIndexOf("=");
+                if (equals < 1) throw new Error("Each price must look like 16 inches=850.");
+                const option = pair.slice(0, equals).trim();
+                const amount = Number(pair.slice(equals + 1).trim());
+                if (!variant.options.some(v => v.toLowerCase() === option.toLowerCase()) || !Number.isFinite(amount) || amount < 0) {
+                    throw new Error('Check the option and price for "' + option + '".');
+                }
+                prices[option] = amount;
+            });
+            variant.prices = prices;
+        });
+        return variants;
+    }
+
     function optionsToText(value) {
         let options = value;
 
@@ -193,6 +225,7 @@ document.addEventListener("DOMContentLoaded", () => {
         field("edit-product-stock").value = product.stock;
         field("edit-product-description").value = product.description;
         field("edit-product-options").value = optionsToText(product.variants);
+        field("edit-product-variant-prices").value = pricesToText(product.variants);
         field("edit-product-personalisation").value =
             optionsToText(product.customization_fields);
         field("edit-product-image").value = "";
@@ -326,8 +359,10 @@ document.addEventListener("DOMContentLoaded", () => {
             // before parsing them, so edited options are included in the save.
             window.GGOptionBuilder?.syncAll();
 
-            const variants =
-                parseOptionFields(field("edit-product-options").value);
+            const variants = applyVariantPrices(
+                parseOptionFields(field("edit-product-options").value),
+                field("edit-product-variant-prices").value
+            );
 
             const customizationFields =
                 parseOptionFields(field("edit-product-personalisation").value);
