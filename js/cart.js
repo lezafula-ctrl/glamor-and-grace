@@ -28,6 +28,9 @@ function addToCart(productId, selectedOptions = {}, customisation = {}) {
         window.location.href = "product.html?id=" + encodeURIComponent(productId);
         return;
     }
+    const priceVariant = variants.find(v => v && v.prices && Object.keys(v.prices).length && selectedOptions[v.name] !== undefined);
+    const selectedPriceKey = priceVariant && Object.keys(priceVariant.prices).find(key => key.toLowerCase() === String(selectedOptions[priceVariant.name]).toLowerCase());
+    const selectedPrice = selectedPriceKey ? Number(priceVariant.prices[selectedPriceKey]) : Number(product.price);
     const entries = Array.isArray(product.variant_stock) ? product.variant_stock : [];
     let available = Number(product.stock || 0);
     if (entries.length) {
@@ -50,7 +53,7 @@ function addToCart(productId, selectedOptions = {}, customisation = {}) {
         const selectedColour = Object.entries(selectedOptions || {}).find(([key]) => /^(colour|color)$/i.test(key));
         const colourPhoto = selectedColour && photos.find(img => String(img.color || "").toLowerCase() === String(selectedColour[1]).toLowerCase());
         cart.push({ id: lineId, lineId, productId: String(product.id), name: product.name,
-            price: Number(product.price), image: colourPhoto?.url || product.image, quantity: 1,
+            price: selectedPrice, image: colourPhoto?.url || product.image, quantity: 1,
             selectedOptions: selectedOptions || {}, customisation: customisation || {} });
     }
     saveCart(); updateCartCount(); renderCart();
