@@ -69,17 +69,12 @@ begin
         if not found then
             raise exception 'A product in your cart is no longer available.';
         end if;
-        if coalesce(v_product.stock, 0) < v_quantity then
-            raise exception 'There is not enough stock for %.', coalesce(v_product.name, 'a product');
-        end if;
-
         v_selected := coalesce(v_item->'selected_variants', '{}'::jsonb);
         if jsonb_typeof(v_selected) <> 'object' then
             raise exception 'Product options are invalid.';
         end if;
 
-        -- If the product uses per-variant stock, require an exact selected variant
-        -- and verify its available quantity. No stock is deducted here.
+        -- Validate exact per-variant stock when configured; otherwise use overall stock.
         if jsonb_typeof(v_product.variant_stock) = 'array'
            and jsonb_array_length(v_product.variant_stock) > 0 then
             select exists (
@@ -92,9 +87,19 @@ begin
             if not v_variant_match then
                 raise exception 'The selected option or its stock is no longer available for %.', coalesce(v_product.name, 'a product');
             end if;
+        elsif coalesce(v_product.stock, 0) < v_quantity then
+            raise exception 'There is not enough stock for %.', coalesce(v_product.name, 'a product');
         end if;
 
-        v_unit_price := round(v_product.price::numeric, 2);
+        -- A selected option may override the base product price (e.g. wig length).
+        v_unit_price := null;
+        select nullif(variant.value->'prices'->>(v_selected->'options'->>(variant.value->>'name')), '')::numeric
+          into v_unit_price
+          from jsonb_array_elements(coalesce(v_product.variants, '[]'::jsonb)) as variant(value)
+         where v_selected->'options' ? (variant.value->>'name')
+           and coalesce(variant.value->'prices', '{}'::jsonb) ? (v_selected->'options'->>(variant.value->>'name'))
+         limit 1;
+        v_unit_price := round(coalesce(v_unit_price, v_product.price)::numeric, 2);
         if v_unit_price is null or v_unit_price < 0 then
             raise exception 'A product price is invalid.';
         end if;
@@ -134,6 +139,14 @@ begin
         where id = v_product_id::bigint;
 
         v_selected := coalesce(v_item->'selected_variants', '{}'::jsonb);
+        v_unit_price := null;
+        select nullif(variant.value->'prices'->>(v_selected->'options'->>(variant.value->>'name')), '')::numeric
+          into v_unit_price
+          from jsonb_array_elements(coalesce(v_product.variants, '[]'::jsonb)) as variant(value)
+         where v_selected->'options' ? (variant.value->>'name')
+           and coalesce(variant.value->'prices', '{}'::jsonb) ? (v_selected->'options'->>(variant.value->>'name'))
+         limit 1;
+        v_unit_price := round(coalesce(v_unit_price, v_product.price)::numeric, 2);
 
         insert into public.order_items (
             order_id, product_id, product_name, unit_price, quantity, selected_variants
@@ -141,7 +154,7 @@ begin
             v_order_id,
             v_product.id::text,
             coalesce(v_product.name, 'Product'),
-            round(v_product.price::numeric, 2),
+            v_unit_price,
             v_quantity,
             v_selected
         );
