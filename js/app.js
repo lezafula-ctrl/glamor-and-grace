@@ -37,14 +37,20 @@ function ggProductImages(product) {
 function ggPriceForOptions(product, selected) {
     const chosen = selected || {};
     const variants = ggAsArray(product.variants);
+    const allPrices = [];
     for (const variant of variants) {
         const prices = variant && variant.prices && typeof variant.prices === "object" ? variant.prices : {};
+        Object.values(prices).forEach(value => {
+            const amount = Number(value);
+            if (Number.isFinite(amount)) allPrices.push(amount);
+        });
         const value = chosen[variant.name];
-        if (value !== undefined && Object.prototype.hasOwnProperty.call(prices, value)) return Number(prices[value]);
-        const match = Object.keys(prices).find(key => key.toLowerCase() === String(value || "").toLowerCase());
-        if (match) return Number(prices[match]);
+        if (value !== undefined) {
+            const match = Object.keys(prices).find(key => key.toLowerCase() === String(value).toLowerCase());
+            if (match) return Number(prices[match]);
+        }
     }
-    return Number(product.price || 0);
+    return allPrices.length ? Math.min(...allPrices) : Number(product.price || 0);
 }
 
 function ggStockForOptions(product, selected) {
@@ -64,7 +70,7 @@ function ggStockForOptions(product, selected) {
 
 function createProductCard(product) {
     const available = Number(product.stock || 0) > 0;
-    const price = Number(product.price || 0);
+    const price = ggPriceForOptions(product, {});
     const hasOptionPrices = ggAsArray(product.variants).some(v => v && v.prices && Object.keys(v.prices).length);
     const name = ggHtmlSafe(product.name || "Unnamed Product");
     const category = ggHtmlSafe(product.category || "Uncategorized");
