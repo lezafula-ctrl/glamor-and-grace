@@ -34,6 +34,19 @@ function ggProductOptions(product) {
 function ggProductImages(product) {
     return ggAsArray(product.product_images).filter(item => item && item.url);
 }
+function ggPriceForOptions(product, selected) {
+    const chosen = selected || {};
+    const variants = ggAsArray(product.variants);
+    for (const variant of variants) {
+        const prices = variant && variant.prices && typeof variant.prices === "object" ? variant.prices : {};
+        const value = chosen[variant.name];
+        if (value !== undefined && Object.prototype.hasOwnProperty.call(prices, value)) return Number(prices[value]);
+        const match = Object.keys(prices).find(key => key.toLowerCase() === String(value || "").toLowerCase());
+        if (match) return Number(prices[match]);
+    }
+    return Number(product.price || 0);
+}
+
 function ggStockForOptions(product, selected) {
     const entries = ggAsArray(product.variant_stock);
     if (!entries.length) return Number(product.stock || 0);
@@ -52,6 +65,7 @@ function ggStockForOptions(product, selected) {
 function createProductCard(product) {
     const available = Number(product.stock || 0) > 0;
     const price = Number(product.price || 0);
+    const hasOptionPrices = ggAsArray(product.variants).some(v => v && v.prices && Object.keys(v.prices).length);
     const name = ggHtmlSafe(product.name || "Unnamed Product");
     const category = ggHtmlSafe(product.category || "Uncategorized");
     const image = ggHtmlSafe(product.image || "");
@@ -61,7 +75,7 @@ function createProductCard(product) {
         : hasChoices
             ? '<a class="add-to-cart" href="product.html?id=' + encodeURIComponent(product.id) + '">View Options</a>'
             : '<button class="add-to-cart" onclick="addToCart(\'' + String(product.id).replace(/'/g, "\'") + '\')">Add to Cart</button>';
-    return '<article class="product-card"><a href="product.html?id=' + encodeURIComponent(product.id) + '"><div class="product-image-container"><img src="' + image + '" alt="' + name + '" onerror="this.style.display=\'none\';this.parentElement.classList.add(\'image-placeholder\')"></div></a><div class="product-info"><div class="product-category">' + category + '</div><a href="product.html?id=' + encodeURIComponent(product.id) + '"><div class="product-name">' + name + '</div></a><div class="product-price">R' + price.toFixed(2) + '</div>' + button + '</div></article>';
+    return '<article class="product-card"><a href="product.html?id=' + encodeURIComponent(product.id) + '"><div class="product-image-container"><img src="' + image + '" alt="' + name + '" onerror="this.style.display=\'none\';this.parentElement.classList.add(\'image-placeholder\')"></div></a><div class="product-info"><div class="product-category">' + category + '</div><a href="product.html?id=' + encodeURIComponent(product.id) + '"><div class="product-name">' + name + '</div></a><div class="product-price">' + (hasOptionPrices ? 'From R' : 'R') + price.toFixed(2) + '</div>' + button + '</div></article>';
 }
 
 
@@ -307,7 +321,7 @@ function displayProductPage() {
 
     container.innerHTML =
         '<div class="product-detail-image"><img id="gg-main-product-image" src="' + ggHtmlSafe(allImages[0].url) + '" alt="' + ggHtmlSafe(product.name) + '" onerror="this.style.display=\'none\';this.parentElement.classList.add(\'image-placeholder\')"><div id="gg-product-thumbnails" class="gg-product-thumbnails"></div></div>' +
-        '<div class="product-detail-info"><p class="product-category">' + ggHtmlSafe(product.category) + '</p><h1>' + ggHtmlSafe(product.name) + '</h1><p class="product-detail-price">R' + Number(product.price || 0).toFixed(2) + '</p><p class="product-description">' + ggHtmlSafe(product.description || "") + '</p><p class="product-availability">' + (available ? "✓ In Stock" : "Coming Soon") + '</p><p class="delivery-note">📦 Estimated delivery: 14-21 business days</p>' +
+        '<div class="product-detail-info"><p class="product-category">' + ggHtmlSafe(product.category) + '</p><h1>' + ggHtmlSafe(product.name) + '</h1><p id="gg-live-product-price" class="product-detail-price">R' + Number(product.price || 0).toFixed(2) + '</p><p class="product-description">' + ggHtmlSafe(product.description || "") + '</p><p class="product-availability">' + (available ? "✓ In Stock" : "Coming Soon") + '</p><p class="delivery-note">📦 Estimated delivery: 14-21 business days</p>' +
         optionControls + personalisation + '<p id="gg-selected-stock" class="product-availability"></p>' +
         (available ? '<button id="gg-add-product-to-cart" type="button" class="primary-button">Add to Cart</button>' : '<button class="primary-button" disabled>Coming Soon</button>') +
         '<p id="gg-product-status" role="status" aria-live="polite"></p><br><a href="shop.html" class="back-to-shop">← Continue Shopping</a></div>';
@@ -324,6 +338,8 @@ function displayProductPage() {
         ).join("");
     }
     function updateAvailableStock() {
+        const livePrice = document.getElementById("gg-live-product-price");
+        if (livePrice) livePrice.textContent = "R" + ggPriceForOptions(product, selected).toFixed(2);
         const stockEl = document.getElementById("gg-selected-stock");
         if (ggAsArray(product.variant_stock).length && Object.keys(selected).length === variants.length) {
             const qty = ggStockForOptions(product, selected);
