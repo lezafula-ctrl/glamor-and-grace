@@ -17,6 +17,29 @@ document.addEventListener("DOMContentLoaded", () => {
             return { name: line.slice(0, i).trim(), options: line.slice(i + 1).split(",").map(v => v.trim()).filter(Boolean) };
         }).filter(item => item.name);
     }
+    function applyVariantPrices(variants, text) {
+        const lines = String(text || "").split(/\r?\n/).map(line => line.trim()).filter(Boolean);
+        lines.forEach(line => {
+            const colon = line.indexOf(":");
+            if (colon < 1) throw new Error("Use the format Length: 16 inches=850, 18 inches=950.");
+            const name = line.slice(0, colon).trim();
+            const variant = variants.find(v => v.name.toLowerCase() === name.toLowerCase());
+            if (!variant) throw new Error('Add the "' + name + '" option first, then enter its prices.');
+            const prices = {};
+            line.slice(colon + 1).split(",").map(x => x.trim()).filter(Boolean).forEach(pair => {
+                const equals = pair.lastIndexOf("=");
+                if (equals < 1) throw new Error("Each price must look like 16 inches=850.");
+                const option = pair.slice(0, equals).trim();
+                const amount = Number(pair.slice(equals + 1).trim());
+                if (!variant.options.some(v => v.toLowerCase() === option.toLowerCase()) || !Number.isFinite(amount) || amount < 0) {
+                    throw new Error('Check the option and price for "' + option + '".');
+                }
+                prices[option] = amount;
+            });
+            variant.prices = prices;
+        });
+        return variants;
+    }
     form.addEventListener("submit", async event => {
         event.preventDefault();
         const button = form.querySelector('button[type="submit"]');
@@ -30,7 +53,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const price = Number(field("product-price").value);
             const stock = Number(field("product-stock").value);
             const description = field("product-description").value.trim();
-            const variants = parseOptionFields(field("product-options").value);
+            const variants = applyVariantPrices(parseOptionFields(field("product-options").value), field("product-variant-prices").value);
             const customizationFields = parseOptionFields(field("product-personalisation").value);
             const imageFile = field("product-image").files[0];
             if (!name || !category || !imageFile) throw new Error("Please complete the required fields and select a main product image.");
