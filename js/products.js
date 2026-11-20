@@ -37,6 +37,7 @@ async function loadProducts() {
     }));
 
     console.log("NORMALISED PRODUCTS:", products);
+    document.dispatchEvent(new Event("ggProductsReady"));
 }
 
 const productsReady = loadProducts();
