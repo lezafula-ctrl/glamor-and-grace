@@ -6,6 +6,7 @@
 let products = [];
 
 async function loadProducts() {
+    if (window.ggPromotionReady) await window.ggPromotionReady;
     const { data, error } = await ggSupabase
         .from("products")
         .select("*")
