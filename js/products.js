@@ -6,6 +6,7 @@
 let products = [];
 
 async function loadProducts() {
+    if (window.ggPromotionReady) await window.ggPromotionReady;
     const { data, error } = await ggSupabase
         .from("products")
         .select("*")
@@ -36,6 +37,7 @@ async function loadProducts() {
     }));
 
     console.log("NORMALISED PRODUCTS:", products);
+    document.dispatchEvent(new Event("ggProductsReady"));
 }
 
 const productsReady = loadProducts();

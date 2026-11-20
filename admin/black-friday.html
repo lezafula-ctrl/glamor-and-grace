@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Black Friday Sale Manager | Glamor &amp; Grace</title>
+<link rel="stylesheet" href="../css/style.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../js/supabase-config.js"></script>
+<style>
+.bf-manager{max-width:900px;margin:32px auto;padding:0 18px}
+.bf-panel{background:#fff;border:1px solid #eadde4;border-radius:16px;padding:22px;margin:18px 0}
+.bf-panel h2{margin-bottom:14px}
+.bf-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+.bf-manager label{display:grid;gap:6px;font-weight:600}
+.bf-manager input,.bf-manager select{width:100%;padding:11px;border:1px solid #d9cbd2;border-radius:8px;background:#fff}
+.bf-discount-row{display:flex!important;align-items:center;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid #f0e6eb}
+.bf-discount-row select{max-width:130px}
+.bf-toggle{display:flex!important;align-items:center;gap:10px}
+.bf-toggle input{width:auto}
+#bf-status{padding:12px;background:#fff6fa;border-radius:8px}
+@media(max-width:520px){.bf-discount-row{align-items:flex-start;flex-direction:column}.bf-discount-row select{max-width:none}}
+</style>
+</head>
+<body>
+<header class="admin-header">
+<a href="../index.html"><img src="../logo.png" alt="Glamor &amp; Grace Logo" class="admin-logo-small"></a>
+<div><a href="dashboard.html">Admin Dashboard</a><a href="inventory.html">Stock &amp; Inventory</a><a href="black-friday.html">Black Friday Sale</a></div>
+</header>
+<main class="bf-manager">
+<p class="section-label">GLAMOR &amp; GRACE</p>
+<h1>Black Friday Sale Manager</h1>
+<p>Manage the Pink &amp; Black Friday campaign. Sale prices are calculated from the original product and variant prices; original prices are not overwritten.</p>
+<p id="bf-status" role="status">Checking admin access and loading sale settings...</p>
+<form id="bf-form">
+<section class="bf-panel">
+<h2>Campaign settings</h2>
+<div class="bf-grid">
+<label>Campaign name<input id="bf-name" type="text" required></label>
+<label>Starts at<input id="bf-start" type="datetime-local" required></label>
+<label>Ends at<input id="bf-end" type="datetime-local" required></label>
+</div>
+<label class="bf-toggle" style="margin-top:18px"><input id="bf-enabled" type="checkbox"> Enable this campaign</label>
+</section>
+<section class="bf-panel">
+<h2>Discounts by product category</h2>
+<p>Set the discount percentage for each category. Choose 0% if a category should not be discounted.</p>
+<div id="bf-category-discounts"></div>
+</section>
+<button id="bf-save" type="submit" class="primary-button">Save Sale Settings</button>
+</form>
+</main>
+<script src="../js/admin-black-friday.js"></script>
+</body>
+</html>

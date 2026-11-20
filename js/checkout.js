@@ -35,7 +35,7 @@ function displayCheckout() {
         return '<div class="checkout-item"><span>' + escapeCheckoutText(item.name) +
             (details ? '<br><small>' + escapeCheckoutText(details) + '</small>' : '') +
             ' × ' + Number(item.quantity || 1) + '</span><strong>R' +
-            (Number(item.price || 0) * Number(item.quantity || 1)).toFixed(2) + '</strong></div>';
+            (ggCartUnitPrice(item) * Number(item.quantity || 1)).toFixed(2) + '</strong></div>';
     }).join("");
     const subtotalElement = document.getElementById("checkout-subtotal");
     const deliveryElement = document.getElementById("checkout-delivery");

@@ -30,7 +30,8 @@ function addToCart(productId, selectedOptions = {}, customisation = {}) {
     }
     const priceVariant = variants.find(v => v && v.prices && Object.keys(v.prices).length && selectedOptions[v.name] !== undefined);
     const selectedPriceKey = priceVariant && Object.keys(priceVariant.prices).find(key => key.toLowerCase() === String(selectedOptions[priceVariant.name]).toLowerCase());
-    const selectedPrice = selectedPriceKey ? Number(priceVariant.prices[selectedPriceKey]) : Number(product.price);
+    const originalPrice = selectedPriceKey ? Number(priceVariant.prices[selectedPriceKey]) : Number(product.price);
+    const selectedPrice = window.ggSalePrice ? window.ggSalePrice(product.category, originalPrice) : originalPrice;
     const entries = Array.isArray(product.variant_stock) ? product.variant_stock : [];
     let available = Number(product.stock || 0);
     if (entries.length) {
@@ -103,13 +104,30 @@ function updateQuantity(lineId, quantity) {
 // CART TOTALS
 // ========================================
 
-function getCartSubtotal() {
+function ggCartProduct(item) {
+    const productId = String(item.productId ?? String(item.id || "").split("::")[0]);
+    return (products || []).find(p => String(p.id) === productId);
+}
 
-    return cart.reduce(
-        (total, item) =>
-            total + (item.price * item.quantity),
-        0
-    );
+function ggCartOriginalUnitPrice(item) {
+    const product = ggCartProduct(item);
+    if (!product) return Number(item.price || 0);
+    return typeof ggPriceForOptions === "function"
+        ? ggPriceForOptions(product, item.selectedOptions || {})
+        : Number(product.price || item.price || 0);
+}
+
+function ggCartUnitPrice(item) {
+    const product = ggCartProduct(item);
+    const original = ggCartOriginalUnitPrice(item);
+    return product && window.ggSalePrice
+        ? window.ggSalePrice(product.category, original)
+        : original;
+}
+
+function getCartSubtotal() {
+    return cart.reduce((total, item) =>
+        total + (ggCartUnitPrice(item) * Number(item.quantity || 0)), 0);
 }
 
 
@@ -159,10 +177,13 @@ function renderCart() {
         const lineId = String(item.lineId || item.id);
         const options = Object.entries(item.selectedOptions || {}).map(([key, value]) => safe(key) + ": " + safe(value)).join(" · ");
         const custom = Object.entries(item.customisation || {}).map(([key, value]) => safe(key) + ": " + safe(value)).join(" · ");
-        return '<article class="cart-item"><div class="cart-item-image"><img src="' + safe(item.image) + '" alt="' + safe(item.name) + '" onerror="this.style.display=\'none\';this.parentElement.classList.add(\'image-placeholder\')"></div><div class="cart-item-info"><h2>' + safe(item.name) + '</h2><p>R' + Number(item.price || 0).toFixed(2) + '</p>' +
+        const unitPrice = ggCartUnitPrice(item);
+        const originalPrice = ggCartOriginalUnitPrice(item);
+        const isDiscounted = unitPrice < originalPrice;
+        return '<article class="cart-item"><div class="cart-item-image"><img src="' + safe(item.image) + '" alt="' + safe(item.name) + '" onerror="this.style.display=\'none\';this.parentElement.classList.add(\'image-placeholder\')"></div><div class="cart-item-info"><h2>' + safe(item.name) + '</h2><p>' + (isDiscounted ? '<span class="gg-original-price">R' + originalPrice.toFixed(2) + '</span> <strong class="gg-sale-price">R' + unitPrice.toFixed(2) + '</strong>' : 'R' + unitPrice.toFixed(2)) + '</p>' +
             (options ? '<p class="cart-item-options">' + options + '</p>' : '') +
             (custom ? '<p class="cart-item-customisation">Personalisation: ' + custom + '</p>' : '') +
-            '<label>Quantity: <input type="number" min="1" value="' + Number(item.quantity || 1) + '" data-line-id="' + safe(lineId) + '" onchange="updateQuantity(this.dataset.lineId,this.value)"></label><button type="button" class="remove-item" data-remove-line="' + safe(lineId) + '">Remove</button></div><div class="cart-item-total"><strong>R' + (Number(item.price || 0) * Number(item.quantity || 0)).toFixed(2) + '</strong></div></article>';
+            '<label>Quantity: <input type="number" min="1" value="' + Number(item.quantity || 1) + '" data-line-id="' + safe(lineId) + '" onchange="updateQuantity(this.dataset.lineId,this.value)"></label><button type="button" class="remove-item" data-remove-line="' + safe(lineId) + '">Remove</button></div><div class="cart-item-total"><strong>R' + (unitPrice * Number(item.quantity || 0)).toFixed(2) + '</strong></div></article>';
     }).join("");
     cartContainer.querySelectorAll("[data-remove-line]").forEach(button => button.addEventListener("click", () => removeFromCart(button.dataset.removeLine)));
     if (subtotalElement) subtotalElement.textContent = "R" + getCartSubtotal().toFixed(2);
@@ -183,6 +204,12 @@ document.addEventListener(
 
     }
 );
+
+document.addEventListener("ggProductsReady", () => {
+    updateCartCount();
+    renderCart();
+    if (typeof displayCheckout === "function") displayCheckout();
+});
 function prepareCheckout() {
 
     if (cart.length === 0) {
