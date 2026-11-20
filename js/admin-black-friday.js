@@ -7,7 +7,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const categories = [
         "Sneakers", "Human Hair Wigs", "Human Blend Wigs", "Bags", "Dresses",
         "Shoes", "Accessories", "Swim & Beachwear", "Gifts", "Home Appliances",
-        "Stationery", "Sportswear", "Sleepwear", "Women Comfies", "Elegancies"
+        "Stationery", "Sportswear", "Sleepwear", "Women Comfies", "Elegancies", "Specials"
     ];
 
     function setStatus(message, isError = false) {
