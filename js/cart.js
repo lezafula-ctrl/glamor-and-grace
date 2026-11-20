@@ -104,14 +104,25 @@ function updateQuantity(lineId, quantity) {
 // CART TOTALS
 // ========================================
 
-function ggCartUnitPrice(item) {
+function ggCartProduct(item) {
     const productId = String(item.productId ?? String(item.id || "").split("::")[0]);
-    const product = products.find(p => String(p.id) === productId);
+    return (products || []).find(p => String(p.id) === productId);
+}
+
+function ggCartOriginalUnitPrice(item) {
+    const product = ggCartProduct(item);
     if (!product) return Number(item.price || 0);
-    const original = typeof ggPriceForOptions === "function"
+    return typeof ggPriceForOptions === "function"
         ? ggPriceForOptions(product, item.selectedOptions || {})
-        : Number(item.price || product.price || 0);
-    return window.ggSalePrice ? window.ggSalePrice(product.category, original) : original;
+        : Number(product.price || item.price || 0);
+}
+
+function ggCartUnitPrice(item) {
+    const product = ggCartProduct(item);
+    const original = ggCartOriginalUnitPrice(item);
+    return product && window.ggSalePrice
+        ? window.ggSalePrice(product.category, original)
+        : original;
 }
 
 function getCartSubtotal() {
@@ -167,7 +178,7 @@ function renderCart() {
         const options = Object.entries(item.selectedOptions || {}).map(([key, value]) => safe(key) + ": " + safe(value)).join(" · ");
         const custom = Object.entries(item.customisation || {}).map(([key, value]) => safe(key) + ": " + safe(value)).join(" · ");
         const unitPrice = ggCartUnitPrice(item);
-        const originalPrice = Number(item.price || unitPrice);
+        const originalPrice = ggCartOriginalUnitPrice(item);
         const isDiscounted = unitPrice < originalPrice;
         return '<article class="cart-item"><div class="cart-item-image"><img src="' + safe(item.image) + '" alt="' + safe(item.name) + '" onerror="this.style.display=\'none\';this.parentElement.classList.add(\'image-placeholder\')"></div><div class="cart-item-info"><h2>' + safe(item.name) + '</h2><p>' + (isDiscounted ? '<span class="gg-original-price">R' + originalPrice.toFixed(2) + '</span> <strong class="gg-sale-price">R' + unitPrice.toFixed(2) + '</strong>' : 'R' + unitPrice.toFixed(2)) + '</p>' +
             (options ? '<p class="cart-item-options">' + options + '</p>' : '') +
