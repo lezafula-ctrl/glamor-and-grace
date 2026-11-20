@@ -1458,3 +1458,32 @@ html{scroll-behavior:smooth;}
     color: #ffffff;
     font-size: 12px;
 }
+
+
+/* PINK & BLACK FRIDAY SALE PRICING */
+.gg-sale-badge {
+    display: inline-block;
+    margin: 0 6px 0 0;
+    padding: 3px 7px;
+    border-radius: 4px;
+    background: #111;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    vertical-align: middle;
+    letter-spacing: .3px;
+}
+.gg-original-price {
+    color: #777;
+    text-decoration: line-through;
+    font-size: .9em;
+    font-weight: 400;
+    margin-right: 6px;
+}
+.gg-sale-price {
+    color: #b32659;
+    font-weight: 800;
+}
+.product-price .gg-sale-badge { margin-bottom: 5px; }
+.product-price .gg-original-price,
+.product-price .gg-sale-price { display: inline-block; }
