@@ -31,8 +31,14 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         document.getElementById("bf-enabled").checked = Boolean(data.enabled);
         document.getElementById("bf-name").value = data.name || "";
-        document.getElementById("bf-start").value = new Date(data.starts_at).toISOString().slice(0,16);
-        document.getElementById("bf-end").value = new Date(data.ends_at).toISOString().slice(0,16);
+        const toLocalInput = value => {
+            const date = new Date(value);
+            const pad = number => String(number).padStart(2, "0");
+            return date.getFullYear() + "-" + pad(date.getMonth() + 1) + "-" + pad(date.getDate()) +
+                "T" + pad(date.getHours()) + ":" + pad(date.getMinutes());
+        };
+        document.getElementById("bf-start").value = toLocalInput(data.starts_at);
+        document.getElementById("bf-end").value = toLocalInput(data.ends_at);
 
         categoryFields.innerHTML = categories.map(category => {
             const discount = Number(data.category_discounts?.[category] ?? 0);
