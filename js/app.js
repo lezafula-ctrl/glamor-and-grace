@@ -70,8 +70,13 @@ function ggStockForOptions(product, selected) {
 
 function createProductCard(product) {
     const available = Number(product.stock || 0) > 0;
-    const price = ggPriceForOptions(product, {});
+    const originalPrice = ggPriceForOptions(product, {});
+    const discount = window.ggPromotionDiscount ? window.ggPromotionDiscount(product.category) : 0;
+    const price = window.ggSalePrice ? window.ggSalePrice(product.category, originalPrice) : originalPrice;
     const hasOptionPrices = ggAsArray(product.variants).some(v => v && v.prices && Object.keys(v.prices).length);
+    const priceMarkup = discount > 0
+        ? '<span class="gg-sale-badge">-' + discount + '%</span><span class="gg-original-price">R' + originalPrice.toFixed(2) + '</span><strong class="gg-sale-price">R' + price.toFixed(2) + '</strong>'
+        : priceMarkup;
     const name = ggHtmlSafe(product.name || "Unnamed Product");
     const category = ggHtmlSafe(product.category || "Uncategorized");
     const image = ggHtmlSafe(product.image || "");
@@ -345,7 +350,14 @@ function displayProductPage() {
     }
     function updateAvailableStock() {
         const livePrice = document.getElementById("gg-live-product-price");
-        if (livePrice) livePrice.textContent = "R" + ggPriceForOptions(product, selected).toFixed(2);
+        if (livePrice) {
+            const original = ggPriceForOptions(product, selected);
+            const discount = window.ggPromotionDiscount ? window.ggPromotionDiscount(product.category) : 0;
+            const salePrice = window.ggSalePrice ? window.ggSalePrice(product.category, original) : original;
+            livePrice.innerHTML = discount > 0
+                ? '<span class="gg-original-price">R' + original.toFixed(2) + '</span> <strong class="gg-sale-price">R' + salePrice.toFixed(2) + '</strong> <span class="gg-sale-badge">-' + discount + '%</span>'
+                : 'R' + original.toFixed(2);
+        }
         const stockEl = document.getElementById("gg-selected-stock");
         if (ggAsArray(product.variant_stock).length && Object.keys(selected).length === variants.length) {
             const qty = ggStockForOptions(product, selected);
