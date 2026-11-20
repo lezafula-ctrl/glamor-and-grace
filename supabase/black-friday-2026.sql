@@ -17,6 +17,9 @@ create table if not exists public.store_promotions (
 
 alter table public.store_promotions enable row level security;
 
+grant select on public.store_promotions to anon, authenticated;
+grant insert, update, delete on public.store_promotions to authenticated;
+
 drop policy if exists "Public can read promotion settings" on public.store_promotions;
 create policy "Public can read promotion settings"
 on public.store_promotions for select
@@ -59,7 +62,8 @@ insert into public.store_promotions (
       "Sportswear": 20,
       "Sleepwear": 10,
       "Women Comfies": 10,
-      "Elegancies": 10
+      "Elegancies": 10,
+      "Specials": 0
     }'::jsonb
 )
 on conflict (id) do update set
