@@ -75,8 +75,8 @@ function createProductCard(product) {
     const price = window.ggSalePrice ? window.ggSalePrice(product.category, originalPrice) : originalPrice;
     const hasOptionPrices = ggAsArray(product.variants).some(v => v && v.prices && Object.keys(v.prices).length);
     const priceMarkup = discount > 0
-        ? '<span class="gg-sale-badge">-' + discount + '%</span><span class="gg-original-price">R' + originalPrice.toFixed(2) + '</span><strong class="gg-sale-price">R' + price.toFixed(2) + '</strong>'
-        : priceMarkup;
+        ? (hasOptionPrices ? 'From ' : '') + '<span class="gg-sale-badge">-' + discount + '%</span><span class="gg-original-price">R' + originalPrice.toFixed(2) + '</span><strong class="gg-sale-price">R' + price.toFixed(2) + '</strong>'
+        : (hasOptionPrices ? 'From R' : 'R') + originalPrice.toFixed(2);
     const name = ggHtmlSafe(product.name || "Unnamed Product");
     const category = ggHtmlSafe(product.category || "Uncategorized");
     const image = ggHtmlSafe(product.image || "");
