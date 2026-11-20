@@ -204,6 +204,12 @@ document.addEventListener(
 
     }
 );
+
+document.addEventListener("ggProductsReady", () => {
+    updateCartCount();
+    renderCart();
+    if (typeof displayCheckout === "function") displayCheckout();
+});
 function prepareCheckout() {
 
     if (cart.length === 0) {
