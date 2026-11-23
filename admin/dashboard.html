@@ -97,6 +97,21 @@
         </section>
 
 
+        <!-- TEAM FAITH & ENCOURAGEMENT -->
+        <section class="admin-section" id="team-scripture">
+            <div class="admin-section-heading">
+                <h2>A Moment of Encouragement</h2>
+                <span>Faith for the team</span>
+            </div>
+            <div class="admin-card" style="background:linear-gradient(145deg,#fbf0f4,#f8f2ed,#f4edf6);border:1px solid #eadde4;padding:24px;border-radius:14px;">
+                <p style="letter-spacing:2px;font-size:12px;font-weight:700;">♡ &nbsp; A WEEKLY SCRIPTURE</p>
+                <blockquote id="team-scripture-verse" style="font-size:1.25rem;line-height:1.7;margin:14px 0;">Loading scripture...</blockquote>
+                <p id="team-scripture-reference" style="font-size:12px;font-weight:700;letter-spacing:1px;"></p>
+                <p id="team-scripture-thought" style="line-height:1.7;"></p>
+                <p style="margin-top:18px;font-style:italic;">“With faith, grace, and love ♡”</p>
+            </div>
+        </section>
+
         <!-- ADMIN MENU -->
 
         <section class="admin-section">
@@ -610,6 +625,59 @@ loadStaffAccounts();
         console.error("Could not load recent orders:", error);
         container.textContent = "Could not load orders. Please refresh the page.";
     }
+})();
+</script>
+
+
+<script>
+(function showTeamScripture() {
+    const messages = [
+    {
+        "verse": "Be still, and know that I am God.",
+        "reference": "PSALM 46:10 · HOLY BIBLE · KJV",
+        "inspiration": "When life feels overwhelming, take a moment to be still. You can turn to God in prayer and remember that He is with you."
+    },
+    {
+        "verse": "Wherefore, ye must press forward with a steadfastness in Christ, having a perfect brightness of hope, and a love of God and of all men.",
+        "reference": "2 NEPHI 31:20 · BOOK OF MORMON",
+        "inspiration": "Faith is not about having every answer. It is about continuing to follow Jesus Christ with hope, even when the road feels difficult."
+    },
+    {
+        "verse": "Look unto me in every thought; doubt not, fear not.",
+        "reference": "DOCTRINE AND COVENANTS 6:36",
+        "inspiration": "When your thoughts feel heavy, turn your heart towards Jesus Christ. You can seek His guidance in the middle of ordinary, everyday moments."
+    },
+    {
+        "verse": "Trust in the LORD with all thine heart; and lean not unto thine own understanding.",
+        "reference": "PROVERBS 3:5 · HOLY BIBLE · KJV",
+        "inspiration": "You may not understand everything happening in your life right now. Keep seeking God and trust Him as you take each step."
+    },
+    {
+        "verse": "And if men come unto me I will show unto them their weakness. I give unto men weakness that they may be humble; and my grace is sufficient for all men that humble themselves before me.",
+        "reference": "ETHER 12:27 · BOOK OF MORMON · EXCERPT",
+        "inspiration": "Your weaknesses do not have to be the end of your story. Through Jesus Christ, you can learn, grow, and become stronger."
+    },
+    {
+        "verse": "My son, peace be unto thy soul; thine adversity and thy afflictions shall be but a small moment.",
+        "reference": "DOCTRINE AND COVENANTS 121:7",
+        "inspiration": "Difficult seasons can feel long while you are living through them. You can seek comfort in Christ and take each day as it comes."
+    },
+    {
+        "verse": "Fear thou not; for I am with thee: be not dismayed; for I am thy God.",
+        "reference": "ISAIAH 41:10 · HOLY BIBLE · KJV",
+        "inspiration": "You can face tomorrow without knowing exactly what it will bring. Remember that you can pray for strength and seek God's guidance along the way."
+    }
+];
+    const startDate = new Date(2026, 9, 19); // Same weekly rotation as the shop.
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const daysSinceStart = Math.floor((today - startDate) / (24 * 60 * 60 * 1000));
+    const weekNumber = Math.floor(daysSinceStart / 7);
+    const index = ((weekNumber % messages.length) + messages.length) % messages.length;
+    const current = messages[index];
+    document.getElementById("team-scripture-verse").textContent = "“" + current.verse + "”";
+    document.getElementById("team-scripture-reference").textContent = current.reference;
+    document.getElementById("team-scripture-thought").textContent = current.inspiration;
 })();
 </script>
 
