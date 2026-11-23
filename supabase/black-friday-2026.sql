@@ -50,7 +50,7 @@ insert into public.store_promotions (
     '{
       "Sneakers": 10,
       "Human Hair Wigs": 20,
-      "Human Blend Wigs": 20,
+      "Blended Wigs": 20,
       "Bags": 30,
       "Dresses": 20,
       "Shoes": 20,
