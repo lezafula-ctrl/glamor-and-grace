@@ -5,7 +5,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const saveButton = document.getElementById("bf-save");
 
     const categories = [
-        "Sneakers", "Human Hair Wigs", "Human Blend Wigs", "Bags", "Dresses",
+        "Sneakers", "Human Hair Wigs", "Blended Wigs", "Bags", "Dresses",
         "Shoes", "Accessories", "Swim & Beachwear", "Gifts", "Home Appliances",
         "Stationery", "Sportswear", "Sleepwear", "Women Comfies", "Elegancies", "Specials"
     ];
