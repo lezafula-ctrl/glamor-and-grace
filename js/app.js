@@ -86,7 +86,7 @@ function createProductCard(product) {
         : hasChoices
             ? '<a class="add-to-cart" href="product.html?id=' + encodeURIComponent(product.id) + '">View Options</a>'
             : '<button class="add-to-cart" onclick="addToCart(\'' + String(product.id).replace(/'/g, "\'") + '\')">Add to Cart</button>';
-    return '<article class="product-card"><a href="product.html?id=' + encodeURIComponent(product.id) + '"><div class="product-image-container"><img src="' + image + '" alt="' + name + '" onerror="this.style.display=\'none\';this.parentElement.classList.add(\'image-placeholder\')"></div></a><div class="product-info"><div class="product-category">' + category + '</div><a href="product.html?id=' + encodeURIComponent(product.id) + '"><div class="product-name">' + name + '</div></a><div class="product-price">' + (hasOptionPrices ? 'From R' : 'R') + price.toFixed(2) + '</div>' + button + '</div></article>';
+    return '<article class="product-card"><a href="product.html?id=' + encodeURIComponent(product.id) + '"><div class="product-image-container"><img src="' + image + '" alt="' + name + '" onerror="this.style.display=\'none\';this.parentElement.classList.add(\'image-placeholder\')"></div></a><div class="product-info"><div class="product-category">' + category + '</div><a href="product.html?id=' + encodeURIComponent(product.id) + '"><div class="product-name">' + name + '</div></a><div class="product-price">' + priceMarkup + '</div>' + button + '</div></article>';
 }
 
 
