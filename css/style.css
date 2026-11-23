@@ -1487,3 +1487,11 @@ html{scroll-behavior:smooth;}
 .product-price .gg-sale-badge { margin-bottom: 5px; }
 .product-price .gg-original-price,
 .product-price .gg-sale-price { display: inline-block; }
+
+
+/* Admin dashboard: keep the team scripture in the same style as the storefront */
+#team-scripture.faith-section { margin: 0 0 50px; border-radius: 18px; }
+#team-scripture .gg-team-faith-grid { grid-template-columns: minmax(0, 760px); justify-content: center; }
+@media (max-width: 560px) {
+  #team-scripture.faith-section { padding: 38px 14px; }
+}
