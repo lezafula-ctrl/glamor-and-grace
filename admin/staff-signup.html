@@ -24,6 +24,7 @@
                     <input type="password" id="staff-password" required minlength="6">
                 </div>
                 <button type="submit" class="primary-button">Create Account</button>
+                <button type="button" id="resend-confirmation" class="secondary-button">Resend confirmation email</button>
                 <p id="signup-message" role="status"></p>
             </form>
         </div>
@@ -59,6 +60,33 @@
             button.disabled = false;
         }
     });
+        document.getElementById("resend-confirmation").addEventListener("click", async () => {
+            const email = document.getElementById("staff-email").value.trim();
+            const message = document.getElementById("signup-message");
+            if (!email) {
+                message.textContent = "Please enter the email address you used to create the account.";
+                return;
+            }
+            const resendButton = document.getElementById("resend-confirmation");
+            resendButton.disabled = true;
+            message.textContent = "Sending a new confirmation email...";
+            try {
+                const { error } = await ggSupabase.auth.resend({
+                    type: "signup",
+                    email,
+                    options: {
+                        emailRedirectTo: "https://lezafula-ctrl.github.io/glamor-and-grace/admin/login.html"
+                    }
+                });
+                if (error) throw error;
+                message.textContent = "If this address has an unconfirmed account, a new confirmation email has been sent. Please check your inbox and spam folder.";
+            } catch (error) {
+                console.error("Resend confirmation error:", error);
+                message.textContent = error.message || "Could not resend the confirmation email. Please try again.";
+            } finally {
+                resendButton.disabled = false;
+            }
+        });
     </script>
 </body>
 </html>
