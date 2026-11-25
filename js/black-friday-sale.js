@@ -39,6 +39,6 @@
     window.ggSalePrice = function (category, originalPrice) {
         const price = Number(originalPrice || 0);
         const discount = window.ggPromotionDiscount(category);
-        return discount > 0 ? Math.round((price * (1 - discount / 100) + Number.EPSILON) * 100) / 100 : price;
+        return discount > 0 ? Math.round(price * (1 - discount / 100)) : Math.round(price);
     };
 })();
