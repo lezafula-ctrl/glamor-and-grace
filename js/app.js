@@ -75,8 +75,8 @@ function createProductCard(product) {
     const price = window.ggSalePrice ? window.ggSalePrice(product.category, originalPrice) : originalPrice;
     const hasOptionPrices = ggAsArray(product.variants).some(v => v && v.prices && Object.keys(v.prices).length);
     const priceMarkup = discount > 0
-        ? (hasOptionPrices ? 'From ' : '') + '<span class="gg-sale-badge">-' + discount + '%</span><span class="gg-original-price">R' + originalPrice.toFixed(2) + '</span><strong class="gg-sale-price">R' + price.toFixed(2) + '</strong>'
-        : (hasOptionPrices ? 'From R' : 'R') + originalPrice.toFixed(2);
+        ? (hasOptionPrices ? 'From ' : '') + '<span class="gg-sale-badge">-' + discount + '%</span><span class="gg-original-price">R' + Math.round(originalPrice) + '</span><strong class="gg-sale-price">R' + Math.round(price) + '</strong>'
+        : (hasOptionPrices ? 'From R' : 'R') + Math.round(originalPrice);
     const name = ggHtmlSafe(product.name || "Unnamed Product");
     const category = ggHtmlSafe(product.category || "Uncategorized");
     const image = ggHtmlSafe(product.image || "");
@@ -332,7 +332,7 @@ function displayProductPage() {
 
     container.innerHTML =
         '<div class="product-detail-image"><img id="gg-main-product-image" src="' + ggHtmlSafe(allImages[0].url) + '" alt="' + ggHtmlSafe(product.name) + '" onerror="this.style.display=\'none\';this.parentElement.classList.add(\'image-placeholder\')"><div id="gg-product-thumbnails" class="gg-product-thumbnails"></div></div>' +
-        '<div class="product-detail-info"><p class="product-category">' + ggHtmlSafe(product.category) + '</p><h1>' + ggHtmlSafe(product.name) + '</h1><p id="gg-live-product-price" class="product-detail-price">R' + Number(product.price || 0).toFixed(2) + '</p><p class="product-description">' + ggHtmlSafe(product.description || "") + '</p><p class="product-availability">' + (available ? "✓ In Stock" : "Coming Soon") + '</p><p class="delivery-note">📦 Estimated delivery: 14-21 business days</p>' +
+        '<div class="product-detail-info"><p class="product-category">' + ggHtmlSafe(product.category) + '</p><h1>' + ggHtmlSafe(product.name) + '</h1><p id="gg-live-product-price" class="product-detail-price">R' + Math.round(Number(product.price || 0)) + '</p><p class="product-description">' + ggHtmlSafe(product.description || "") + '</p><p class="product-availability">' + (available ? "✓ In Stock" : "Coming Soon") + '</p><p class="delivery-note">📦 Estimated delivery: 14-21 business days</p>' +
         optionControls + personalisation + '<p id="gg-selected-stock" class="product-availability"></p>' +
         (available ? '<button id="gg-add-product-to-cart" type="button" class="primary-button">Add to Cart</button>' : '<button class="primary-button" disabled>Coming Soon</button>') +
         '<p id="gg-product-status" role="status" aria-live="polite"></p><br><a href="shop.html" class="back-to-shop">← Continue Shopping</a></div>';
@@ -355,8 +355,8 @@ function displayProductPage() {
             const discount = window.ggPromotionDiscount ? window.ggPromotionDiscount(product.category) : 0;
             const salePrice = window.ggSalePrice ? window.ggSalePrice(product.category, original) : original;
             livePrice.innerHTML = discount > 0
-                ? '<span class="gg-original-price">R' + original.toFixed(2) + '</span> <strong class="gg-sale-price">R' + salePrice.toFixed(2) + '</strong> <span class="gg-sale-badge">-' + discount + '%</span>'
-                : 'R' + original.toFixed(2);
+                ? '<span class="gg-original-price">R' + Math.round(original) + '</span> <strong class="gg-sale-price">R' + Math.round(salePrice) + '</strong> <span class="gg-sale-badge">-' + discount + '%</span>'
+                : 'R' + Math.round(original);
         }
         const stockEl = document.getElementById("gg-selected-stock");
         if (ggAsArray(product.variant_stock).length && Object.keys(selected).length === variants.length) {
