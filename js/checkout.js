@@ -35,14 +35,14 @@ function displayCheckout() {
         return '<div class="checkout-item"><span>' + escapeCheckoutText(item.name) +
             (details ? '<br><small>' + escapeCheckoutText(details) + '</small>' : '') +
             ' × ' + Number(item.quantity || 1) + '</span><strong>R' +
-            (ggCartUnitPrice(item) * Number(item.quantity || 1)).toFixed(2) + '</strong></div>';
+            Math.round(ggCartUnitPrice(item) * Number(item.quantity || 1)) + '</strong></div>';
     }).join("");
     const subtotalElement = document.getElementById("checkout-subtotal");
     const deliveryElement = document.getElementById("checkout-delivery");
     const totalElement = document.getElementById("checkout-total");
-    if (subtotalElement) subtotalElement.textContent = "R" + subtotal.toFixed(2);
+    if (subtotalElement) subtotalElement.textContent = "R" + Math.round(subtotal);
     if (deliveryElement) deliveryElement.textContent = "Select delivery";
-    if (totalElement) totalElement.textContent = "R" + subtotal.toFixed(2);
+    if (totalElement) totalElement.textContent = "R" + Math.round(subtotal);
 }
 
 function setupDeliveryOptions() {
@@ -51,8 +51,8 @@ function setupDeliveryOptions() {
             const fee = Number(option.dataset.fee || 0);
             const deliveryElement = document.getElementById("checkout-delivery");
             const totalElement = document.getElementById("checkout-total");
-            if (deliveryElement) deliveryElement.textContent = "R" + fee.toFixed(2);
-            if (totalElement) totalElement.textContent = "R" + getCheckoutTotal(fee).toFixed(2);
+            if (deliveryElement) deliveryElement.textContent = "R" + Math.round(fee);
+            if (totalElement) totalElement.textContent = "R" + Math.round(getCheckoutTotal(fee));
         });
     });
 }
@@ -67,8 +67,8 @@ function buildWhatsAppOrderMessage(customer, deliveryLabel, orderId, items, subt
         return (index + 1) + ". " + item.product_name +
             (details.length ? "\n   " + details.join("; ") : "") +
             "\n   Quantity: " + item.quantity +
-            " | Unit price: R" + Number(item.unit_price).toFixed(2) +
-            " | Line total: R" + (Number(item.unit_price) * item.quantity).toFixed(2);
+            " | Unit price: R" + Math.round(Number(item.unit_price)) +
+            " | Line total: R" + Math.round(Number(item.unit_price) * item.quantity);
     });
     return [
         "Hello Glamor and Grace! 🤍", "",
@@ -83,9 +83,9 @@ function buildWhatsAppOrderMessage(customer, deliveryLabel, orderId, items, subt
         "Method: " + deliveryLabel,
         "Details: " + customer.delivery_details, "",
         "ORDER", ...lines, "",
-        "Subtotal: R" + subtotal.toFixed(2),
-        "Delivery: R" + deliveryFee.toFixed(2),
-        "TOTAL: R" + total.toFixed(2), "",
+        "Subtotal: R" + Math.round(subtotal),
+        "Delivery: R" + Math.round(deliveryFee),
+        "TOTAL: R" + Math.round(total), "",
         "Please send me the payment instructions. Thank you!"
     ].join("\n");
 }
