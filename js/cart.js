@@ -167,7 +167,7 @@ function renderCart() {
         cartContainer.innerHTML = "";
         if (emptyCart) emptyCart.style.display = "block";
         if (cartSummary) cartSummary.style.display = "none";
-        if (subtotalElement) subtotalElement.textContent = "R0.00";
+        if (subtotalElement) subtotalElement.textContent = "R0";
         return;
     }
     if (emptyCart) emptyCart.style.display = "none";
@@ -180,13 +180,13 @@ function renderCart() {
         const unitPrice = ggCartUnitPrice(item);
         const originalPrice = ggCartOriginalUnitPrice(item);
         const isDiscounted = unitPrice < originalPrice;
-        return '<article class="cart-item"><div class="cart-item-image"><img src="' + safe(item.image) + '" alt="' + safe(item.name) + '" onerror="this.style.display=\'none\';this.parentElement.classList.add(\'image-placeholder\')"></div><div class="cart-item-info"><h2>' + safe(item.name) + '</h2><p>' + (isDiscounted ? '<span class="gg-original-price">R' + originalPrice.toFixed(2) + '</span> <strong class="gg-sale-price">R' + unitPrice.toFixed(2) + '</strong>' : 'R' + unitPrice.toFixed(2)) + '</p>' +
+        return '<article class="cart-item"><div class="cart-item-image"><img src="' + safe(item.image) + '" alt="' + safe(item.name) + '" onerror="this.style.display=\'none\';this.parentElement.classList.add(\'image-placeholder\')"></div><div class="cart-item-info"><h2>' + safe(item.name) + '</h2><p>' + (isDiscounted ? '<span class="gg-original-price">R' + Math.round(originalPrice) + '</span> <strong class="gg-sale-price">R' + Math.round(unitPrice) + '</strong>' : 'R' + Math.round(unitPrice)) + '</p>' +
             (options ? '<p class="cart-item-options">' + options + '</p>' : '') +
             (custom ? '<p class="cart-item-customisation">Personalisation: ' + custom + '</p>' : '') +
-            '<label>Quantity: <input type="number" min="1" value="' + Number(item.quantity || 1) + '" data-line-id="' + safe(lineId) + '" onchange="updateQuantity(this.dataset.lineId,this.value)"></label><button type="button" class="remove-item" data-remove-line="' + safe(lineId) + '">Remove</button></div><div class="cart-item-total"><strong>R' + (unitPrice * Number(item.quantity || 0)).toFixed(2) + '</strong></div></article>';
+            '<label>Quantity: <input type="number" min="1" value="' + Number(item.quantity || 1) + '" data-line-id="' + safe(lineId) + '" onchange="updateQuantity(this.dataset.lineId,this.value)"></label><button type="button" class="remove-item" data-remove-line="' + safe(lineId) + '">Remove</button></div><div class="cart-item-total"><strong>R' + Math.round(unitPrice * Number(item.quantity || 0)) + '</strong></div></article>';
     }).join("");
     cartContainer.querySelectorAll("[data-remove-line]").forEach(button => button.addEventListener("click", () => removeFromCart(button.dataset.removeLine)));
-    if (subtotalElement) subtotalElement.textContent = "R" + getCartSubtotal().toFixed(2);
+    if (subtotalElement) subtotalElement.textContent = "R" + Math.round(getCartSubtotal());
 }
 
 
