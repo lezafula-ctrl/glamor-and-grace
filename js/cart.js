@@ -176,7 +176,7 @@ function renderCart() {
     cartContainer.innerHTML = cart.map(item => {
         const lineId = String(item.lineId || item.id);
         const options = Object.entries(item.selectedOptions || {}).map(([key, value]) => safe(key) + ": " + safe(value)).join(" · ");
-        const custom = Object.entries(item.customisation || {}).map(([key, value]) => safe(key) + ": " + safe(value)).join(" · ");
+        const custom = Object.entries(item.customisation || {}).map(([key, value]) => safe(key) + ": " + (key === "Customer Photo Upload" ? "Photo attached" : safe(value))).join(" · ");
         const unitPrice = ggCartUnitPrice(item);
         const originalPrice = ggCartOriginalUnitPrice(item);
         const isDiscounted = unitPrice < originalPrice;
