@@ -1495,3 +1495,18 @@ html{scroll-behavior:smooth;}
 @media (max-width: 560px) {
   #team-scripture.faith-section { padding: 38px 14px; }
 }
+
+
+/* Limited-stock labels */
+.gg-stock-badge {
+    display: inline-block;
+    margin: 2px 0 7px;
+    padding: 4px 8px;
+    background: #f9edf1;
+    color: #6d3448;
+    border: 1px solid #ead0da;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .5px;
+    text-transform: uppercase;
+}
