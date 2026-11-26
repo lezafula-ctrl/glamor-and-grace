@@ -1,7 +1,7 @@
 -- Glamor & Grace: Black Friday 2026 campaign
 -- Run this file in the Supabase SQL Editor before enabling the sale.
--- The campaign ends at midnight on 30 November (South African time),
--- so the sale covers all of 23-29 November 2026.
+-- The campaign ends at midnight on 7 December (South African time),
+-- so the sale covers all of 23 November-6 December 2026.
 
 create table if not exists public.store_promotions (
     id smallint primary key default 1 check (id = 1),
@@ -45,7 +45,7 @@ insert into public.store_promotions (
     1,
     'Pink & Black Friday 2026',
     '2026-11-23 00:00:00+02',
-    '2026-11-30 00:00:00+02',
+    '2026-12-07 00:00:00+02',
     true,
     '{
       "Sneakers": 10,
