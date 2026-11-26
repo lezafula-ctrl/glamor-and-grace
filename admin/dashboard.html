@@ -607,7 +607,7 @@ loadStaffAccounts();
             delivery.textContent = "Delivery: " + order.delivery_method + " · " + order.delivery_details;
             card.appendChild(delivery);
             const list = document.createElement("ul");
-            (itemsByOrder[order.id] || []).forEach(item => {
+            for (const item of (itemsByOrder[order.id] || [])) {
                 const li = document.createElement("li");
                 const variant = item.selected_variants || {};
                 const customEntries = Object.entries(variant.customisation || {});
@@ -634,7 +634,7 @@ loadStaffAccounts();
                     li.appendChild(photoLink);
                 }
                 list.appendChild(li);
-            });
+            }
             card.appendChild(list);
             const total = document.createElement("p");
             total.textContent = "Subtotal: R" + Number(order.subtotal).toFixed(2) +
