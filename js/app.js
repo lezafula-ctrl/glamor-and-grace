@@ -322,11 +322,14 @@ function displayProductPage() {
         const values = Array.isArray(field.options) ? field.options : [];
         const name = String(field.name || "").trim();
         if (!name) return "";
-        const freeText = !values.length || /^(name|message|custom message)$/i.test(name) && values.length === 0;
-        return '<div class="gg-product-field gg-personalisation-field"><label for="gg-personal-' + index + '">' + ggHtmlSafe(name) + (freeText ? ' (optional)' : '') + '</label>' +
-            (freeText
-                ? '<input id="gg-personal-' + index + '" class="gg-personalisation" data-field-name="' + ggHtmlSafe(name) + '" type="text" maxlength="100" placeholder="Enter ' + ggHtmlSafe(name.toLowerCase()) + '">'
-                : '<select id="gg-personal-' + index + '" class="gg-personalisation" data-field-name="' + ggHtmlSafe(name) + '"><option value="">Choose ' + ggHtmlSafe(name) + '</option>' + values.map(v => '<option value="' + ggHtmlSafe(v) + '">' + ggHtmlSafe(v) + '</option>').join("") + '</select>') +
+        const isPhotoUpload = /^customer photo upload$/i.test(name);
+        const freeText = !isPhotoUpload && (!values.length || /^(name|message|custom message)$/i.test(name) && values.length === 0);
+        return '<div class="gg-product-field gg-personalisation-field"><label for="gg-personal-' + index + '">' + ggHtmlSafe(name) + (freeText || isPhotoUpload ? ' (optional)' : '') + '</label>' +
+            (isPhotoUpload
+                ? '<input id="gg-personal-' + index + '" class="gg-customer-photo-upload" data-field-name="' + ggHtmlSafe(name) + '" type="file" accept="image/jpeg,image/png,image/webp,image/heic"><small>Please upload a JPG, PNG, WEBP or HEIC image (max 5 MB).</small>'
+                : freeText
+                    ? '<input id="gg-personal-' + index + '" class="gg-personalisation" data-field-name="' + ggHtmlSafe(name) + '" type="text" maxlength="100" placeholder="Enter ' + ggHtmlSafe(name.toLowerCase()) + '">'
+                    : '<select id="gg-personal-' + index + '" class="gg-personalisation" data-field-name="' + ggHtmlSafe(name) + '"><option value="">Choose ' + ggHtmlSafe(name) + '</option>' + values.map(v => '<option value="' + ggHtmlSafe(v) + '">' + ggHtmlSafe(v) + '</option>').join("") + '</select>') +
             '</div>';
     }).join("");
 
@@ -387,7 +390,7 @@ function displayProductPage() {
     updateAvailableStock();
 
     const addButton = document.getElementById("gg-add-product-to-cart");
-    if (addButton) addButton.addEventListener("click", () => {
+    if (addButton) addButton.addEventListener("click", async () => {
         const status = document.getElementById("gg-product-status");
         const missing = variants.filter(v => !selected[v.name]);
         if (missing.length) { status.textContent = "Please choose: " + missing.map(v => v.name).join(", ") + "."; return; }
@@ -396,8 +399,38 @@ function displayProductPage() {
             const value = input.value.trim();
             if (value) custom[input.dataset.fieldName] = value;
         });
+        const photoInput = container.querySelector(".gg-customer-photo-upload");
+        const photoFile = photoInput && photoInput.files ? photoInput.files[0] : null;
+        if (photoFile) {
+            if (!photoFile.type.startsWith("image/") || !["image/jpeg","image/png","image/webp","image/heic"].includes(photoFile.type)) {
+                status.textContent = "Please choose a JPG, PNG, WEBP or HEIC image."; return;
+            }
+            if (photoFile.size > 5 * 1024 * 1024) {
+                status.textContent = "Please choose an image smaller than 5 MB."; return;
+            }
+        }
         if (ggAsArray(product.variant_stock).length && ggStockForOptions(product, selected) <= 0) {
             status.textContent = "Sorry, that size/colour combination is out of stock."; return;
+        }
+        if (photoFile) {
+            addButton.disabled = true;
+            addButton.textContent = "Uploading photo...";
+            try {
+                const extension = photoFile.name.split(".").pop().toLowerCase().replace(/[^a-z0-9]/g, "") || "jpg";
+                const path = "customer-photos/" + crypto.randomUUID() + "." + extension;
+                const { error: uploadError } = await ggSupabase.storage.from("customer-personalisation").upload(path, photoFile, {
+                    cacheControl: "3600", upsert: false, contentType: photoFile.type
+                });
+                if (uploadError) throw uploadError;
+                custom["Customer Photo Upload"] = path;
+            } catch (error) {
+                console.error("Customer photo upload failed:", error);
+                status.textContent = "We couldn't upload that picture. Please try again.";
+                return;
+            } finally {
+                addButton.disabled = false;
+                addButton.textContent = "Add to Cart";
+            }
         }
         addToCart(String(product.id), {...selected}, custom);
         status.textContent = "Added to cart. Choose another colour or size to add another item.";
