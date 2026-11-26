@@ -31,7 +31,7 @@ function addToCart(productId, selectedOptions = {}, customisation = {}) {
     const priceVariant = variants.find(v => v && v.prices && Object.keys(v.prices).length && selectedOptions[v.name] !== undefined);
     const selectedPriceKey = priceVariant && Object.keys(priceVariant.prices).find(key => key.toLowerCase() === String(selectedOptions[priceVariant.name]).toLowerCase());
     const originalPrice = selectedPriceKey ? Number(priceVariant.prices[selectedPriceKey]) : Number(product.price);
-    const selectedPrice = window.ggSalePrice ? window.ggSalePrice(product.category, originalPrice) : originalPrice;
+    const selectedPrice = window.ggSalePrice ? window.ggSalePrice(product.category, originalPrice, product.name) : originalPrice;
     const entries = Array.isArray(product.variant_stock) ? product.variant_stock : [];
     let available = Number(product.stock || 0);
     if (entries.length) {
@@ -121,7 +121,7 @@ function ggCartUnitPrice(item) {
     const product = ggCartProduct(item);
     const original = ggCartOriginalUnitPrice(item);
     return product && window.ggSalePrice
-        ? window.ggSalePrice(product.category, original)
+        ? window.ggSalePrice(product.category, original, product.name)
         : original;
 }
 
