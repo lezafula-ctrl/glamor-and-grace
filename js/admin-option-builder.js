@@ -15,6 +15,7 @@
             { value: "number", label: "Choose a Number (0–9)", name: "Number", preset: "0, 1, 2, 3, 4, 5, 6, 7, 8, 9" },
             { value: "name", label: "Customer types a name", name: "Name", preset: "", freeText: true },
             { value: "message", label: "Customer types a message", name: "Message", preset: "", freeText: true },
+            { value: "photo", label: "Customer uploads a picture", name: "Customer Photo Upload", preset: "", freeFile: true },
             { value: "length", label: "Length", name: "Length", preset: "12, 14, 16, 18, 20 inches" },
             { value: "other", label: "Other dropdown option", name: "Other", preset: "Option 1, Option 2", custom: true }
         ]
@@ -75,8 +76,8 @@
         function applyType(resetValues) {
             const def = getDefinition(kind, type.value);
             customName.hidden = !def || !def.custom;
-            values.hidden = !def || !!def.freeText;
-            values.disabled = !def || !!def.freeText;
+            values.hidden = !def || !!def.freeText || !!def.freeFile;
+            values.disabled = !def || !!def.freeText || !!def.freeFile;
             if (def && resetValues) values.value = def.preset || "";
             if (def && def.custom && !customName.value) customName.value = "";
         }
@@ -118,7 +119,7 @@
                 ? controls.customName.value.trim()
                 : def.name;
             if (!name) return;
-            const values = def.freeText ? "" : controls.values.value.trim();
+            const values = def.freeText || def.freeFile ? "" : controls.values.value.trim();
             lines.push(name + ":" + (values ? " " + values : ""));
         });
         output.value = lines.join("\n");
@@ -131,6 +132,7 @@
         const lowered = clean.toLowerCase();
         const defs = definitions[kind] || [];
         if (/^(colour|color)$/.test(lowered)) return defs.find(d => d.value === "colour") ? "colour" : "other";
+        if (kind === "personalisation" && lowered === "customer photo upload") return "photo";
         if (kind === "personalisation" && lowered === "name") return "name";
         if (kind === "personalisation" && /^(message|custom message)$/.test(lowered)) return "message";
         if (/^(size|clothing size)$/.test(lowered)) return "size";
