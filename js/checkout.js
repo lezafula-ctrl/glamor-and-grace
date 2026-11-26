@@ -62,7 +62,7 @@ function buildWhatsAppOrderMessage(customer, deliveryLabel, orderId, items, subt
         const options = item.selected_variants || {};
         const details = [
             ...Object.entries(options.options || {}).map(([key, value]) => key + ": " + value),
-            ...Object.entries(options.customisation || {}).map(([key, value]) => key + ": " + value)
+            ...Object.entries(options.customisation || {}).map(([key, value]) => key + ": " + (key === "Customer Photo Upload" ? "Photo attached" : value))
         ];
         return (index + 1) + ". " + item.product_name +
             (details.length ? "\n   " + details.join("; ") : "") +
