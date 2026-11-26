@@ -30,7 +30,7 @@ function displayCheckout() {
     checkoutItems.innerHTML = cart.map(item => {
         const details = [
             ...Object.entries(item.selectedOptions || {}).map(([key, value]) => key + ": " + value),
-            ...Object.entries(item.customisation || {}).map(([key, value]) => key + ": " + value)
+            ...Object.entries(item.customisation || {}).map(([key, value]) => key + ": " + (key === "Customer Photo Upload" ? "Photo attached" : value))
         ].join(" | ");
         return '<div class="checkout-item"><span>' + escapeCheckoutText(item.name) +
             (details ? '<br><small>' + escapeCheckoutText(details) + '</small>' : '') +
