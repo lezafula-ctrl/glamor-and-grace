@@ -324,7 +324,7 @@ function displayProductPage() {
         if (!name) return "";
         const isPhotoUpload = /^customer photo upload$/i.test(name);
         const freeText = !isPhotoUpload && (!values.length || /^(name|message|custom message)$/i.test(name) && values.length === 0);
-        return '<div class="gg-product-field gg-personalisation-field"><label for="gg-personal-' + index + '">' + ggHtmlSafe(name) + (freeText || isPhotoUpload ? ' (optional)' : '') + '</label>' +
+        return '<div class="gg-product-field gg-personalisation-field"><label for="gg-personal-' + index + '">' + ggHtmlSafe(name) + (freeText ? ' (optional)' : '') + '</label>' +
             (isPhotoUpload
                 ? '<input id="gg-personal-' + index + '" class="gg-customer-photo-upload" data-field-name="' + ggHtmlSafe(name) + '" type="file" accept="image/jpeg,image/png,image/webp,image/heic"><small>Please upload a JPG, PNG, WEBP or HEIC image (max 5 MB).</small>'
                 : freeText
@@ -401,6 +401,10 @@ function displayProductPage() {
         });
         const photoInput = container.querySelector(".gg-customer-photo-upload");
         const photoFile = photoInput && photoInput.files ? photoInput.files[0] : null;
+        if (photoInput && !photoFile) {
+            status.textContent = "Please upload the picture for your personalised photo frame.";
+            return;
+        }
         if (photoFile) {
             if (!photoFile.type.startsWith("image/") || !["image/jpeg","image/png","image/webp","image/heic"].includes(photoFile.type)) {
                 status.textContent = "Please choose a JPG, PNG, WEBP or HEIC image."; return;
