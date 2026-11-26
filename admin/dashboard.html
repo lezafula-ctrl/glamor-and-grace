@@ -589,7 +589,7 @@ loadStaffAccounts();
             (itemsByOrder[item.order_id] ||= []).push(item);
         });
         container.replaceChildren();
-        orders.forEach(order => {
+        for (const order of orders) {
             const card = document.createElement("article");
             card.className = "admin-card";
             card.style.marginBottom = "16px";
@@ -610,13 +610,29 @@ loadStaffAccounts();
             (itemsByOrder[order.id] || []).forEach(item => {
                 const li = document.createElement("li");
                 const variant = item.selected_variants || {};
+                const customEntries = Object.entries(variant.customisation || {});
+                const photoEntry = customEntries.find(([key]) => key === "Customer Photo Upload");
                 const optionText = [
                     ...Object.entries(variant.options || {}).map(([k,v]) => k + ": " + v),
-                    ...Object.entries(variant.customisation || {}).map(([k,v]) => k + ": " + v)
+                    ...customEntries.filter(([key]) => key !== "Customer Photo Upload").map(([k,v]) => k + ": " + v),
+                    ...(photoEntry ? ["Customer Photo Upload: Attached"] : [])
                 ].join(" · ");
                 li.textContent = item.product_name + " × " + item.quantity +
                     " — R" + Number(item.unit_price).toFixed(2) +
                     (optionText ? " (" + optionText + ")" : "");
+                if (photoEntry && photoEntry[1]) {
+                    const { data: signedPhoto, error: signedPhotoError } = await ggSupabase.storage
+                        .from("customer-personalisation")
+                        .createSignedUrl(photoEntry[1], 3600);
+                    const photoLink = document.createElement("a");
+                    photoLink.textContent = signedPhotoError ? "Photo unavailable" : "View customer photo";
+                    photoLink.href = signedPhoto?.signedUrl || "#";
+                    photoLink.target = "_blank";
+                    photoLink.rel = "noopener";
+                    photoLink.style.display = "block";
+                    photoLink.style.marginTop = "6px";
+                    li.appendChild(photoLink);
+                }
                 list.appendChild(li);
             });
             card.appendChild(list);
@@ -629,7 +645,7 @@ loadStaffAccounts();
             status.textContent = "Order status: " + order.order_status + " · Payment: " + order.payment_status;
             card.appendChild(status);
             container.appendChild(card);
-        });
+        }
     } catch (error) {
         console.error("Could not load recent orders:", error);
         container.textContent = "Could not load orders. Please refresh the page.";
