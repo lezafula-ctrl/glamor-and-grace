@@ -71,8 +71,8 @@ function ggStockForOptions(product, selected) {
 function createProductCard(product) {
     const available = Number(product.stock || 0) > 0;
     const originalPrice = ggPriceForOptions(product, {});
-    const discount = window.ggPromotionDiscount ? window.ggPromotionDiscount(product.category) : 0;
-    const price = window.ggSalePrice ? window.ggSalePrice(product.category, originalPrice) : originalPrice;
+    const discount = window.ggPromotionDiscount ? window.ggPromotionDiscount(product.category, product.name) : 0;
+    const price = window.ggSalePrice ? window.ggSalePrice(product.category, originalPrice, product.name) : originalPrice;
     const hasOptionPrices = ggAsArray(product.variants).some(v => v && v.prices && Object.keys(v.prices).length);
     const priceMarkup = discount > 0
         ? (hasOptionPrices ? 'From ' : '') + '<span class="gg-sale-badge">-' + discount + '%</span><span class="gg-original-price">R' + Math.round(originalPrice) + '</span><strong class="gg-sale-price">R' + Math.round(price) + '</strong>'
@@ -356,8 +356,8 @@ function displayProductPage() {
         const livePrice = document.getElementById("gg-live-product-price");
         if (livePrice) {
             const original = ggPriceForOptions(product, selected);
-            const discount = window.ggPromotionDiscount ? window.ggPromotionDiscount(product.category) : 0;
-            const salePrice = window.ggSalePrice ? window.ggSalePrice(product.category, original) : original;
+            const discount = window.ggPromotionDiscount ? window.ggPromotionDiscount(product.category, product.name) : 0;
+            const salePrice = window.ggSalePrice ? window.ggSalePrice(product.category, original, product.name) : original;
             livePrice.innerHTML = discount > 0
                 ? '<span class="gg-original-price">R' + Math.round(original) + '</span> <strong class="gg-sale-price">R' + Math.round(salePrice) + '</strong> <span class="gg-sale-badge">-' + discount + '%</span>'
                 : 'R' + Math.round(original);
