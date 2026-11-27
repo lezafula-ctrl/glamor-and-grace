@@ -597,7 +597,7 @@ loadStaffAccounts();
 
         container.replaceChildren();
         for (const order of orders) {
-            const reference = "GG-" + String(order.id).replace(/-/g, "").slice(0, 8).toUpperCase();
+            const reference = "GG-" + String(order.id).toUpperCase();
             const card = el("article");
             card.style.cssText = "background:#fff;border:1px solid #eadde5;border-radius:14px;padding:20px;margin:0 0 18px;box-shadow:0 4px 16px rgba(70,35,50,.05);";
             
