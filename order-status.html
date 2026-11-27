@@ -6,7 +6,7 @@
 
     <title>Track Order | Glamor & Grace</title>
 
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/style.css?v=order-flow-refresh-2">
 </head>
 
 <body>
@@ -33,16 +33,9 @@
             </a>
 
             <div class="header-icons">
-
-                <a href="shop.html" class="icon-button">
-                    🛍️
-                </a>
-
-                <a href="cart.html" class="cart-link">
-                    🛒
-                    <span id="cart-count">0</span>
-                </a>
-
+                <a href="shop.html" class="icon-button" aria-label="Shop">🛍️</a>
+                <a href="cart.html" class="cart-link" aria-label="Shopping cart">🛒 <span id="cart-count">0</span></a>
+                <a href="order-status.html" class="track-order-header is-current" aria-label="Track your order">Track Order</a>
             </div>
 
         </div>
@@ -53,56 +46,22 @@
     <main>
 
         <section class="order-status-page">
-
-            <div class="section-heading">
-
-                <div>
-
-                    <p class="section-label">
-                        GLAMOR & GRACE
-                    </p>
-
-                    <h1>
-                        Track My Order
-                    </h1>
-
+            <div class="tracking-hero">
+                <p class="section-label">GLAMOR &amp; GRACE · ORDER UPDATES</p>
+                <h1>Track Your Order</h1>
+                <p>Stay up to date with your order, from payment confirmation to delivery.</p>
+            </div>
+            <form id="order-search-form" class="tracking-search-card">
+                <label for="order-number">Your order reference</label>
+                <p class="tracking-form-help">Enter the full reference shown after checkout, beginning with GG-.</p>
+                <div class="tracking-search-row">
+                    <input type="text" id="order-number" placeholder="GG-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" autocomplete="off" required>
+                    <button type="submit" class="primary-button">Track Order</button>
                 </div>
-
-            </div>
-
-
-            <form id="order-search-form">
-
-                <label for="order-number">
-                    Order Number
-                </label>
-
-                <input
-                    type="text"
-                    id="order-number"
-                    placeholder="e.g. GG-10001"
-                    required
-                >
-
-                <button
-                    type="submit"
-                    class="primary-button"
-                >
-                    Track Order
-                </button>
-
             </form>
-
-
-            <div
-                id="order-result"
-                class="order-result"
-            >
-                <p>
-                    Enter your order number above to track your order.
-                </p>
+            <div id="order-result" class="order-result" aria-live="polite">
+                <div class="tracking-empty-state"><span>♡</span><h2>Your order journey starts here</h2><p>Enter your order reference above and we’ll show you the latest available update.</p></div>
             </div>
-
         </section>
 
     </main>
