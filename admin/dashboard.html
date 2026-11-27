@@ -577,6 +577,7 @@ loadStaffAccounts();
     };
     const money = value => "R" + Number(value || 0).toLocaleString("en-ZA", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     const paymentLabel = value => String(value || "pending").replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+    const orderStatusLabel = value => ({ pending: "Awaiting processing", processing: "Being prepared", packed: "Packed", shipped: "Shipped", delivered: "Delivered" }[String(value || "pending").toLowerCase()] || String(value || "pending").replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase()));
     container.textContent = "Loading orders...";
     try {
         const { data: orders, error } = await ggSupabase
@@ -610,7 +611,7 @@ loadStaffAccounts();
             badges.style.cssText = "display:flex;gap:8px;flex-wrap:wrap;";
             const payBadge = el("span", "Payment: " + paymentLabel(order.payment_status));
             payBadge.style.cssText = "display:inline-block;padding:6px 10px;border-radius:20px;background:" + (String(order.payment_status).toLowerCase()==="paid" ? "#e5f5eb;color:#176b39" : "#fff2d9;color:#805600") + ";font-size:12px;font-weight:700;";
-            const orderBadge = el("span", "Order: " + paymentLabel(order.order_status));
+            const orderBadge = el("span", "Order: " + orderStatusLabel(order.order_status));
             orderBadge.style.cssText = "display:inline-block;padding:6px 10px;border-radius:20px;background:#f2edf1;color:#57434f;font-size:12px;font-weight:700;";
             badges.append(payBadge, orderBadge);
             top.append(titleWrap, badges);
@@ -671,6 +672,51 @@ loadStaffAccounts();
             grand.style.fontSize = "18px";
             totals.appendChild(grand);
             card.appendChild(totals);
+
+            const statusActions = el("div");
+            statusActions.style.cssText = "border-top:1px solid #f0e7ec;margin-top:16px;padding-top:14px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;";
+            const statusLabel = el("label", "Update order status");
+            statusLabel.style.cssText = "font-weight:700;color:#654b58;font-size:13px;";
+            const statusSelect = el("select");
+            statusSelect.setAttribute("aria-label", "Update order status for " + reference);
+            statusSelect.style.cssText = "min-width:190px;padding:10px 12px;border:1px solid #dfcbd5;border-radius:9px;background:#fff;color:#5b4350;font:inherit;";
+            [
+                ["pending", "Awaiting processing"],
+                ["processing", "Being prepared"],
+                ["packed", "Packed"],
+                ["shipped", "Shipped"],
+                ["delivered", "Delivered"]
+            ].forEach(([value, label]) => {
+                const option = el("option", label);
+                option.value = value;
+                statusSelect.appendChild(option);
+            });
+            statusSelect.value = String(order.order_status || "pending").toLowerCase();
+            statusLabel.appendChild(statusSelect);
+            const statusHint = el("small", "Customers can see this update on the Track Order page.");
+            statusHint.style.cssText = "width:100%;color:#927e88;font-size:11px;";
+            statusActions.append(statusLabel, statusHint);
+            statusSelect.addEventListener("change", async () => {
+                const nextStatus = statusSelect.value;
+                const previousStatus = String(order.order_status || "pending").toLowerCase();
+                statusSelect.disabled = true;
+                statusSelect.style.opacity = ".6";
+                const { error: statusError } = await ggSupabase.from("orders")
+                    .update({ order_status: nextStatus }).eq("id", order.id);
+                statusSelect.disabled = false;
+                statusSelect.style.opacity = "1";
+                if (statusError) {
+                    console.error("Could not update order status:", statusError);
+                    statusSelect.value = previousStatus;
+                    alert("Order status could not be updated. Please try again.");
+                    return;
+                }
+                order.order_status = nextStatus;
+                orderBadge.textContent = "Order: " + orderStatusLabel(nextStatus);
+                orderBadge.style.cssText = "display:inline-block;padding:6px 10px;border-radius:20px;background:#f2edf1;color:#57434f;font-size:12px;font-weight:700;";
+                statusHint.textContent = "Status saved. The customer can now see this update.";
+            });
+            card.appendChild(statusActions);
 
             if (String(order.payment_status || "").toLowerCase() !== "paid") {
                 const actions = el("div");
