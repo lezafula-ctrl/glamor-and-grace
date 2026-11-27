@@ -6,7 +6,7 @@
 
     <title>Checkout | Glamor & Grace</title>
 
-    <link rel="stylesheet" href="css/style.css?v=checkout-refresh-1">
+    <link rel="stylesheet" href="css/style.css?v=order-flow-refresh-2">
 </head>
 
 <body>
@@ -33,14 +33,9 @@
 
             <div class="header-icons">
 
-                <a href="shop.html" class="icon-button">
-                    🛍️
-                </a>
-
-                <a href="cart.html" class="cart-link">
-                    🛒
-                    <span id="cart-count">0</span>
-                </a>
+                <a href="shop.html" class="icon-button" aria-label="Shop">🛍️</a>
+                <a href="cart.html" class="cart-link" aria-label="Shopping cart">🛒 <span id="cart-count">0</span></a>
+                <a href="order-status.html" class="track-order-header" aria-label="Track your order">Track Order</a>
 
             </div>
 
@@ -243,19 +238,10 @@
                     </div>
 
 
-                    <div class="form-group">
-
-                        <label for="delivery-details">
-                            Delivery / Collection Details
-                        </label>
-
-                        <textarea
-                            id="delivery-details"
-                            rows="5"
-                            placeholder="For PAXI: enter your preferred PAXI collection point. For Courier Guy: enter your full delivery address."
-                            required
-                        ></textarea>
-
+                    <div class="form-group delivery-details-group">
+                        <label for="delivery-details" id="delivery-details-label">Delivery / Collection Details</label>
+                        <p id="delivery-details-hint" class="delivery-details-hint">Choose a delivery option above to see what details are needed.</p>
+                        <textarea id="delivery-details" rows="4" placeholder="Select a delivery option first." required></textarea>
                     </div>
 
                 </section>
