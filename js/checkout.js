@@ -60,8 +60,8 @@ function updateDeliveryDetailsPrompt() {
         field.placeholder = "Example: 12 Example Street, Unit 4, Summerstrand, Gqeberha, 6001";
     } else if (isPaxi) {
         label.textContent = "Preferred PAXI / PEP Collection Point";
-        hint.textContent = "Enter the name or location of the PAXI point where you would like to collect your parcel. You do not need to enter your home address.";
-        field.placeholder = "Example: PEP Store, [Shopping Centre / Mall], [Area]";
+        hint.textContent = "Enter your preferred PAXI point, PEP store name, or the collection-point code if you have it. You do not need to enter your home address.";
+        field.placeholder = "Example: PEP Store at [Mall / Shopping Centre], [Area] or your PAXI / PEP collection code";
     } else {
         label.textContent = "Delivery / Collection Details";
         hint.textContent = "Choose a delivery option above to see what details are needed.";
