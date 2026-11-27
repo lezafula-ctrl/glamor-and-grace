@@ -160,19 +160,36 @@ async function submitCheckoutOrder(form) {
         }));
         const actualSubtotal = actualItems.reduce((sum, item) => sum + Number(item.unit_price) * Number(item.quantity), 0);
         const actualTotal = actualSubtotal + deliveryFee;
-        const message = buildWhatsAppOrderMessage(
-            customer, deliveryLabels[selectedDelivery.value], orderId,
-            actualItems, actualSubtotal, deliveryFee, actualTotal
-        );
+        const paymentReference = "GG-" + String(orderId).replace(/-/g, "").slice(0, 8).toUpperCase();
+        const proofMessage = [
+            "Hello Glamor and Grace! 💗",
+            "I have made payment for my order.",
+            "Order reference: " + paymentReference,
+            "Amount paid: R" + actualTotal.toFixed(2),
+            "I have attached my proof of payment."
+        ].join("\n");
 
         localStorage.removeItem("ggCart");
         if (typeof cart !== "undefined") cart = [];
         const success = document.getElementById("checkout-success");
         if (success) {
             success.hidden = false;
-            success.innerHTML = '<h2>Thank you! Your order has been placed.</h2><p>Your order reference is <strong>' +
-                escapeCheckoutText(orderId) + '</strong>.</p><p>Your order is saved. Payment is still pending; please use the WhatsApp link below to receive payment instructions.</p><a class="primary-button" href="https://wa.me/' +
-                GG_BUSINESS_WHATSAPP + '?text=' + encodeURIComponent(message) + '" target="_blank" rel="noopener">Continue to WhatsApp</a>';
+            success.innerHTML =
+                '<h2>Thank you! Your order has been placed. 💗</h2>' +
+                '<p>Your order reference is <strong>' + escapeCheckoutText(paymentReference) + '</strong>.</p>' +
+                '<p><strong>Total to pay: R' + actualTotal.toFixed(2) + '</strong></p>' +
+                '<div class="checkout-payment-instructions">' +
+                    '<h3>Manual Payment Details</h3>' +
+                    '<p><strong>Bank:</strong> GoTyme Bank</p>' +
+                    '<p><strong>Account name:</strong> Glamor and Grace</p>' +
+                    '<p><strong>Account number:</strong> 51133813751</p>' +
+                    '<p><strong>Payment reference:</strong> ' + escapeCheckoutText(paymentReference) + '</p>' +
+                    '<p>Please use the payment reference exactly as shown. Your order will only be processed once payment reflects in our account.</p>' +
+                '</div>' +
+                '<p>Your payment status is currently <strong>Pending</strong>.</p>' +
+                '<a class="primary-button" href="https://wa.me/' + GG_BUSINESS_WHATSAPP +
+                '?text=' + encodeURIComponent(proofMessage) +
+                '" target="_blank" rel="noopener">Send Proof of Payment on WhatsApp</a>';
         }
         form.hidden = true;
         window.scrollTo({ top: 0, behavior: "smooth" });
