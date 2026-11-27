@@ -1965,3 +1965,10 @@ html{scroll-behavior:smooth;}
         text-align: left;
     }
 }
+
+.checkout-intro {
+    margin-top: 7px;
+    color: #765d68;
+    font-size: 13px;
+    line-height: 1.6;
+}
