@@ -45,6 +45,30 @@ function displayCheckout() {
     if (totalElement) totalElement.textContent = "R" + Math.round(subtotal);
 }
 
+function updateDeliveryDetailsPrompt() {
+    const selected = document.querySelector('input[name="delivery"]:checked');
+    const label = document.getElementById("delivery-details-label");
+    const hint = document.getElementById("delivery-details-hint");
+    const field = document.getElementById("delivery-details");
+    if (!label || !hint || !field) return;
+
+    const isCourier = selected && selected.value.startsWith("courier");
+    const isPaxi = selected && selected.value.startsWith("paxi");
+    if (isCourier) {
+        label.textContent = "Full Delivery Address";
+        hint.textContent = "Courier Guy delivers to your address. Please include your house or unit number, street name, suburb, town/city and postal code.";
+        field.placeholder = "Example: 12 Example Street, Unit 4, Summerstrand, Gqeberha, 6001";
+    } else if (isPaxi) {
+        label.textContent = "Preferred PAXI / PEP Collection Point";
+        hint.textContent = "Enter the name or location of the PAXI point where you would like to collect your parcel. You do not need to enter your home address.";
+        field.placeholder = "Example: PEP Store, [Shopping Centre / Mall], [Area]";
+    } else {
+        label.textContent = "Delivery / Collection Details";
+        hint.textContent = "Choose a delivery option above to see what details are needed.";
+        field.placeholder = "Select a delivery option first.";
+    }
+}
+
 function setupDeliveryOptions() {
     document.querySelectorAll('input[name="delivery"]').forEach(option => {
         option.addEventListener("change", () => {
@@ -53,8 +77,10 @@ function setupDeliveryOptions() {
             const totalElement = document.getElementById("checkout-total");
             if (deliveryElement) deliveryElement.textContent = "R" + Math.round(fee);
             if (totalElement) totalElement.textContent = "R" + Math.round(getCheckoutTotal(fee));
+            updateDeliveryDetailsPrompt();
         });
     });
+    updateDeliveryDetailsPrompt();
 }
 
 function buildWhatsAppOrderMessage(customer, deliveryLabel, orderId, items, subtotal, deliveryFee, total) {
@@ -160,7 +186,7 @@ async function submitCheckoutOrder(form) {
         }));
         const actualSubtotal = actualItems.reduce((sum, item) => sum + Number(item.unit_price) * Number(item.quantity), 0);
         const actualTotal = actualSubtotal + deliveryFee;
-        const paymentReference = "GG-" + String(orderId).replace(/-/g, "").slice(0, 8).toUpperCase();
+        const paymentReference = "GG-" + String(orderId).toUpperCase();
         const proofMessage = [
             "Hello Glamor and Grace! 💗",
             "I have made payment for my order.",
@@ -204,13 +230,14 @@ async function submitCheckoutOrder(form) {
                         '<a class="primary-button gg-whatsapp-button" href="https://wa.me/' + GG_BUSINESS_WHATSAPP +
                         '?text=' + encodeURIComponent(proofMessage) +
                         '" target="_blank" rel="noopener">Send Proof of Payment on WhatsApp</a>' +
-                        '<small>If you are using a computer, you can open this link on your phone instead.</small>' +
                     '</div>' +
                     '<p class="gg-thankyou-note">Thank you for supporting Glamor &amp; Grace. We will update your order once your payment has been verified. 💗</p>' +
                 '</div>'
         }
         form.hidden = true;
-        window.scrollTo({ top: 0, behavior: "smooth" });
+        if (success) {
+            success.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
     } catch (error) {
         console.error("Checkout order submission failed:", error);
         throw new Error(error.message || "We could not save your order. Please try again.");
