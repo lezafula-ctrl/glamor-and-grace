@@ -638,7 +638,8 @@ loadStaffAccounts();
             itemSection.appendChild(el("strong","Items ordered"));
             const list = el("ul");
             list.style.cssText = "margin:10px 0 0;padding-left:20px;";
-            for (const item of (itemsByOrder[order.id] || [])) {
+            const orderedItems = itemsByOrder[order.id] || [];
+            for (const [itemIndex, item] of orderedItems.entries()) {
                 const variant = item.selected_variants || {};
                 const customEntries = Object.entries(variant.customisation || {});
                 const photoEntry = customEntries.find(([key]) => key === "Customer Photo Upload");
@@ -649,6 +650,7 @@ loadStaffAccounts();
                 ].join(" · ");
                 const li = el("li", item.product_name + " × " + item.quantity + " — " + money(Number(item.unit_price) * Number(item.quantity)) + (optionText ? " | " + optionText : ""));
                 li.style.marginBottom = "7px";
+                if (itemIndex >= 3) li.hidden = true;
                 if (photoEntry && photoEntry[1]) {
                     const { data: signedPhoto, error: signedPhotoError } = await ggSupabase.storage
                         .from("customer-personalisation").createSignedUrl(photoEntry[1], 3600);
@@ -662,6 +664,21 @@ loadStaffAccounts();
                 list.appendChild(li);
             }
             itemSection.appendChild(list);
+            if (orderedItems.length > 3) {
+                const toggleItems = el("button", "Show more (" + (orderedItems.length - 3) + ")");
+                toggleItems.type = "button";
+                toggleItems.setAttribute("aria-expanded", "false");
+                toggleItems.style.cssText = "margin-top:12px;padding:8px 14px;border:1px solid #e5cbd8;border-radius:20px;background:#fff;color:#8a5570;font-weight:700;cursor:pointer;";
+                toggleItems.addEventListener("click", () => {
+                    const expanded = toggleItems.getAttribute("aria-expanded") === "true";
+                    Array.from(list.children).forEach((itemNode, index) => {
+                        if (index >= 3) itemNode.hidden = expanded;
+                    });
+                    toggleItems.setAttribute("aria-expanded", String(!expanded));
+                    toggleItems.textContent = expanded ? "Show more (" + (orderedItems.length - 3) + ")" : "Show less";
+                });
+                itemSection.appendChild(toggleItems);
+            }
             card.appendChild(itemSection);
 
             const totals = el("div");
