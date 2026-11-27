@@ -569,13 +569,21 @@ loadStaffAccounts();
 (async function renderRecentOrders() {
     const container = document.getElementById("admin-orders");
     if (!container) return;
+    const el = (tag, text, className) => {
+        const node = document.createElement(tag);
+        if (text !== undefined && text !== null) node.textContent = text;
+        if (className) node.className = className;
+        return node;
+    };
+    const money = value => "R" + Number(value || 0).toLocaleString("en-ZA", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    const paymentLabel = value => String(value || "pending").replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
     container.textContent = "Loading orders...";
     try {
         const { data: orders, error } = await ggSupabase
             .from("orders").select("*").order("created_at", { ascending: false }).limit(50);
         if (error) throw error;
         if (!orders || !orders.length) {
-            container.textContent = "No orders yet.";
+            container.replaceChildren(el("p", "No orders yet."));
             return;
         }
         const ids = orders.map(order => order.id);
@@ -585,108 +593,118 @@ loadStaffAccounts();
             .in("order_id", ids);
         if (itemError) throw itemError;
         const itemsByOrder = {};
-        (items || []).forEach(item => {
-            (itemsByOrder[item.order_id] ||= []).push(item);
-        });
+        (items || []).forEach(item => (itemsByOrder[item.order_id] ||= []).push(item));
+
         container.replaceChildren();
         for (const order of orders) {
-            const card = document.createElement("article");
-            card.className = "admin-card";
-            card.style.marginBottom = "16px";
-            const heading = document.createElement("h3");
-            heading.textContent = "Order #" + order.id;
-            card.appendChild(heading);
-            const created = document.createElement("p");
-            created.textContent = order.created_at ? new Date(order.created_at).toLocaleString() : "";
-            card.appendChild(created);
-            const customer = document.createElement("p");
-            customer.textContent = order.first_name + " " + order.surname + " · " + order.phone +
-                (order.whatsapp ? " · WhatsApp: " + order.whatsapp : "") + " · " + order.email;
-            card.appendChild(customer);
-            const delivery = document.createElement("p");
-            delivery.textContent = "Delivery: " + order.delivery_method + " · " + order.delivery_details;
-            card.appendChild(delivery);
-            const list = document.createElement("ul");
+            const reference = "GG-" + String(order.id).replace(/-/g, "").slice(0, 8).toUpperCase();
+            const card = el("article");
+            card.style.cssText = "background:#fff;border:1px solid #eadde5;border-radius:14px;padding:20px;margin:0 0 18px;box-shadow:0 4px 16px rgba(70,35,50,.05);";
+            
+            const top = el("div");
+            top.style.cssText = "display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;border-bottom:1px solid #f0e7ec;padding-bottom:14px;margin-bottom:14px;";
+            const titleWrap = el("div");
+            titleWrap.appendChild(el("h3", reference));
+            titleWrap.appendChild(el("small", order.created_at ? new Date(order.created_at).toLocaleString("en-ZA") : "Date unavailable"));
+            const badges = el("div");
+            badges.style.cssText = "display:flex;gap:8px;flex-wrap:wrap;";
+            const payBadge = el("span", "Payment: " + paymentLabel(order.payment_status));
+            payBadge.style.cssText = "display:inline-block;padding:6px 10px;border-radius:20px;background:" + (String(order.payment_status).toLowerCase()==="paid" ? "#e5f5eb;color:#176b39" : "#fff2d9;color:#805600") + ";font-size:12px;font-weight:700;";
+            const orderBadge = el("span", "Order: " + paymentLabel(order.order_status));
+            orderBadge.style.cssText = "display:inline-block;padding:6px 10px;border-radius:20px;background:#f2edf1;color:#57434f;font-size:12px;font-weight:700;";
+            badges.append(payBadge, orderBadge);
+            top.append(titleWrap, badges);
+            card.appendChild(top);
+
+            const details = el("div");
+            details.style.cssText = "display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-bottom:16px;";
+            const customerBox = el("div");
+            customerBox.appendChild(el("strong","Customer"));
+            customerBox.appendChild(el("p",[order.first_name,order.surname].filter(Boolean).join(" ")));
+            customerBox.appendChild(el("p",order.phone || "No phone supplied"));
+            if (order.whatsapp) customerBox.appendChild(el("p","WhatsApp: " + order.whatsapp));
+            customerBox.appendChild(el("p",order.email || "No email supplied"));
+            const deliveryBox = el("div");
+            deliveryBox.appendChild(el("strong","Delivery"));
+            deliveryBox.appendChild(el("p",String(order.delivery_method || "Not specified").replace(/-/g," ")));
+            deliveryBox.appendChild(el("p",order.delivery_details || "No delivery details supplied"));
+            deliveryBox.appendChild(el("p","Payment reference: " + reference));
+            details.append(customerBox,deliveryBox);
+            card.appendChild(details);
+
+            const itemSection = el("div");
+            itemSection.style.cssText = "background:#fcf8fa;border-radius:10px;padding:14px;margin-bottom:14px;";
+            itemSection.appendChild(el("strong","Items ordered"));
+            const list = el("ul");
+            list.style.cssText = "margin:10px 0 0;padding-left:20px;";
             for (const item of (itemsByOrder[order.id] || [])) {
-                const li = document.createElement("li");
                 const variant = item.selected_variants || {};
                 const customEntries = Object.entries(variant.customisation || {});
                 const photoEntry = customEntries.find(([key]) => key === "Customer Photo Upload");
                 const optionText = [
                     ...Object.entries(variant.options || {}).map(([k,v]) => k + ": " + v),
                     ...customEntries.filter(([key]) => key !== "Customer Photo Upload").map(([k,v]) => k + ": " + v),
-                    ...(photoEntry ? ["Customer Photo Upload: Attached"] : [])
+                    ...(photoEntry ? ["Customer photo attached"] : [])
                 ].join(" · ");
-                li.textContent = item.product_name + " × " + item.quantity +
-                    " — R" + Number(item.unit_price).toFixed(2) +
-                    (optionText ? " (" + optionText + ")" : "");
+                const li = el("li", item.product_name + " × " + item.quantity + " — " + money(Number(item.unit_price) * Number(item.quantity)) + (optionText ? " | " + optionText : ""));
+                li.style.marginBottom = "7px";
                 if (photoEntry && photoEntry[1]) {
                     const { data: signedPhoto, error: signedPhotoError } = await ggSupabase.storage
-                        .from("customer-personalisation")
-                        .createSignedUrl(photoEntry[1], 3600);
-                    const photoLink = document.createElement("a");
-                    photoLink.textContent = signedPhotoError ? "Photo unavailable" : "View customer photo";
-                    photoLink.href = signedPhoto?.signedUrl || "#";
-                    photoLink.target = "_blank";
-                    photoLink.rel = "noopener";
-                    photoLink.style.display = "block";
-                    photoLink.style.marginTop = "6px";
-                    li.appendChild(photoLink);
+                        .from("customer-personalisation").createSignedUrl(photoEntry[1], 3600);
+                    const link = el("a", signedPhotoError ? "Photo unavailable" : "View customer photo");
+                    link.href = signedPhoto?.signedUrl || "#";
+                    link.target = "_blank";
+                    link.rel = "noopener";
+                    link.style.marginLeft = "8px";
+                    li.appendChild(link);
                 }
                 list.appendChild(li);
             }
-            card.appendChild(list);
-            const total = document.createElement("p");
-            total.textContent = "Subtotal: R" + Number(order.subtotal).toFixed(2) +
-                " · Delivery: R" + Number(order.delivery_fee).toFixed(2) +
-                " · Total: R" + Number(order.total).toFixed(2);
-            card.appendChild(total);
-            const paymentReference = "GG-" + String(order.id).replace(/-/g, "").slice(0, 8).toUpperCase();
-            const reference = document.createElement("p");
-            reference.textContent = "Customer payment reference: " + paymentReference;
-            card.appendChild(reference);
+            itemSection.appendChild(list);
+            card.appendChild(itemSection);
 
-            const status = document.createElement("p");
-            status.textContent = "Order status: " + order.order_status + " · Payment: " + order.payment_status;
-            card.appendChild(status);
+            const totals = el("div");
+            totals.style.cssText = "display:flex;justify-content:flex-end;flex-wrap:wrap;gap:12px 22px;text-align:right;";
+            totals.appendChild(el("span","Subtotal: " + money(order.subtotal)));
+            totals.appendChild(el("span","Delivery: " + money(order.delivery_fee)));
+            const grand = el("strong","Total: " + money(order.total));
+            grand.style.fontSize = "18px";
+            totals.appendChild(grand);
+            card.appendChild(totals);
 
             if (String(order.payment_status || "").toLowerCase() !== "paid") {
-                const confirmPayment = document.createElement("button");
-                confirmPayment.type = "button";
-                confirmPayment.className = "primary-button";
-                confirmPayment.textContent = "Confirm payment received";
-                confirmPayment.addEventListener("click", async () => {
-                    const confirmed = window.confirm(
-                        "Have you checked your GoTyme account and confirmed that the full payment for " +
-                        paymentReference + " has actually arrived?"
-                    );
-                    if (!confirmed) return;
-                    confirmPayment.disabled = true;
-                    confirmPayment.textContent = "Updating...";
-                    const { error: updateError } = await ggSupabase
-                        .from("orders")
-                        .update({ payment_status: "paid" })
-                        .eq("id", order.id);
+                const actions = el("div");
+                actions.style.cssText = "border-top:1px solid #f0e7ec;margin-top:16px;padding-top:14px;display:flex;justify-content:flex-end;";
+                const confirm = el("button","Confirm payment received");
+                confirm.type = "button";
+                confirm.className = "primary-button";
+                confirm.addEventListener("click", async () => {
+                    if (!window.confirm("Have you checked your bank account and confirmed the full payment for " + reference + " has arrived?")) return;
+                    confirm.disabled = true;
+                    confirm.textContent = "Updating...";
+                    const { error: updateError } = await ggSupabase.from("orders")
+                        .update({ payment_status: "paid" }).eq("id", order.id);
                     if (updateError) {
-                        console.error("Could not confirm order payment:", updateError);
-                        alert("We could not update the payment status. Please try again.");
-                        confirmPayment.disabled = false;
-                        confirmPayment.textContent = "Confirm payment received";
+                        console.error("Could not update payment status:", updateError);
+                        alert("Payment status could not be updated. Please try again.");
+                        confirm.disabled = false;
+                        confirm.textContent = "Confirm payment received";
                         return;
                     }
-                    status.textContent = "Order status: " + order.order_status + " · Payment: paid";
-                    confirmPayment.remove();
-                    alert("Payment marked as received for " + paymentReference + ".");
+                    payBadge.textContent = "Payment: Paid";
+                    payBadge.style.cssText = "display:inline-block;padding:6px 10px;border-radius:20px;background:#e5f5eb;color:#176b39;font-size:12px;font-weight:700;";
+                    actions.remove();
                 });
-                card.appendChild(confirmPayment);
+                actions.appendChild(confirm);
+                card.appendChild(actions);
             }
             container.appendChild(card);
         }
     } catch (error) {
         console.error("Could not load recent orders:", error);
-        container.textContent = "Could not load orders. Please refresh the page.";
+        container.replaceChildren(el("p","Could not load orders. Please refresh the page."));
     }
-})();
+})();;
 </script>
 
 
