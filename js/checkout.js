@@ -175,21 +175,39 @@ async function submitCheckoutOrder(form) {
         if (success) {
             success.hidden = false;
             success.innerHTML =
-                '<h2>Thank you! Your order has been placed. 💗</h2>' +
-                '<p>Your order reference is <strong>' + escapeCheckoutText(paymentReference) + '</strong>.</p>' +
-                '<p><strong>Total to pay: R' + actualTotal.toFixed(2) + '</strong></p>' +
-                '<div class="checkout-payment-instructions">' +
-                    '<h3>Manual Payment Details</h3>' +
-                    '<p><strong>Bank:</strong> GoTyme Bank</p>' +
-                    '<p><strong>Account name:</strong> Glamor and Grace</p>' +
-                    '<p><strong>Account number:</strong> 51133813751</p>' +
-                    '<p><strong>Payment reference:</strong> ' + escapeCheckoutText(paymentReference) + '</p>' +
-                    '<p>Please use the payment reference exactly as shown. Your order will only be processed once payment reflects in our account.</p>' +
+                '<div class="gg-success-hero">' +
+                    '<span class="gg-success-icon">✓</span>' +
+                    '<p class="gg-success-eyebrow">GLAMOR &amp; GRACE</p>' +
+                    '<h2>Thank you, your order has been placed!</h2>' +
+                    '<p>We are so happy you chose to shop with us. Your order has been saved successfully.</p>' +
+                    '<span class="gg-payment-status">Payment pending</span>' +
                 '</div>' +
-                '<p>Your payment status is currently <strong>Pending</strong>.</p>' +
-                '<a class="primary-button" href="https://wa.me/' + GG_BUSINESS_WHATSAPP +
-                '?text=' + encodeURIComponent(proofMessage) +
-                '" target="_blank" rel="noopener">Send Proof of Payment on WhatsApp</a>';
+                '<div class="gg-success-content">' +
+                    '<div class="gg-reference-card">' +
+                        '<span>YOUR ORDER REFERENCE</span>' +
+                        '<strong>' + escapeCheckoutText(paymentReference) + '</strong>' +
+                        '<small>Use this reference when making your bank transfer.</small>' +
+                    '</div>' +
+                    '<div class="gg-payment-total"><span>Total to pay</span><strong>R' + actualTotal.toFixed(2) + '</strong></div>' +
+                    '<div class="gg-bank-card">' +
+                        '<div class="gg-success-section-heading"><span>01</span><div><h3>Make your payment</h3><p>Use the bank details below to pay for your order.</p></div></div>' +
+                        '<div class="gg-bank-details">' +
+                            '<div><span>Bank</span><strong>GoTyme Bank</strong></div>' +
+                            '<div><span>Account name</span><strong>Glamor and Grace</strong></div>' +
+                            '<div><span>Account number</span><strong>51133813751</strong></div>' +
+                            '<div><span>Payment reference</span><strong>' + escapeCheckoutText(paymentReference) + '</strong></div>' +
+                        '</div>' +
+                        '<p class="gg-payment-reminder">Please enter the reference exactly as shown. Your order will only be processed once the payment reflects in our account.</p>' +
+                    '</div>' +
+                    '<div class="gg-next-step-card">' +
+                        '<div class="gg-success-section-heading"><span>02</span><div><h3>Send your proof of payment</h3><p>After making the transfer, send us your proof of payment on WhatsApp.</p></div></div>' +
+                        '<a class="primary-button gg-whatsapp-button" href="https://wa.me/' + GG_BUSINESS_WHATSAPP +
+                        '?text=' + encodeURIComponent(proofMessage) +
+                        '" target="_blank" rel="noopener">Send Proof of Payment on WhatsApp</a>' +
+                        '<small>If you are using a computer, you can open this link on your phone instead.</small>' +
+                    '</div>' +
+                    '<p class="gg-thankyou-note">Thank you for supporting Glamor &amp; Grace. We will update your order once your payment has been verified. 💗</p>' +
+                '</div>'
         }
         form.hidden = true;
         window.scrollTo({ top: 0, behavior: "smooth" });
