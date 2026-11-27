@@ -458,131 +458,67 @@ document.addEventListener(
 // ========================================
 
 function setupOrderTracking() {
+    const form = document.getElementById("order-search-form");
+    const result = document.getElementById("order-result");
+    const input = document.getElementById("order-number");
+    if (!form || !result || !input) return;
 
-    const form =
-        document.getElementById("order-search-form");
+    const escapeHtml = value => String(value ?? "").replace(/[&<>"']/g, char => ({
+        "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+    })[char]);
+    const pretty = value => String(value || "pending").replace(/[-_]/g, " ").replace(/\b\w/g, c => c.toUpperCase());
 
-    const result =
-        document.getElementById("order-result");
-
-    if (!form || !result) {
-        return;
-    }
-
-
-    form.addEventListener("submit", event => {
-
+    form.addEventListener("submit", async event => {
         event.preventDefault();
-
-
-        const orderNumber =
-            document.getElementById("order-number")
-                .value
-                .trim();
-
-
-        if (!orderNumber) {
+        const reference = input.value.trim().toUpperCase();
+        if (!/^GG-[0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{12}$/.test(reference)) {
+            result.innerHTML = '<div class="tracking-message tracking-error"><strong>Please check your order reference.</strong><p>Use the full GG- reference shown on your order confirmation.</p></div>';
             return;
         }
-
-
-        result.innerHTML = `
-
-            <div class="order-status-card">
-
-                <p class="section-label">
-                    ORDER ${orderNumber}
-                </p>
-
-                <h2>
-                    Order Status
-                </h2>
-
-
-                <div class="order-timeline">
-
-                    <div class="status-step active">
-                        <span>✓</span>
-                        <div>
-                            <strong>Payment Pending</strong>
-                            <small>
-                                Waiting for payment confirmation
-                            </small>
-                        </div>
-                    </div>
-
-
-                    <div class="status-step">
-                        <span>2</span>
-                        <div>
-                            <strong>Paid / Confirmed</strong>
-                            <small>
-                                Payment confirmed
-                            </small>
-                        </div>
-                    </div>
-
-
-                    <div class="status-step">
-                        <span>3</span>
-                        <div>
-                            <strong>Processing</strong>
-                            <small>
-                                Your order is being prepared
-                            </small>
-                        </div>
-                    </div>
-
-
-                    <div class="status-step">
-                        <span>4</span>
-                        <div>
-                            <strong>Packed</strong>
-                            <small>
-                                Your order has been packed
-                            </small>
-                        </div>
-                    </div>
-
-
-                    <div class="status-step">
-                        <span>5</span>
-                        <div>
-                            <strong>Shipped</strong>
-                            <small>
-                                Your order is on its way
-                            </small>
-                        </div>
-                    </div>
-
-
-                    <div class="status-step">
-                        <span>6</span>
-                        <div>
-                            <strong>Tracking Added</strong>
-                            <small>
-                                Tracking information available
-                            </small>
-                        </div>
-                    </div>
-
-
-                    <div class="status-step">
-                        <span>7</span>
-                        <div>
-                            <strong>Delivered</strong>
-                            <small>
-                                Order delivered
-                            </small>
-                        </div>
-                    </div>
-
-                </div>
-
-            </div>
-
-        `;
-
+        const button = form.querySelector('button[type="submit"]');
+        if (button) { button.disabled = true; button.textContent = "Looking up order…"; }
+        result.innerHTML = '<div class="tracking-loading">Looking up your order…</div>';
+        try {
+            const { data, error } = await ggSupabase.rpc("track_store_order", { p_reference: reference });
+            if (error) throw error;
+            if (!data) {
+                result.innerHTML = '<div class="tracking-message tracking-error"><strong>We couldn’t find that order.</strong><p>Please check the reference and try again.</p></div>';
+                return;
+            }
+            const payment = String(data.payment_status || "pending").toLowerCase();
+            const order = String(data.order_status || "pending").toLowerCase();
+            const stages = [
+                { key: "payment", title: "Payment confirmed", detail: "We have confirmed your payment." },
+                { key: "processing", title: "Being prepared", detail: "Your order is being prepared." },
+                { key: "packed", title: "Packed", detail: "Your parcel has been packed." },
+                { key: "shipped", title: "On its way", detail: "Your parcel has been handed to the delivery service." },
+                { key: "delivered", title: "Delivered", detail: "Your order has been delivered." }
+            ];
+            const orderStages = ["pending", "processing", "packed", "shipped", "delivered"];
+            const currentIndex = orderStages.indexOf(order);
+            const paymentDone = payment === "paid";
+            const activeStage = order === "pending" ? (paymentDone ? 1 : 0) : Math.max(1, currentIndex + 1);
+            const method = pretty(data.delivery_method);
+            const date = data.created_at ? new Date(data.created_at).toLocaleDateString("en-ZA", { day: "numeric", month: "long", year: "numeric" }) : "Date unavailable";
+            const steps = stages.map((step, index) => {
+                const completed = index === 0 ? paymentDone : (currentIndex >= index);
+                const active = !completed && index === activeStage - 1;
+                return '<div class="tracking-step ' + (completed ? "completed" : (active ? "active" : "")) + '"><span class="tracking-step-icon">' + (completed ? "✓" : (index + 1)) + '</span><div><strong>' + step.title + '</strong><small>' + (completed ? step.detail : (active ? "This is your current stage." : "Coming up next.")) + '</small></div></div>';
+            }).join("");
+            const paymentLabel = paymentDone ? "Paid" : "Payment pending";
+            const orderLabel = pretty(order);
+            result.innerHTML = '<article class="tracking-result-card">' +
+                '<div class="tracking-result-top"><div><span class="tracking-overline">ORDER REFERENCE</span><h2>' + escapeHtml(reference) + '</h2><small>Placed ' + escapeHtml(date) + '</small></div><span class="tracking-status-pill ' + (paymentDone ? "is-paid" : "is-pending") + '">' + escapeHtml(paymentLabel) + '</span></div>' +
+                '<div class="tracking-summary-grid"><div><span>Order status</span><strong>' + escapeHtml(orderLabel) + '</strong></div><div><span>Delivery method</span><strong>' + escapeHtml(method) + '</strong></div></div>' +
+                '<h3 class="tracking-progress-title">Your order progress</h3><div class="tracking-timeline">' + steps + '</div>' +
+                '<p class="tracking-footnote">We’ll update this page as your order moves through each stage. If you need help, please contact us on WhatsApp.</p>' +
+                '</article>';
+        } catch (error) {
+            console.error("Order tracking lookup failed:", error);
+            result.innerHTML = '<div class="tracking-message tracking-error"><strong>We couldn’t load your order right now.</strong><p>Please try again in a moment.</p></div>';
+        } finally {
+            if (button) { button.disabled = false; button.textContent = "Track Order"; }
+        }
     });
 }
 
@@ -591,12 +527,7 @@ function setupOrderTracking() {
 // LOAD ORDER TRACKING
 // ========================================
 
-document.addEventListener(
-    "DOMContentLoaded",
-    () => {
-        setupOrderTracking();
-    }
-);
+document.addEventListener("DOMContentLoaded", setupOrderTracking);
 // ========================================
 // MOBILE MENU
 // ========================================
