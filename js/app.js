@@ -461,6 +461,7 @@ function setupOrderTracking() {
     const form = document.getElementById("order-search-form");
     const result = document.getElementById("order-result");
     const input = document.getElementById("order-number");
+    const emailInput = document.getElementById("tracking-email");
     if (!form || !result || !input) return;
 
     const escapeHtml = value => String(value ?? "").replace(/[&<>"']/g, char => ({
@@ -471,15 +472,22 @@ function setupOrderTracking() {
     form.addEventListener("submit", async event => {
         event.preventDefault();
         const reference = input.value.trim().toUpperCase();
-        if (!/^GG-[0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{12}$/.test(reference)) {
-            result.innerHTML = '<div class="tracking-message tracking-error"><strong>Please check your order reference.</strong><p>Use the full GG- reference shown on your order confirmation.</p></div>';
+        const isNewReference = /^GG-[0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{12}$/.test(reference);
+        const isLegacyReference = /^GG-[0-9A-F]{8}$/.test(reference);
+        const email = emailInput ? emailInput.value.trim() : "";
+        if (!isNewReference && !isLegacyReference) {
+            result.innerHTML = '<div class="tracking-message tracking-error"><strong>Please check your order reference.</strong><p>Enter the full GG- reference shown on your confirmation, or the shorter GG-XXXXXXXX reference from an earlier order.</p></div>';
+            return;
+        }
+        if (isLegacyReference && !email) {
+            result.innerHTML = '<div class="tracking-message tracking-error"><strong>Please enter your checkout email.</strong><p>For older order references, we use the email address on the order to verify it is yours.</p></div>';
             return;
         }
         const button = form.querySelector('button[type="submit"]');
         if (button) { button.disabled = true; button.textContent = "Looking up order…"; }
         result.innerHTML = '<div class="tracking-loading">Looking up your order…</div>';
         try {
-            const { data, error } = await ggSupabase.rpc("track_store_order", { p_reference: reference });
+            const { data, error } = await ggSupabase.rpc("track_store_order", { p_reference: reference, p_email: email || null });
             if (error) throw error;
             if (!data) {
                 result.innerHTML = '<div class="tracking-message tracking-error"><strong>We couldn’t find that order.</strong><p>Please check the reference and try again.</p></div>';
