@@ -497,12 +497,12 @@ function setupOrderTracking() {
             const orderStages = ["pending", "processing", "packed", "shipped", "delivered"];
             const currentIndex = orderStages.indexOf(order);
             const paymentDone = payment === "paid";
-            const activeStage = order === "pending" ? (paymentDone ? 1 : 0) : Math.max(1, currentIndex + 1);
+            const activeStage = paymentDone ? Math.min(4, Math.max(1, currentIndex + 1)) : 0;
             const method = pretty(data.delivery_method);
             const date = data.created_at ? new Date(data.created_at).toLocaleDateString("en-ZA", { day: "numeric", month: "long", year: "numeric" }) : "Date unavailable";
             const steps = stages.map((step, index) => {
                 const completed = index === 0 ? paymentDone : (currentIndex >= index);
-                const active = !completed && index === activeStage - 1;
+                const active = !completed && index === activeStage;
                 return '<div class="tracking-step ' + (completed ? "completed" : (active ? "active" : "")) + '"><span class="tracking-step-icon">' + (completed ? "✓" : (index + 1)) + '</span><div><strong>' + step.title + '</strong><small>' + (completed ? step.detail : (active ? "This is your current stage." : "Coming up next.")) + '</small></div></div>';
             }).join("");
             const paymentLabel = paymentDone ? "Paid" : "Payment pending";
