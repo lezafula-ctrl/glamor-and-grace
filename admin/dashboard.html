@@ -641,9 +641,45 @@ loadStaffAccounts();
                 " · Delivery: R" + Number(order.delivery_fee).toFixed(2) +
                 " · Total: R" + Number(order.total).toFixed(2);
             card.appendChild(total);
+            const paymentReference = "GG-" + String(order.id).replace(/-/g, "").slice(0, 8).toUpperCase();
+            const reference = document.createElement("p");
+            reference.textContent = "Customer payment reference: " + paymentReference;
+            card.appendChild(reference);
+
             const status = document.createElement("p");
             status.textContent = "Order status: " + order.order_status + " · Payment: " + order.payment_status;
             card.appendChild(status);
+
+            if (String(order.payment_status || "").toLowerCase() !== "paid") {
+                const confirmPayment = document.createElement("button");
+                confirmPayment.type = "button";
+                confirmPayment.className = "primary-button";
+                confirmPayment.textContent = "Confirm payment received";
+                confirmPayment.addEventListener("click", async () => {
+                    const confirmed = window.confirm(
+                        "Have you checked your GoTyme account and confirmed that the full payment for " +
+                        paymentReference + " has actually arrived?"
+                    );
+                    if (!confirmed) return;
+                    confirmPayment.disabled = true;
+                    confirmPayment.textContent = "Updating...";
+                    const { error: updateError } = await ggSupabase
+                        .from("orders")
+                        .update({ payment_status: "paid" })
+                        .eq("id", order.id);
+                    if (updateError) {
+                        console.error("Could not confirm order payment:", updateError);
+                        alert("We could not update the payment status. Please try again.");
+                        confirmPayment.disabled = false;
+                        confirmPayment.textContent = "Confirm payment received";
+                        return;
+                    }
+                    status.textContent = "Order status: " + order.order_status + " · Payment: paid";
+                    confirmPayment.remove();
+                    alert("Payment marked as received for " + paymentReference + ".");
+                });
+                card.appendChild(confirmPayment);
+            }
             container.appendChild(card);
         }
     } catch (error) {
