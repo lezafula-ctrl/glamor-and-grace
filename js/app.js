@@ -75,7 +75,7 @@ function createProductCard(product) {
     const price = window.ggSalePrice ? window.ggSalePrice(product.category, originalPrice, product.name) : originalPrice;
     const hasOptionPrices = ggAsArray(product.variants).some(v => v && v.prices && Object.keys(v.prices).length);
     const priceMarkup = discount > 0
-        ? (hasOptionPrices ? 'From ' : '') + '<span class="gg-sale-badge">-' + discount + '%</span><span class="gg-original-price">R' + Math.round(originalPrice) + '</span><strong class="gg-sale-price">R' + Math.round(price) + '</strong>'
+        ? (hasOptionPrices ? 'From ' : '') + '<span class="gg-sale-badge">-' + (Number.isInteger(Number(discount)) ? Number(discount) : Number(discount).toFixed(1)) + '%</span><span class="gg-original-price">R' + Math.round(originalPrice) + '</span><strong class="gg-sale-price">R' + Math.round(price) + '</strong>'
         : (hasOptionPrices ? 'From R' : 'R') + Math.round(originalPrice);
     const name = ggHtmlSafe(product.name || "Unnamed Product");
     const category = ggHtmlSafe(product.category || "Uncategorized");
@@ -359,7 +359,7 @@ function displayProductPage() {
             const discount = window.ggPromotionDiscount ? window.ggPromotionDiscount(product.category, product.name) : 0;
             const salePrice = window.ggSalePrice ? window.ggSalePrice(product.category, original, product.name) : original;
             livePrice.innerHTML = discount > 0
-                ? '<span class="gg-original-price">R' + Math.round(original) + '</span> <strong class="gg-sale-price">R' + Math.round(salePrice) + '</strong> <span class="gg-sale-badge">-' + discount + '%</span>'
+                ? '<span class="gg-original-price">R' + Math.round(original) + '</span> <strong class="gg-sale-price">R' + Math.round(salePrice) + '</strong> <span class="gg-sale-badge">-' + (Number.isInteger(Number(discount)) ? Number(discount) : Number(discount).toFixed(1)) + '%</span>'
                 : 'R' + Math.round(original);
         }
         const stockEl = document.getElementById("gg-selected-stock");
