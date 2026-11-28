@@ -2271,3 +2271,84 @@ html{scroll-behavior:smooth;}
     .tracking-result-top { flex-direction: column; }
     .tracking-summary-grid { grid-template-columns: 1fr; }
 }
+
+
+/* ========================================
+   GLAMOR & GRACE — INSTALLABLE APP PROMPT
+======================================== */
+.gg-pwa-card {
+    position: fixed;
+    z-index: 3000;
+    left: 16px;
+    right: 16px;
+    bottom: max(16px, env(safe-area-inset-bottom));
+    max-width: 520px;
+    margin: 0 auto;
+    padding: 17px 18px;
+    background: #ffffff;
+    border: 1px solid #ead7df;
+    border-radius: 16px;
+    box-shadow: 0 12px 40px rgba(35, 20, 27, .18);
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    color: #111111;
+}
+.gg-pwa-card[hidden] { display: none !important; }
+.gg-pwa-card-icon {
+    width: 48px;
+    height: 48px;
+    flex: 0 0 48px;
+    border-radius: 12px;
+    object-fit: cover;
+}
+.gg-pwa-card-copy { flex: 1; min-width: 0; }
+.gg-pwa-card-copy strong {
+    display: block;
+    font-family: Georgia, serif;
+    font-size: 16px;
+    margin-bottom: 3px;
+}
+.gg-pwa-card-copy span {
+    display: block;
+    color: #666666;
+    font-size: 12px;
+    line-height: 1.45;
+}
+.gg-pwa-actions { display: flex; align-items: center; gap: 7px; }
+.gg-pwa-install {
+    border: 0;
+    border-radius: 30px;
+    padding: 10px 14px;
+    background: #111111;
+    color: #ffffff;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    white-space: nowrap;
+}
+.gg-pwa-close {
+    border: 0;
+    background: transparent;
+    color: #777777;
+    font-size: 22px;
+    line-height: 1;
+    padding: 4px;
+    cursor: pointer;
+}
+.gg-pwa-help {
+    margin-top: 7px;
+    padding: 9px 11px;
+    border-radius: 8px;
+    background: #fbf0f4;
+    color: #333333;
+    font-size: 12px;
+    line-height: 1.5;
+}
+@media (max-width: 420px) {
+    .gg-pwa-card { left: 10px; right: 10px; padding: 13px; gap: 9px; }
+    .gg-pwa-card-icon { width: 40px; height: 40px; flex-basis: 40px; }
+    .gg-pwa-card-copy strong { font-size: 14px; }
+    .gg-pwa-card-copy span { font-size: 11px; }
+    .gg-pwa-install { padding: 9px 11px; }
+}
