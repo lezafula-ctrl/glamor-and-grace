@@ -4,7 +4,7 @@
 // ========================================
 
 const MINIMUM_CART_TOTAL = 150;
-const GG_BUSINESS_WHATSAPP = "27729352184";
+const GG_BUSINESS_WHATSAPP = "27730592497";
 let checkoutSubmitting = false;
 
 function escapeCheckoutText(value) {
